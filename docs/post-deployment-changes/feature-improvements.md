@@ -28,7 +28,7 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 
 ## Expenses & data
 
-- [x] **P1 — Date range export** — CSV filtered by from/to date in Settings.
+- [~] **P1 — Date range CSV export** — **Hidden from Settings UI** (May 2026). Backend remains at `GET /api/export/csv` (optional `?from=` / `?to=`). Re-enable by restoring the Data section in `components/settings-panel.tsx` when users need spreadsheet backup.
 - [ ] **P1 — Recurring expenses** — Optional template (e.g. rent monthly) — needs schema + UI.
 - [ ] **P2 — Income tracking** — Separate type or table; out of v1 scope.
 - [ ] **P2 — Receipt upload / OCR** — Photo → amount + merchant via vision model.
@@ -75,9 +75,23 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 
 ---
 
+## Hidden / deferred in UI
+
+### CSV export (Settings)
+
+| Item | Detail |
+|------|--------|
+| **Why hidden** | Low day-to-day need; keeps Settings focused on profile and legal links. |
+| **Still works?** | Yes — `app/api/export/csv/route.ts` is live for authenticated users. Not linked in the app UI. |
+| **How to test** | While logged in, open `/api/export/csv` in the browser (or call with optional `?from=YYYY-MM-DD&to=YYYY-MM-DD`). |
+| **Re-enable** | Add back the Data block in `components/settings-panel.tsx` (see git history). |
+| **Related** | Full JSON export remains a separate P1 backlog item below. |
+
+---
+
 ## Already shipped (v1–3) — do not re-plan here
 
-- Manual + Gemini add expense, weekly insight, category management, budgets, CSV export, profile display name, multi-user RLS.
+- Manual + Gemini add expense, weekly insight, category management, budgets, CSV export API (Settings UI hidden post-deploy), profile display name, multi-user RLS.
 
 ---
 

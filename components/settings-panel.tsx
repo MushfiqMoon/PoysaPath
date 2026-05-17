@@ -18,9 +18,6 @@ export function SettingsPanel({ email, displayName }: SettingsPanelProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [exporting, setExporting] = useState(false);
-  const [exportFrom, setExportFrom] = useState("");
-  const [exportTo, setExportTo] = useState("");
 
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -34,37 +31,6 @@ export function SettingsPanel({ email, displayName }: SettingsPanelProps) {
       setError(err instanceof Error ? err.message : "Could not save");
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function handleExport() {
-    setExporting(true);
-    setError(null);
-    try {
-      const params = new URLSearchParams();
-      if (exportFrom) params.set("from", exportFrom);
-      if (exportTo) params.set("to", exportTo);
-      const qs = params.toString();
-      const res = await fetch(`/api/export/csv${qs ? `?${qs}` : ""}`);
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? "Export failed");
-      }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download =
-        res.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] ??
-        "poysapath-expenses.csv";
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Could not export CSV.",
-      );
-    } finally {
-      setExporting(false);
     }
   }
 
@@ -100,42 +66,6 @@ export function SettingsPanel({ email, displayName }: SettingsPanelProps) {
             {loading ? "Saving…" : "Save profile"}
           </Button>
         </form>
-      </section>
-
-      <section className="rounded-xl border border-border bg-surface p-4">
-        <h3 className="font-medium text-text">Data</h3>
-        <p className="mt-1 text-sm text-text-muted">
-          Download expenses as CSV. Leave dates empty to export everything.
-        </p>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <div>
-            <Label htmlFor="export-from">From (optional)</Label>
-            <Input
-              id="export-from"
-              type="date"
-              value={exportFrom}
-              onChange={(e) => setExportFrom(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="export-to">To (optional)</Label>
-            <Input
-              id="export-to"
-              type="date"
-              value={exportTo}
-              onChange={(e) => setExportTo(e.target.value)}
-            />
-          </div>
-        </div>
-        <Button
-          type="button"
-          variant="secondary"
-          className="mt-4 w-full"
-          disabled={exporting}
-          onClick={handleExport}
-        >
-          {exporting ? "Exporting…" : "Export CSV"}
-        </Button>
       </section>
 
       <section className="rounded-xl border border-border bg-surface p-4">

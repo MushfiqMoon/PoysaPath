@@ -143,6 +143,7 @@ className="border border-white/10 bg-surface/75 shadow-lg shadow-black/5 backdro
 
 ## Settings & auth
 
+- [~] **P1 — CSV export in Settings** — Implemented then **hidden** (May 2026). See [feature-improvements.md § Hidden / deferred](./feature-improvements.md#hidden--deferred-in-ui).
 - [x] **P1 — Sign out confirmation** — Confirm dialog in `app-shell.tsx`.
 - [ ] **P2 — Avatar / initials** — Circle with first letter of display name on dashboard and settings.
 - [ ] **P2 — Theme toggle** — Light / dark / system if not already exposed in UI.

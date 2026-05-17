@@ -33,9 +33,9 @@ export default function PrivacyPage() {
           </p>
           <h2 className="text-base font-medium text-text">Your choices</h2>
           <p>
-            Export expenses as CSV from Settings. To delete your account and
-            all data, contact the app operator or use a future in-app delete
-            flow.
+            Data export may be offered in a future update. To request a copy of
+            your data or delete your account, contact the app operator or use a
+            future in-app delete flow.
           </p>
           <h2 className="text-base font-medium text-text">Contact</h2>
           <p>
