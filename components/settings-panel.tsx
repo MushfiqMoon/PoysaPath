@@ -84,8 +84,8 @@ export function SettingsPanel({ email, displayName }: SettingsPanelProps) {
         </ul>
       </section>
 
-      <p className="text-center text-xs text-text-muted">
-        Currency: BDT (৳) · Timezone: Asia/Dhaka
+      <p className="text-center text-xs text-text-muted pb-4">
+        All rights reserved. Develop by <a href="https://github.com/MushfiqMoon" className="text-accent hover:underline">Mushfiq</a>
       </p>
     </div>
   );

@@ -14,14 +14,17 @@ export function Logo({
   href,
   className = "",
 }: LogoProps) {
+  const src = size <= 64 ? "/icon.png" : "/logo.png";
+
   const image = (
     <Image
-      src="/logo.png"
+      src={src}
       alt="PoysaPath"
       width={size}
       height={size}
+      sizes={`${size}px`}
       className="rounded-full"
-      priority
+      priority={size >= 64}
     />
   );
 

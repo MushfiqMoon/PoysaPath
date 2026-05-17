@@ -13,7 +13,11 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PAYMENT_METHODS } from "@/lib/constants";
+import {
+  formatPaymentMethod,
+  PAYMENT_METHODS,
+  type StoredPaymentMethod,
+} from "@/lib/constants";
 import { getTodayInDhaka } from "@/lib/dates";
 import type { Category, Expense } from "@/lib/types";
 
@@ -110,7 +114,7 @@ export function ExpenseForm({
       category_id: categoryId,
       expense_date: expenseDate,
       note: note || null,
-      payment_method: paymentMethod || null,
+      payment_method: (paymentMethod || null) as StoredPaymentMethod | null,
     };
 
     try {
@@ -160,7 +164,7 @@ export function ExpenseForm({
       <form
         id="expense-form"
         onSubmit={handleSubmit}
-        className="space-y-4 pb-28 md:pb-4"
+        className="space-y-4"
       >
         <div>
           <Label htmlFor="amount">Amount (৳)</Label>
@@ -199,7 +203,7 @@ export function ExpenseForm({
           )}
         </div>
 
-        <div>
+        <div className="min-w-0 max-w-full">
           <Label htmlFor="expense-date">Date</Label>
           <Input
             id="expense-date"
@@ -207,7 +211,12 @@ export function ExpenseForm({
             required
             value={expenseDate}
             onChange={(e) => setExpenseDate(e.target.value)}
-            className={highlightParsed ? parsedRing : ""}
+            className={[
+              "min-w-0 max-w-full",
+              highlightParsed ? parsedRing : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
           />
         </div>
 
@@ -232,6 +241,12 @@ export function ExpenseForm({
             className="mt-1.5 min-h-11 w-full rounded-xl border border-border bg-surface px-3 py-2 text-base text-text"
           >
             <option value="">—</option>
+            {paymentMethod &&
+              !PAYMENT_METHODS.some((p) => p.value === paymentMethod) && (
+                <option value={paymentMethod}>
+                  {formatPaymentMethod(paymentMethod) ?? paymentMethod}
+                </option>
+              )}
             {PAYMENT_METHODS.map((p) => (
               <option key={p.value} value={p.value}>
                 {p.label}
@@ -246,7 +261,7 @@ export function ExpenseForm({
           </p>
         )}
 
-        <div className="hidden md:block md:space-y-3">
+        <div className="space-y-3 pt-1">
           <Button type="submit" fullWidth disabled={loading}>
             {loading ? "Saving…" : isEdit ? "Save changes" : "Save expense"}
           </Button>
@@ -263,28 +278,6 @@ export function ExpenseForm({
           )}
         </div>
       </form>
-
-      <div
-        className="glass-panel fixed inset-x-0 bottom-0 z-10 border-t p-4 pb-[max(1rem,env(safe-area-inset-bottom))] md:static md:z-auto md:border-0 md:bg-transparent md:p-0 md:backdrop-filter-none"
-        style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
-      >
-        <div className="mx-auto max-w-3xl space-y-2 md:hidden">
-          <Button type="submit" form="expense-form" fullWidth disabled={loading}>
-            {loading ? "Saving…" : isEdit ? "Save changes" : "Save expense"}
-          </Button>
-          {isEdit && (
-            <Button
-              type="button"
-              variant="danger"
-              fullWidth
-              disabled={loading}
-              onClick={() => setConfirmDelete(true)}
-            >
-              Delete expense
-            </Button>
-          )}
-        </div>
-      </div>
 
       <ConfirmDialog
         open={confirmDelete}

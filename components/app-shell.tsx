@@ -84,6 +84,7 @@ export function AppShell({ children, title }: AppShellProps) {
       <Link
         key={item.href}
         href={item.href}
+        prefetch
         aria-current={active ? "page" : undefined}
         className={[
           mobile
@@ -116,6 +117,7 @@ export function AppShell({ children, title }: AppShellProps) {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch
                 aria-current={active ? "page" : undefined}
                 className={[
                   "rounded-xl px-3 py-2 text-sm transition-colors",

@@ -1,21 +1,18 @@
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { AppShell } from "@/components/app-shell";
-import { createClient } from "@/lib/supabase/server";
+import { CoinLoader } from "@/components/coin-loader";
 
-export default async function AppLayout({
+export default function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  return <AppShell>{children}</AppShell>;
+  return (
+    <AppShell>
+      <Suspense fallback={<CoinLoader fullPage label="Loading…" />}>
+        {children}
+      </Suspense>
+    </AppShell>
+  );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { PageHeader } from "@/components/page-header";
 import { SettingsPanel } from "@/components/settings-panel";
+import { getAuthUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 
 const menuLinks = [
@@ -10,10 +11,8 @@ const menuLinks = [
 ];
 
 export default async function SettingsPage() {
+  const user = await getAuthUser();
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   const { data: profile } = user
     ? await supabase

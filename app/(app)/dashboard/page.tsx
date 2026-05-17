@@ -1,10 +1,21 @@
+import dynamic from "next/dynamic";
 import Link from "next/link";
 
 import { CategoryBreakdown } from "@/components/category-breakdown";
-import { InsightCard } from "@/components/insight-card";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const InsightCard = dynamic(
+  () =>
+    import("@/components/insight-card").then((mod) => ({
+      default: mod.InsightCard,
+    })),
+  {
+    loading: () => <Skeleton className="h-28 w-full rounded-xl" />,
+  },
+);
+import { getAuthUser, getDisplayName } from "@/lib/auth/session";
 import { getCachedInsight } from "@/lib/data/insights";
-import { createClient } from "@/lib/supabase/server";
 import {
   getMonthCategoryTotals,
   getMonthTotal,
@@ -14,31 +25,17 @@ import {
 import { formatCurrency, formatExpenseTitle, formatRelativeDay } from "@/lib/format";
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let displayName = user?.email?.split("@")[0] ?? "there";
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("display_name")
-      .eq("id", user.id)
-      .maybeSingle();
-    if (profile?.display_name) {
-      displayName = profile.display_name;
-    }
-  }
-
-  const [todayTotal, monthTotal, categoryTotals, recent, cachedInsight] =
+  const [displayName, user, todayTotal, monthTotal, categoryTotals, recent] =
     await Promise.all([
+      getDisplayName(),
+      getAuthUser(),
       getTodayTotal(),
       getMonthTotal(),
       getMonthCategoryTotals(),
       getRecentExpenses(5),
-      user ? getCachedInsight(user.id) : Promise.resolve(null),
     ]);
+
+  const cachedInsight = user ? await getCachedInsight(user.id) : null;
 
   const hasExpenses = monthTotal > 0 || recent.length > 0;
 

@@ -112,7 +112,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     <div className="mx-auto w-full max-w-md px-4 py-8">
       <Link
         href={mode === "login" ? "/" : "/login"}
-        className="mb-6 inline-block text-sm text-text-muted hover:text-text"
+        className="mb-6 block text-sm text-text-muted hover:text-text"
       >
         ← Back
       </Link>
