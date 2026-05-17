@@ -23,6 +23,20 @@ export type CategoryTotal = {
   total: number;
 };
 
+export type Notification = {
+  id: string;
+  title: string;
+  body: string;
+  kind: string;
+  created_at: string;
+};
+
+export type UserNotificationRead = {
+  user_id: string;
+  notification_id: string;
+  read_at: string;
+};
+
 export type BudgetRow = {
   id: string;
   category_id: string;
