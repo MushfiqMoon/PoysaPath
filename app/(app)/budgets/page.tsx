@@ -1,0 +1,32 @@
+import { BudgetsManager } from "@/components/budgets-manager";
+import { PageHeader } from "@/components/page-header";
+import {
+  getBudgetsWithSpent,
+  getCategoriesWithoutBudget,
+} from "@/lib/data/budgets";
+import { getMonthStartInDhaka } from "@/lib/dates";
+
+export default async function BudgetsPage() {
+  const monthStart = getMonthStartInDhaka();
+  const [y, m] = monthStart.split("-");
+  const monthLabel = new Intl.DateTimeFormat("en-GB", {
+    month: "long",
+    year: "numeric",
+  }).format(new Date(Number(y), Number(m) - 1, 1));
+
+  const [budgets, unbudgetedCategories] = await Promise.all([
+    getBudgetsWithSpent(monthStart),
+    getCategoriesWithoutBudget(monthStart),
+  ]);
+
+  return (
+    <div className="space-y-4">
+      <PageHeader title={`Budgets — ${monthLabel}`} />
+      <BudgetsManager
+        budgets={budgets}
+        unbudgetedCategories={unbudgetedCategories}
+        monthLabel={monthLabel}
+      />
+    </div>
+  );
+}
