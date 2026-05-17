@@ -31,7 +31,7 @@
 ## 3. After deploy
 
 - Sign up / log in on production URL.
-- Add an expense, test Quick parse, export CSV from Settings.
+- Add an expense, test Quick parse. (CSV export API exists at `/api/export/csv` but is hidden from Settings — see `docs/post-deployment-changes/feature-improvements.md`.)
 - Optional: configure [custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp) for auth emails.
 
 ## 4. Local vs production

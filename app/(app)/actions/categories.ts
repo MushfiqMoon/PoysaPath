@@ -67,7 +67,19 @@ export async function updateCategory(
   revalidateCategoryPaths();
 }
 
-export async function deleteCategory(id: string) {
+export async function getCategoryExpenseCount(categoryId: string) {
+  const { supabase } = await requireUser();
+
+  const { count, error } = await supabase
+    .from("expenses")
+    .select("id", { count: "exact", head: true })
+    .eq("category_id", categoryId);
+
+  if (error) throw new Error(error.message);
+  return count ?? 0;
+}
+
+export async function deleteCategory(id: string, reassignToId?: string) {
   const { supabase } = await requireUser();
 
   const { count, error: countError } = await supabase
@@ -76,8 +88,21 @@ export async function deleteCategory(id: string) {
     .eq("category_id", id);
 
   if (countError) throw new Error(countError.message);
+
   if (count && count > 0) {
-    throw new Error("Cannot delete a category that has expenses.");
+    if (!reassignToId) {
+      throw new Error("REASSIGN_REQUIRED");
+    }
+    if (reassignToId === id) {
+      throw new Error("Choose a different category to reassign expenses.");
+    }
+
+    const { error: moveError } = await supabase
+      .from("expenses")
+      .update({ category_id: reassignToId })
+      .eq("category_id", id);
+
+    if (moveError) throw new Error(moveError.message);
   }
 
   const { error } = await supabase.from("categories").delete().eq("id", id);

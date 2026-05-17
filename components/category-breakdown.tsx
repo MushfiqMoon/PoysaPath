@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { formatCurrency } from "@/lib/format";
 import type { CategoryTotal } from "@/lib/types";
 
@@ -25,21 +27,30 @@ export function CategoryBreakdown({
               : 0;
           return (
             <li key={row.category_id}>
-              <div className="mb-1 flex justify-between text-sm">
-                <span className="text-text">
-                  {row.icon && <span aria-hidden>{row.icon} </span>}
-                  {row.name}
+              <Link
+                href={`/expenses?category=${row.category_id}`}
+                className="block rounded-lg transition-colors hover:bg-surface/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >
+                <div className="mb-1 flex justify-between text-sm">
+                  <span className="text-text">
+                    {row.icon && <span aria-hidden>{row.icon} </span>}
+                    {row.name}
+                  </span>
+                  <span className="font-medium tabular-nums text-text">
+                    {formatCurrency(row.total)}
+                  </span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-border">
+                  <div
+                    className="h-full rounded-full bg-accent"
+                    style={{ width: `${pct}%` }}
+                    aria-hidden
+                  />
+                </div>
+                <span className="sr-only">
+                  View expenses in {row.name}
                 </span>
-                <span className="font-medium tabular-nums text-text">
-                  {formatCurrency(row.total)}
-                </span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-border">
-                <div
-                  className="h-full rounded-full bg-accent"
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
+              </Link>
             </li>
           );
         })}

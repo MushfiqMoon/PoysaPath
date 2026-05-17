@@ -4,7 +4,12 @@ import {
   getWeekEndExclusive,
   getWeekStartInDhaka,
 } from "@/lib/dates";
-import { getCachedInsight, saveInsightCache } from "@/lib/data/insights";
+import {
+  getCachedInsight,
+  getInsightCacheRecord,
+  INSIGHT_REFRESH_COOLDOWN_MS,
+  saveInsightCache,
+} from "@/lib/data/insights";
 import { requireApiUser } from "@/lib/gemini/auth";
 import { generateJson } from "@/lib/gemini/client";
 import { buildWeeklyInsightPrompt } from "@/lib/gemini/prompts";
@@ -27,6 +32,24 @@ export async function POST(request: Request) {
       const cached = await getCachedInsight(user.id, weekStart);
       if (cached) {
         return NextResponse.json({ insight: cached, cached: true });
+      }
+    } else {
+      const record = await getInsightCacheRecord(user.id, weekStart);
+      if (record) {
+        const elapsed = Date.now() - new Date(record.created_at).getTime();
+        if (elapsed < INSIGHT_REFRESH_COOLDOWN_MS) {
+          const retryAfterSeconds = Math.ceil(
+            (INSIGHT_REFRESH_COOLDOWN_MS - elapsed) / 1000,
+          );
+          return NextResponse.json(
+            {
+              error: "Insight was refreshed recently. Try again later.",
+              retryAfterSeconds,
+              insight: record.content,
+            },
+            { status: 429 },
+          );
+        }
       }
     }
 

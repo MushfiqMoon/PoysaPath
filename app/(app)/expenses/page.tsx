@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { FiEdit } from "react-icons/fi";
 
 import { EmptyState } from "@/components/empty-state";
 import { ExpenseFilters } from "@/components/expense-filters";
@@ -37,7 +38,9 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
           </p>
         </div>
         <Link href="/add">
-          <Button variant="secondary">Add</Button>
+          <Button variant="secondary" aria-label="Add expense" className="px-3">
+            <FiEdit className="h-5 w-5" aria-hidden />
+          </Button>
         </Link>
       </div>
 

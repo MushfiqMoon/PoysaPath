@@ -1,14 +1,24 @@
 import { getWeekStartInDhaka } from "@/lib/dates";
 import { createClient } from "@/lib/supabase/server";
 
+export const INSIGHT_REFRESH_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+
 export async function getCachedInsight(
   userId: string,
   weekStart = getWeekStartInDhaka(),
 ): Promise<string | null> {
+  const record = await getInsightCacheRecord(userId, weekStart);
+  return record?.content ?? null;
+}
+
+export async function getInsightCacheRecord(
+  userId: string,
+  weekStart = getWeekStartInDhaka(),
+): Promise<{ content: string; created_at: string } | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("insight_cache")
-    .select("content")
+    .select("content, created_at")
     .eq("user_id", userId)
     .eq("week_start", weekStart)
     .maybeSingle();
@@ -18,7 +28,8 @@ export async function getCachedInsight(
     throw new Error(error.message);
   }
 
-  return data?.content ?? null;
+  if (!data) return null;
+  return { content: data.content, created_at: data.created_at };
 }
 
 export async function saveInsightCache(
