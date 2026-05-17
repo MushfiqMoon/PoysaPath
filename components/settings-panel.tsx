@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 import { updateDisplayName } from "@/app/(app)/actions/profile";
@@ -18,6 +19,8 @@ export function SettingsPanel({ email, displayName }: SettingsPanelProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [exportFrom, setExportFrom] = useState("");
+  const [exportTo, setExportTo] = useState("");
 
   async function handleSaveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -38,8 +41,15 @@ export function SettingsPanel({ email, displayName }: SettingsPanelProps) {
     setExporting(true);
     setError(null);
     try {
-      const res = await fetch("/api/export/csv");
-      if (!res.ok) throw new Error("Export failed");
+      const params = new URLSearchParams();
+      if (exportFrom) params.set("from", exportFrom);
+      if (exportTo) params.set("to", exportTo);
+      const qs = params.toString();
+      const res = await fetch(`/api/export/csv${qs ? `?${qs}` : ""}`);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? "Export failed");
+      }
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -49,8 +59,10 @@ export function SettingsPanel({ email, displayName }: SettingsPanelProps) {
         "poysapath-expenses.csv";
       a.click();
       URL.revokeObjectURL(url);
-    } catch {
-      setError("Could not export CSV.");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not export CSV.",
+      );
     } finally {
       setExporting(false);
     }
@@ -93,8 +105,28 @@ export function SettingsPanel({ email, displayName }: SettingsPanelProps) {
       <section className="rounded-xl border border-border bg-surface p-4">
         <h3 className="font-medium text-text">Data</h3>
         <p className="mt-1 text-sm text-text-muted">
-          Download all your expenses as CSV.
+          Download expenses as CSV. Leave dates empty to export everything.
         </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div>
+            <Label htmlFor="export-from">From (optional)</Label>
+            <Input
+              id="export-from"
+              type="date"
+              value={exportFrom}
+              onChange={(e) => setExportFrom(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="export-to">To (optional)</Label>
+            <Input
+              id="export-to"
+              type="date"
+              value={exportTo}
+              onChange={(e) => setExportTo(e.target.value)}
+            />
+          </div>
+        </div>
         <Button
           type="button"
           variant="secondary"
@@ -104,6 +136,22 @@ export function SettingsPanel({ email, displayName }: SettingsPanelProps) {
         >
           {exporting ? "Exporting…" : "Export CSV"}
         </Button>
+      </section>
+
+      <section className="rounded-xl border border-border bg-surface p-4">
+        <h3 className="font-medium text-text">Legal</h3>
+        <ul className="mt-3 space-y-2 text-sm">
+          <li>
+            <Link href="/privacy" className="text-accent hover:underline">
+              Privacy policy
+            </Link>
+          </li>
+          <li>
+            <Link href="/terms" className="text-accent hover:underline">
+              Terms of use
+            </Link>
+          </li>
+        </ul>
       </section>
 
       <p className="text-center text-xs text-text-muted">

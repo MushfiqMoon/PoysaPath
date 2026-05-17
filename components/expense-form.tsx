@@ -157,7 +157,11 @@ export function ExpenseForm({
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form
+        id="expense-form"
+        onSubmit={handleSubmit}
+        className="space-y-4 pb-28 md:pb-4"
+      >
         <div>
           <Label htmlFor="amount">Amount (৳)</Label>
           <Input
@@ -170,7 +174,12 @@ export function ExpenseForm({
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="0"
-            className={highlightParsed && amount ? parsedRing : ""}
+            className={[
+              "text-lg",
+              highlightParsed && amount ? parsedRing : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
           />
         </div>
 
@@ -237,22 +246,45 @@ export function ExpenseForm({
           </p>
         )}
 
-        <Button type="submit" fullWidth disabled={loading}>
-          {loading ? "Saving…" : isEdit ? "Save changes" : "Save expense"}
-        </Button>
-
-        {isEdit && (
-          <Button
-            type="button"
-            variant="danger"
-            fullWidth
-            disabled={loading}
-            onClick={() => setConfirmDelete(true)}
-          >
-            Delete expense
+        <div className="hidden md:block md:space-y-3">
+          <Button type="submit" fullWidth disabled={loading}>
+            {loading ? "Saving…" : isEdit ? "Save changes" : "Save expense"}
           </Button>
-        )}
+          {isEdit && (
+            <Button
+              type="button"
+              variant="danger"
+              fullWidth
+              disabled={loading}
+              onClick={() => setConfirmDelete(true)}
+            >
+              Delete expense
+            </Button>
+          )}
+        </div>
       </form>
+
+      <div
+        className="glass-panel fixed inset-x-0 bottom-0 z-10 border-t p-4 pb-[max(1rem,env(safe-area-inset-bottom))] md:static md:z-auto md:border-0 md:bg-transparent md:p-0 md:backdrop-filter-none"
+        style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+      >
+        <div className="mx-auto max-w-3xl space-y-2 md:hidden">
+          <Button type="submit" form="expense-form" fullWidth disabled={loading}>
+            {loading ? "Saving…" : isEdit ? "Save changes" : "Save expense"}
+          </Button>
+          {isEdit && (
+            <Button
+              type="button"
+              variant="danger"
+              fullWidth
+              disabled={loading}
+              onClick={() => setConfirmDelete(true)}
+            >
+              Delete expense
+            </Button>
+          )}
+        </div>
+      </div>
 
       <ConfirmDialog
         open={confirmDelete}

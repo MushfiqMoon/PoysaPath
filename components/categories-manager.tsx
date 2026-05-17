@@ -1,11 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   createCategory,
   deleteCategory,
+  getCategoryExpenseCount,
   updateCategory,
 } from "@/app/(app)/actions/categories";
 import { ConfirmDialog } from "@/components/confirm-dialog";
@@ -25,9 +26,39 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteExpenseCount, setDeleteExpenseCount] = useState(0);
+  const [reassignToId, setReassignToId] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editIcon, setEditIcon] = useState("");
+
+  const deleteTarget = categories.find((c) => c.id === deleteId);
+  const reassignOptions = categories.filter((c) => c.id !== deleteId);
+
+  useEffect(() => {
+    if (!deleteId) {
+      setDeleteExpenseCount(0);
+      setReassignToId("");
+      return;
+    }
+
+    let cancelled = false;
+    getCategoryExpenseCount(deleteId)
+      .then((count) => {
+        if (!cancelled) {
+          setDeleteExpenseCount(count);
+          const first = categories.find((c) => c.id !== deleteId);
+          setReassignToId(first?.id ?? "");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setDeleteExpenseCount(0);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [deleteId, categories]);
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
@@ -61,18 +92,31 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
 
   async function handleDelete() {
     if (!deleteId) return;
+    if (deleteExpenseCount > 0 && !reassignToId) {
+      setError("Choose a category to move expenses into.");
+      return;
+    }
+
     setLoading(true);
+    setError(null);
     try {
-      await deleteCategory(deleteId);
+      await deleteCategory(
+        deleteId,
+        deleteExpenseCount > 0 ? reassignToId : undefined,
+      );
       setDeleteId(null);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not delete");
-      setDeleteId(null);
     } finally {
       setLoading(false);
     }
   }
+
+  const deleteMessage =
+    deleteExpenseCount > 0
+      ? `${deleteExpenseCount} expense${deleteExpenseCount === 1 ? "" : "s"} use “${deleteTarget?.name}”. Move them to another category, then delete.`
+      : `Delete “${deleteTarget?.name}”? This cannot be undone.`;
 
   return (
     <div className="space-y-6">
@@ -152,7 +196,10 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
         ))}
       </ul>
 
-      <form onSubmit={handleAdd} className="space-y-3 rounded-xl border border-border bg-surface p-4">
+      <form
+        onSubmit={handleAdd}
+        className="space-y-3 rounded-xl border border-border bg-surface p-4"
+      >
         <p className="font-medium text-text">Add category</p>
         <div>
           <Label htmlFor="cat-name">Name</Label>
@@ -187,11 +234,35 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
       <ConfirmDialog
         open={Boolean(deleteId)}
         title="Delete category?"
-        message="Only allowed if no expenses use this category."
+        message={deleteMessage}
         loading={loading}
         onCancel={() => setDeleteId(null)}
         onConfirm={handleDelete}
-      />
+      >
+        {deleteExpenseCount > 0 && reassignOptions.length > 0 && (
+          <div className="mt-4">
+            <Label htmlFor="reassign-category">Move expenses to</Label>
+            <select
+              id="reassign-category"
+              value={reassignToId}
+              onChange={(e) => setReassignToId(e.target.value)}
+              className="mt-1.5 min-h-11 w-full rounded-xl border border-border bg-surface px-3 py-2 text-base text-text"
+            >
+              {reassignOptions.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.icon ? `${c.icon} ` : ""}
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        {deleteExpenseCount > 0 && reassignOptions.length === 0 && (
+          <p className="mt-3 text-sm text-danger">
+            Add another category before deleting this one.
+          </p>
+        )}
+      </ConfirmDialog>
     </div>
   );
 }

@@ -45,7 +45,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <section>
-        <p className="text-text-muted">Hi, {displayName}</p>
+        <p className="text-text-muted">👋 Hi , {displayName}</p>
         <h2 className="mt-1 text-2xl font-semibold text-text">Dashboard</h2>
       </section>
 

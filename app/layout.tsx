@@ -6,8 +6,7 @@ export const metadata: Metadata = {
   description:
     "Multi-user daily expense tracker in BDT with AI-assisted quick entry.",
   icons: {
-    icon: [{ url: "/logo.png", type: "image/png" }],
-    apple: [{ url: "/logo.png", type: "image/png" }],
+    icon: [{ url: "/favicon.png", type: "image/png" }]
   },
 };
 
