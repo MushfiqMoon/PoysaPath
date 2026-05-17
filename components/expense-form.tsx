@@ -203,7 +203,7 @@ export function ExpenseForm({
           )}
         </div>
 
-        <div className="min-w-0 max-w-full">
+        <div className="w-fit max-w-full">
           <Label htmlFor="expense-date">Date</Label>
           <Input
             id="expense-date"
@@ -212,7 +212,7 @@ export function ExpenseForm({
             value={expenseDate}
             onChange={(e) => setExpenseDate(e.target.value)}
             className={[
-              "min-w-0 max-w-full",
+              "!w-auto min-w-44 max-w-full",
               highlightParsed ? parsedRing : "",
             ]
               .filter(Boolean)

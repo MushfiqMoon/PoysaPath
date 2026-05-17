@@ -8,12 +8,16 @@ import { FiEdit } from "react-icons/fi";
 import {
   IoHome,
   IoHomeOutline,
+  IoLogOutOutline,
   IoSettings,
   IoSettingsOutline,
 } from "react-icons/io5";
 
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Logo } from "@/components/logo";
+import { NotificationsBellButton } from "@/components/notifications-bell-button";
+import { NotificationsPanel } from "@/components/notifications-panel";
+import { useNotifications } from "@/lib/notifications/use-notifications";
 import { createClient } from "@/lib/supabase/client";
 
 const mainNav = [
@@ -48,6 +52,9 @@ const sidebarExtra = [
   { href: "/budgets", label: "Budgets" },
 ];
 
+const headerIconClass =
+  "flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-muted transition-colors hover:bg-surface/80 hover:text-text active:scale-[0.98]";
+
 function isActive(pathname: string, href: string) {
   if (href === "/settings") {
     return (
@@ -68,6 +75,13 @@ export function AppShell({ children, title }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [confirmSignOut, setConfirmSignOut] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const notifications = useNotifications();
+
+  function openNotifications() {
+    setNotificationsOpen(true);
+    void notifications.load();
+  }
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -131,18 +145,27 @@ export function AppShell({ children, title }: AppShellProps) {
             );
           })}
         </nav>
-        <div className="border-t border-glass-border p-3">
-          <button
-            type="button"
-            onClick={() => setConfirmSignOut(true)}
-            className="w-full rounded-xl px-3 py-2 text-left text-sm text-text-muted hover:bg-surface/50 hover:text-text"
-          >
-            Sign out
-          </button>
-        </div>
       </aside>
 
       <div className="flex min-h-full flex-1 flex-col md:pl-56">
+        <header className="glass-panel-light sticky top-0 z-10 hidden border-b px-4 py-3 md:block">
+          <div className="mx-auto flex max-w-3xl items-center justify-end gap-1">
+            <NotificationsBellButton
+              buttonClassName={headerIconClass}
+              unreadCount={notifications.unreadCount}
+              onClick={openNotifications}
+            />
+            <button
+              type="button"
+              onClick={() => setConfirmSignOut(true)}
+              className={headerIconClass}
+              aria-label="Sign out"
+            >
+              <IoLogOutOutline className="h-6 w-6" aria-hidden />
+            </button>
+          </div>
+        </header>
+
         <header className="glass-panel-light sticky top-0 z-10 border-b px-4 py-3 md:hidden">
           <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
             {title ? (
@@ -150,14 +173,21 @@ export function AppShell({ children, title }: AppShellProps) {
             ) : (
               <Logo href="/dashboard" size={32} showWordmark />
             )}
-            <button
-              type="button"
-              onClick={() => setConfirmSignOut(true)}
-              className="text-sm text-text-muted hover:text-text"
-              aria-label="Sign out"
-            >
-              Sign out
-            </button>
+            <div className="flex items-center gap-1">
+              <NotificationsBellButton
+                buttonClassName={headerIconClass}
+                unreadCount={notifications.unreadCount}
+                onClick={openNotifications}
+              />
+              <button
+                type="button"
+                onClick={() => setConfirmSignOut(true)}
+                className={headerIconClass}
+                aria-label="Sign out"
+              >
+                <IoLogOutOutline className="h-6 w-6" aria-hidden />
+              </button>
+            </div>
           </div>
         </header>
 
@@ -177,6 +207,16 @@ export function AppShell({ children, title }: AppShellProps) {
           </ul>
         </nav>
       </div>
+
+      <NotificationsPanel
+        open={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+        items={notifications.items}
+        loading={notifications.loading}
+        markingId={notifications.markingId}
+        error={notifications.error}
+        onMarkRead={(id) => void notifications.markRead(id)}
+      />
 
       <ConfirmDialog
         open={confirmSignOut}

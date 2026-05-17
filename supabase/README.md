@@ -7,6 +7,8 @@
 3. If you already had test sign-ups before migrations, also run `002_backfill_existing_users.sql`.
 4. For weekly AI insights, run `003_insight_cache.sql`.
 5. For budgets, run `004_budgets.sql`.
+6. For in-app notifications (broadcast + per-user read state), run `005_notifications.sql`.
+7. For announcement messages, run each file in `migrations/notifications/` (start with `001_intro.sql`). See `migrations/notifications/README.md`.
 
 ## Verify
 
@@ -24,6 +26,12 @@ Supabase’s **built-in email** allows only a few auth emails per hour. Repeated
 2. **Dashboard → Authentication → Users → Add user** → create a test user with email + password → log in on `/login` (no email sent).
 3. **Wait ~1 hour** for the limit to reset, then try again.
 4. **Production / heavy dev:** [configure custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp) (Resend, SendGrid, etc.) for higher limits.
+
+## Notifications (broadcast to all users)
+
+After running `005_notifications.sql`, run files under `migrations/notifications/` (see that folder’s README). Example — intro message is in `notifications/001_intro.sql`.
+
+Each user sees an announcement until they mark it read in the app (bell icon → **Mark as read**). Add new ones by copying `notifications/_template.sql`.
 
 ## RLS test (two accounts)
 
