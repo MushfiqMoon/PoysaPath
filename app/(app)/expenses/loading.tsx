@@ -1,5 +1,5 @@
-import { CoinLoader } from "@/components/coin-loader";
+import { ExpensesRouteSkeleton } from "@/components/route-loading-skeleton";
 
 export default function ExpensesLoading() {
-  return <CoinLoader fullPage label="Loading expenses…" />;
+  return <ExpensesRouteSkeleton />;
 }

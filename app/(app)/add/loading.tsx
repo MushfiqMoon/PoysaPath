@@ -1,5 +1,5 @@
-import { CoinLoader } from "@/components/coin-loader";
+import { AddRouteSkeleton } from "@/components/route-loading-skeleton";
 
 export default function AddLoading() {
-  return <CoinLoader fullPage label="Loading…" />;
+  return <AddRouteSkeleton />;
 }

@@ -21,7 +21,7 @@ export default async function EditExpensePage({ params }: EditExpensePageProps) 
   }
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 space-y-4">
       <Link
         href="/expenses"
         className="text-sm text-text-muted hover:text-text"

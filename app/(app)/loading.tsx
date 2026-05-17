@@ -1,5 +1,5 @@
-import { CoinLoader } from "@/components/coin-loader";
+import { DashboardRouteSkeleton } from "@/components/route-loading-skeleton";
 
 export default function AppLoading() {
-  return <CoinLoader fullPage label="Loading PoysaPath…" />;
+  return <DashboardRouteSkeleton />;
 }

@@ -88,16 +88,14 @@ export function AppShell({ children, title }: AppShellProps) {
         aria-current={active ? "page" : undefined}
         className={[
           mobile
-            ? "flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors active:scale-[0.98]"
+            ? "flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors"
             : "flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
           active ? "text-accent" : "text-text-muted hover:text-text",
           !mobile && active ? "bg-accent/10" : "",
         ].join(" ")}
       >
         <Icon className={mobile ? "h-6 w-6" : "h-5 w-5 shrink-0"} aria-hidden />
-        <span className={mobile && active ? "font-semibold" : ""}>
-          {item.label}
-        </span>
+        <span>{item.label}</span>
       </Link>
     );
   }
@@ -142,7 +140,7 @@ export function AppShell({ children, title }: AppShellProps) {
         </div>
       </aside>
 
-      <div className="flex min-h-full flex-1 flex-col md:pl-56">
+      <div className="flex min-h-full min-w-0 flex-1 flex-col md:pl-56">
         <header className="glass-panel-light sticky top-0 z-10 border-b px-4 py-3 md:hidden">
           <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
             {title ? (
@@ -161,7 +159,7 @@ export function AppShell({ children, title }: AppShellProps) {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-4 pb-28 md:pb-8">
+        <main className="mx-auto min-w-0 w-full max-w-3xl flex-1 overflow-x-hidden px-4 py-4 pb-28 md:pb-8">
           {children}
         </main>
 

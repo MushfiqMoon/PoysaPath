@@ -16,7 +16,7 @@ export function AddExpenseTabs({ categories }: AddExpenseTabsProps) {
   const [tab, setTab] = useState<Tab>("manual");
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 space-y-4">
       <div
         className="grid grid-cols-2 gap-1 rounded-xl border border-border bg-surface p-1"
         role="tablist"

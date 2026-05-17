@@ -1,5 +1,5 @@
-import { CoinLoader } from "@/components/coin-loader";
+import { SettingsRouteSkeleton } from "@/components/route-loading-skeleton";
 
 export default function SettingsLoading() {
-  return <CoinLoader fullPage label="Loading settings…" />;
+  return <SettingsRouteSkeleton />;
 }

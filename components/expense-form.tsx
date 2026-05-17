@@ -39,7 +39,7 @@ type ExpenseFormProps = {
 };
 
 const parsedRing =
-  "ring-2 ring-accent/40 ring-offset-2 ring-offset-surface transition-shadow";
+  "ring-2 ring-inset ring-accent/40 transition-shadow";
 
 export function ExpenseForm({
   categories,
@@ -164,7 +164,7 @@ export function ExpenseForm({
       <form
         id="expense-form"
         onSubmit={handleSubmit}
-        className="space-y-4"
+        className="min-w-0 space-y-4"
       >
         <div>
           <Label htmlFor="amount">Amount (৳)</Label>
@@ -203,7 +203,7 @@ export function ExpenseForm({
           )}
         </div>
 
-        <div className="min-w-0 max-w-full">
+        <div className="min-w-0 max-w-full overflow-hidden">
           <Label htmlFor="expense-date">Date</Label>
           <Input
             id="expense-date"

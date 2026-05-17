@@ -1,5 +1,5 @@
-import { CoinLoader } from "@/components/coin-loader";
+import { DashboardRouteSkeleton } from "@/components/route-loading-skeleton";
 
 export default function DashboardLoading() {
-  return <CoinLoader fullPage label="Loading dashboard…" />;
+  return <DashboardRouteSkeleton />;
 }
