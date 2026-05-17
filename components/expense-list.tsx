@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { formatPaymentMethod } from "@/lib/constants";
 import { formatCurrency, formatExpenseTitle, formatRelativeDay } from "@/lib/format";
 import type { Expense } from "@/lib/types";
 
@@ -37,7 +38,7 @@ export function ExpenseList({ expenses }: ExpenseListProps) {
               const title = formatExpenseTitle(expense.note, categoryName);
               const meta = [
                 categoryName,
-                expense.payment_method,
+                formatPaymentMethod(expense.payment_method),
               ]
                 .filter(Boolean)
                 .join(" · ");

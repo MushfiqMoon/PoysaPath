@@ -1,11 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { CoinLoader } from "@/components/coin-loader";
 
 export default function AddLoading() {
-  return (
-    <div className="space-y-4">
-      <Skeleton className="h-8 w-36" />
-      <Skeleton className="h-11 w-full" />
-      <Skeleton className="h-48 w-full" />
-    </div>
-  );
+  return <CoinLoader fullPage label="Loading…" />;
 }

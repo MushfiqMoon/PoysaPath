@@ -13,7 +13,7 @@ type AddExpenseTabsProps = {
 };
 
 export function AddExpenseTabs({ categories }: AddExpenseTabsProps) {
-  const [tab, setTab] = useState<Tab>("quick");
+  const [tab, setTab] = useState<Tab>("manual");
 
   return (
     <div className="space-y-4">

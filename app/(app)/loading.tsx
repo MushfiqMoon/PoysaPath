@@ -1,0 +1,5 @@
+import { CoinLoader } from "@/components/coin-loader";
+
+export default function AppLoading() {
+  return <CoinLoader fullPage label="Loading PoysaPath…" />;
+}
