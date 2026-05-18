@@ -224,6 +224,8 @@ export function SettingsPanel({
         All rights reserved. Develop by{" "}
         <a
           href="https://github.com/MushfiqMoon"
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-accent hover:underline"
         >
           Mushfiq

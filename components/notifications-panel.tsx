@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { createPortal } from "react-dom";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { TIMEZONE } from "@/lib/constants";
+import { formatNotificationDate } from "@/lib/notifications/format";
 import type { Notification } from "@/lib/types";
 
 type NotificationsPanelProps = {
@@ -16,13 +17,6 @@ type NotificationsPanelProps = {
   error: string | null;
   onMarkRead: (id: string) => void;
 };
-
-function formatNotificationDate(iso: string) {
-  return new Intl.DateTimeFormat("en", {
-    dateStyle: "medium",
-    timeZone: TIMEZONE,
-  }).format(new Date(iso));
-}
 
 export function NotificationsPanel({
   open,
@@ -89,9 +83,16 @@ export function NotificationsPanel({
             )}
 
             {!loading && items.length === 0 && (
-              <p className="py-8 text-center text-sm text-text-muted">
-                No new notifications.
-              </p>
+              <div className="py-8 text-center text-sm text-text-muted">
+                <p>No new notifications.</p>
+                <Link
+                  href="/settings/notification-history"
+                  onClick={onClose}
+                  className="mt-3 inline-block text-accent hover:underline"
+                >
+                  See previous notifications →
+                </Link>
+              </div>
             )}
 
             {error && (

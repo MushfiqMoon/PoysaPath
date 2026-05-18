@@ -6,7 +6,7 @@ import {
 } from "@/lib/data/budgets";
 import { getMonthStartInDhaka } from "@/lib/dates";
 
-export default async function BudgetsPage() {
+export default async function SettingsBudgetPage() {
   const monthStart = getMonthStartInDhaka();
   const [y, m] = monthStart.split("-");
   const monthLabel = new Intl.DateTimeFormat("en-GB", {
@@ -21,7 +21,11 @@ export default async function BudgetsPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader title={`Budgets — ${monthLabel}`} />
+      <PageHeader
+        title={`Budgets — ${monthLabel}`}
+        backHref="/settings"
+        backLabel="← Settings"
+      />
       <BudgetsManager
         budgets={budgets}
         unbudgetedCategories={unbudgetedCategories}

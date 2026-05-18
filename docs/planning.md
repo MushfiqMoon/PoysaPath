@@ -107,7 +107,7 @@ Full RLS detail: [planning-db.md](./planning-db.md).
 | `/dashboard` | Today/month totals, insight, recent |
 | `/add` | Quick (AI) \| Manual (no AI) tabs |
 | `/expenses`, `/expenses/[id]/edit` | List, edit, delete |
-| `/categories`, `/budgets`, `/settings` | Manage |
+| `/settings`, `/settings/categories`, `/settings/budget`, `/settings/notification-history` | Manage |
 | `/privacy`, `/terms` | Legal |
 
 **API:** `POST /api/gemini/parse-expense`, `POST /api/gemini/weekly-insight`, `GET /api/export/csv` (optional `?from=` / `?to=` dates).

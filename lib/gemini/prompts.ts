@@ -31,10 +31,10 @@ export function buildWeeklyInsightPrompt(
   const lines = Object.entries(summary)
     .map(([name, amount]) => `- ${name}: ৳${amount}`)
     .join("\n");
-  return `Write a brief weekly spending insight (2-4 sentences) for a personal expense app user in Bangladesh.
+  return `Write a brief spending insight (2-4 sentences) for a personal expense app user in Bangladesh.
 Be friendly, specific, and practical. Use ৳ for amounts. Do not invent categories not in the data.
 
-This week's totals:
+Last 7 days (including today):
 ${lines}
 Total: ৳${total}
 

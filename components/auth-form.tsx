@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FaLinkedin, FaWhatsapp } from "react-icons/fa";
 
 import { Logo } from "@/components/logo";
+import { GEMINI_CONTACT } from "@/lib/gemini/disabled-message";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -69,21 +71,22 @@ export function AuthForm({ mode }: AuthFormProps) {
         return;
       }
 
-      if (mode === "forgot") {
-        const redirectTo = `${window.location.origin}/login`;
-        const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-          email,
-          { redirectTo },
-        );
-
-        if (resetError) {
-          setError(formatAuthError(resetError));
-          return;
-        }
-
-        setMessage("Check your email for a password reset link.");
-        return;
-      }
+      // Password reset via email is disabled for now — users contact the developer.
+      // if (mode === "forgot") {
+      //   const redirectTo = `${window.location.origin}/login`;
+      //   const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+      //     email,
+      //     { redirectTo },
+      //   );
+      //
+      //   if (resetError) {
+      //     setError(formatAuthError(resetError));
+      //     return;
+      //   }
+      //
+      //   setMessage("Check your email for a password reset link.");
+      //   return;
+      // }
 
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
@@ -105,7 +108,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const titles = {
     login: "Welcome back",
     signup: "Create your account",
-    forgot: "Reset password",
+    forgot: "Forgot password",
   };
 
   return (
@@ -127,11 +130,46 @@ export function AuthForm({ mode }: AuthFormProps) {
             {mode === "signup"
               ? "Track every taka, every day."
               : mode === "forgot"
-                ? "We will email you a reset link."
+                ? "Contact the developer to reset your password."
                 : "Sign in to continue to PoysaPath."}
           </p>
         </div>
 
+        {mode === "forgot" ? (
+          <div className="space-y-4">
+            <p className="text-sm leading-relaxed text-text-muted">
+              Self-service password reset is not available yet. Reach out to{" "}
+              {GEMINI_CONTACT.name} and we will help you get back into your
+              account.
+            </p>
+            <div className="flex flex-col gap-2">
+              <a
+                href={GEMINI_CONTACT.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-bg px-3 py-2 text-sm font-medium text-text transition-colors hover:border-accent/40"
+              >
+                <FaLinkedin className="h-4 w-4 text-[#0A66C2]" aria-hidden />
+                LinkedIn
+              </a>
+              <a
+                href={GEMINI_CONTACT.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-bg px-3 py-2 text-sm font-medium text-text transition-colors hover:border-accent/40"
+              >
+                <FaWhatsapp className="h-4 w-4 text-[#25D366]" aria-hidden />
+                WhatsApp {GEMINI_CONTACT.whatsapp}
+              </a>
+            </div>
+            <Link
+              href="/login"
+              className="inline-flex min-h-10 w-full items-center justify-center rounded-lg border border-accent/30 bg-accent/10 px-3 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/15"
+            >
+              Back to log in
+            </Link>
+          </div>
+        ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="email">Email</Label>
@@ -145,22 +183,20 @@ export function AuthForm({ mode }: AuthFormProps) {
             />
           </div>
 
-          {mode !== "forgot" && (
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                autoComplete={
-                  mode === "signup" ? "new-password" : "current-password"
-                }
-                required
-                minLength={mode === "signup" ? 8 : undefined}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          )}
+          <div>
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
+              type="password"
+              autoComplete={
+                mode === "signup" ? "new-password" : "current-password"
+              }
+              required
+              minLength={mode === "signup" ? 8 : undefined}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
           {mode === "signup" && (
             <div>
@@ -205,12 +241,11 @@ export function AuthForm({ mode }: AuthFormProps) {
                 ? "Please wait…"
                 : mode === "login"
                   ? "Log in"
-                  : mode === "signup"
-                    ? "Sign up"
-                    : "Send reset link"}
+                  : "Sign up"}
             </Button>
           </div>
         </form>
+        )}
 
         {mode === "login" && (
           <p className="mt-6 text-center text-sm text-text-muted">

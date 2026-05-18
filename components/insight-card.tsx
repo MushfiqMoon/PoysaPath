@@ -4,11 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AiDisabledNotice } from "@/components/ai-disabled-notice";
 import { Button } from "@/components/ui/button";
+import { INSIGHT_REFRESH_COOLDOWN_MS } from "@/lib/constants";
 import { isGeminiKeyRequiredResponse } from "@/lib/gemini/disabled-message";
 import { AI_LABELS } from "@/lib/gemini/labels";
 
-const REFRESH_KEY = "poysapath-insight-refresh-at";
-const COOLDOWN_MS = 24 * 60 * 60 * 1000;
+/** Bumped when cooldown changed 24h → 4h so old localStorage entries are ignored. */
+const REFRESH_KEY = "poysapath-insight-refresh-at-v2";
 
 type InsightCardProps = {
   hasGeminiKey: boolean;
@@ -20,12 +21,23 @@ function msUntilRefreshAllowed(): number {
   const raw = localStorage.getItem(REFRESH_KEY);
   if (!raw) return 0;
   const next = Number(raw);
-  if (Number.isNaN(next)) return 0;
-  return Math.max(0, next - Date.now());
+  if (Number.isNaN(next)) {
+    localStorage.removeItem(REFRESH_KEY);
+    return 0;
+  }
+  const remaining = Math.max(0, next - Date.now());
+  if (remaining > INSIGHT_REFRESH_COOLDOWN_MS) {
+    localStorage.removeItem(REFRESH_KEY);
+    return 0;
+  }
+  return remaining;
 }
 
 function markRefresh() {
-  localStorage.setItem(REFRESH_KEY, String(Date.now() + COOLDOWN_MS));
+  localStorage.setItem(
+    REFRESH_KEY,
+    String(Date.now() + INSIGHT_REFRESH_COOLDOWN_MS),
+  );
 }
 
 export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) {
@@ -65,9 +77,13 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
         }
         if (data.insight) setInsight(data.insight);
         if (data.retryAfterSeconds) {
-          const until = Date.now() + data.retryAfterSeconds * 1000;
+          const waitMs = Math.min(
+            data.retryAfterSeconds * 1000,
+            INSIGHT_REFRESH_COOLDOWN_MS,
+          );
+          const until = Date.now() + waitMs;
           localStorage.setItem(REFRESH_KEY, String(until));
-          setCooldownMs(until - Date.now());
+          setCooldownMs(waitMs);
         }
         setError(data.error ?? "Insight unavailable");
         return;
@@ -91,6 +107,10 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
   const initialFetchDone = useRef(false);
 
   useEffect(() => {
+    setCooldownMs(msUntilRefreshAllowed());
+  }, []);
+
+  useEffect(() => {
     if (!hasGeminiKey || initialInsight || initialFetchDone.current) return;
     initialFetchDone.current = true;
     const id = window.setTimeout(() => {
@@ -100,7 +120,10 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
   }, [hasGeminiKey, initialInsight, fetchInsight]);
 
   const refreshDisabled = cooldownMs > 0;
-  const cooldownHours = Math.ceil(cooldownMs / (60 * 60 * 1000));
+  const cooldownHours = Math.max(
+    1,
+    Math.ceil(cooldownMs / (60 * 60 * 1000)),
+  );
 
   if (keyRequired) {
     return (

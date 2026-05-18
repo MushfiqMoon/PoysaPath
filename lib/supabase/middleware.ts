@@ -42,9 +42,9 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/expenses") ||
     pathname.startsWith("/add") ||
+    pathname.startsWith("/settings") ||
     pathname.startsWith("/categories") ||
-    pathname.startsWith("/budgets") ||
-    pathname.startsWith("/settings");
+    pathname.startsWith("/budgets");
 
   if (!user && isAppRoute) {
     const url = request.nextUrl.clone();

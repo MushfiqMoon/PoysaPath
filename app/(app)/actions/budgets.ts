@@ -37,7 +37,7 @@ export async function upsertBudget(categoryId: string, amount: number) {
     throw new Error(error.message);
   }
 
-  revalidatePath("/budgets");
+  revalidatePath("/settings/budget");
   revalidatePath("/dashboard");
 }
 
@@ -47,5 +47,5 @@ export async function deleteBudget(id: string) {
   const { error } = await supabase.from("budgets").delete().eq("id", id);
 
   if (error) throw new Error(error.message);
-  revalidatePath("/budgets");
+  revalidatePath("/settings/budget");
 }

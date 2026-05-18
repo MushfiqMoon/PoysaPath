@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 
 import {
-  getWeekEndExclusive,
-  getWeekStartInDhaka,
+  getInsightCachePeriodKeyInDhaka,
+  getRolling7DayRangeInDhaka,
 } from "@/lib/dates";
 import {
   getCachedInsight,
@@ -27,8 +27,8 @@ export async function POST(request: Request) {
   if ("error" in auth) return auth.error;
 
   const { supabase, user } = auth;
-  const weekStart = getWeekStartInDhaka();
-  const weekEnd = getWeekEndExclusive(weekStart);
+  const periodKey = getInsightCachePeriodKeyInDhaka();
+  const { start: rangeStart, end: rangeEnd } = getRolling7DayRangeInDhaka();
 
   const url = new URL(request.url);
   const forceRefresh = url.searchParams.get("refresh") === "1";
@@ -45,12 +45,12 @@ export async function POST(request: Request) {
 
   try {
     if (!forceRefresh) {
-      const cached = await getCachedInsight(user.id, weekStart);
+      const cached = await getCachedInsight(user.id, periodKey);
       if (cached) {
         return NextResponse.json({ insight: cached, cached: true });
       }
     } else {
-      const record = await getInsightCacheRecord(user.id, weekStart);
+      const record = await getInsightCacheRecord(user.id, periodKey);
       if (record) {
         const elapsed = Date.now() - new Date(record.created_at).getTime();
         if (elapsed < INSIGHT_REFRESH_COOLDOWN_MS) {
@@ -79,8 +79,8 @@ export async function POST(request: Request) {
     const { data: expenses, error } = await supabase
       .from("expenses")
       .select("amount, categories(name)")
-      .gte("expense_date", weekStart)
-      .lt("expense_date", weekEnd);
+      .gte("expense_date", rangeStart)
+      .lte("expense_date", rangeEnd);
 
     if (error) {
       if (error.code === "42P01") {
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
     if (total === 0) {
       return NextResponse.json({
         insight: null,
-        message: "No spending this week yet.",
+        message: "No spending in the last 7 days.",
       });
     }
 
@@ -115,7 +115,7 @@ export async function POST(request: Request) {
     const raw = await generateJson<unknown>(prompt, apiKey);
     const { insight } = weeklyInsightResponseSchema.parse(raw);
 
-    await saveInsightCache(user.id, insight, weekStart);
+    await saveInsightCache(user.id, insight, periodKey);
 
     return NextResponse.json({ insight, cached: false });
   } catch (err) {

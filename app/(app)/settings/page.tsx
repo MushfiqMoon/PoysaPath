@@ -7,8 +7,21 @@ import { getGeminiKeyStatus } from "@/lib/data/gemini-credentials";
 import { createClient } from "@/lib/supabase/server";
 
 const menuLinks = [
-  { href: "/categories", label: "Categories", desc: "Manage expense categories" },
-  { href: "/budgets", label: "Budgets", desc: "Monthly limits per category" },
+  {
+    href: "/settings/categories",
+    label: "Categories",
+    desc: "Manage expense categories",
+  },
+  {
+    href: "/settings/budget",
+    label: "Budgets",
+    desc: "Monthly limits per category",
+  },
+  {
+    href: "/settings/notification-history",
+    label: "Announcements",
+    desc: "Updates you have already read",
+  },
 ];
 
 export default async function SettingsPage() {

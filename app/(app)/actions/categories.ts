@@ -14,11 +14,11 @@ async function requireUser() {
 }
 
 function revalidateCategoryPaths() {
-  revalidatePath("/categories");
+  revalidatePath("/settings/categories");
   revalidatePath("/add");
   revalidatePath("/expenses");
   revalidatePath("/dashboard");
-  revalidatePath("/budgets");
+  revalidatePath("/settings/budget");
 }
 
 export async function createCategory(name: string, icon?: string | null) {

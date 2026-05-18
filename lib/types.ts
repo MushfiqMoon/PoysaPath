@@ -31,6 +31,10 @@ export type Notification = {
   created_at: string;
 };
 
+export type ReadNotification = Notification & {
+  read_at: string;
+};
+
 export type UserNotificationRead = {
   user_id: string;
   notification_id: string;

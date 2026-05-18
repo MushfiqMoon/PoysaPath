@@ -46,3 +46,16 @@ export function getWeekStartInDhaka(): string {
 export function getWeekEndExclusive(weekStart: string): string {
   return addDaysYmd(weekStart, 7);
 }
+
+export type DateRangeYmd = { start: string; end: string };
+
+/** Last 7 calendar days in Dhaka including today (start = today − 6 days). */
+export function getRolling7DayRangeInDhaka(): DateRangeYmd {
+  const end = getTodayInDhaka();
+  return { start: addDaysYmd(end, -6), end };
+}
+
+/** Cache key for rolling insight (`insight_cache.week_start` = anchor day). */
+export function getInsightCachePeriodKeyInDhaka(): string {
+  return getTodayInDhaka();
+}
