@@ -37,6 +37,7 @@ export async function GET(request: Request) {
   let query = supabase
     .from("expenses")
     .select("expense_date, amount, note, payment_method, categories(name)")
+    .eq("user_id", user.id)
     .order("expense_date", { ascending: false });
 
   if (isValidDateParam(from)) {

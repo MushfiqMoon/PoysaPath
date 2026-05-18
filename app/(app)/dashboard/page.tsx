@@ -15,6 +15,7 @@ const InsightCard = dynamic(
   },
 );
 import { getAuthUser, getDisplayName } from "@/lib/auth/session";
+import { getGeminiKeyStatus } from "@/lib/data/gemini-credentials";
 import { getCachedInsight } from "@/lib/data/insights";
 import {
   getMonthCategoryTotals,
@@ -35,7 +36,11 @@ export default async function DashboardPage() {
       getRecentExpenses(5),
     ]);
 
-  const cachedInsight = user ? await getCachedInsight(user.id) : null;
+  const geminiStatus = user
+    ? await getGeminiKeyStatus(user.id)
+    : { hasKey: false, keyHint: null };
+  const cachedInsight =
+    user && geminiStatus.hasKey ? await getCachedInsight(user.id) : null;
 
   const hasExpenses = monthTotal > 0 || recent.length > 0;
 
@@ -63,7 +68,10 @@ export default async function DashboardPage() {
 
       {hasExpenses ? (
         <>
-          <InsightCard initialInsight={cachedInsight} />
+          <InsightCard
+            hasGeminiKey={geminiStatus.hasKey}
+            initialInsight={cachedInsight}
+          />
           <CategoryBreakdown totals={categoryTotals} monthTotal={monthTotal} />
 
           <section className="space-y-3">
@@ -77,21 +85,23 @@ export default async function DashboardPage() {
               {recent.map((expense) => {
                 const categoryName = expense.categories?.name ?? "Expense";
                 return (
-                  <li
-                    key={expense.id}
-                    className="flex justify-between rounded-xl border border-border bg-surface px-4 py-3"
-                  >
-                    <div>
-                      <p className="text-sm text-text-muted">
-                        {formatRelativeDay(expense.expense_date)}
+                  <li key={expense.id}>
+                    <Link
+                      href={`/expenses/${expense.id}/edit`}
+                      className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3 transition-colors hover:border-accent/40 active:border-accent/40"
+                    >
+                      <div className="min-w-0 flex-1 pr-3">
+                        <p className="text-sm text-text-muted">
+                          {formatRelativeDay(expense.expense_date)}
+                        </p>
+                        <p className="font-medium text-text">
+                          {formatExpenseTitle(expense.note, categoryName)}
+                        </p>
+                      </div>
+                      <p className="shrink-0 font-semibold tabular-nums text-text">
+                        {formatCurrency(Number(expense.amount))}
                       </p>
-                      <p className="font-medium text-text">
-                        {formatExpenseTitle(expense.note, categoryName)}
-                      </p>
-                    </div>
-                    <p className="font-semibold tabular-nums text-text">
-                      {formatCurrency(Number(expense.amount))}
-                    </p>
+                    </Link>
                   </li>
                 );
               })}

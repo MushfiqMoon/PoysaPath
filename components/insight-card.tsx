@@ -1,13 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
+import { AiDisabledNotice } from "@/components/ai-disabled-notice";
 import { Button } from "@/components/ui/button";
+import { isGeminiKeyRequiredResponse } from "@/lib/gemini/disabled-message";
+import { AI_LABELS } from "@/lib/gemini/labels";
 
 const REFRESH_KEY = "poysapath-insight-refresh-at";
 const COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
 type InsightCardProps = {
+  hasGeminiKey: boolean;
   initialInsight: string | null;
 };
 
@@ -24,17 +28,20 @@ function markRefresh() {
   localStorage.setItem(REFRESH_KEY, String(Date.now() + COOLDOWN_MS));
 }
 
-export function InsightCard({ initialInsight }: InsightCardProps) {
+export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) {
   const [insight, setInsight] = useState<string | null>(initialInsight);
-  const [loading, setLoading] = useState(!initialInsight);
+  const [loading, setLoading] = useState(hasGeminiKey && !initialInsight);
+  const [keyRequired, setKeyRequired] = useState(!hasGeminiKey);
   const [error, setError] = useState<string | null>(null);
-  const [cooldownMs, setCooldownMs] = useState(0);
-
-  useEffect(() => {
-    setCooldownMs(msUntilRefreshAllowed());
-  }, []);
+  const [cooldownMs, setCooldownMs] = useState(() => msUntilRefreshAllowed());
 
   const fetchInsight = useCallback(async (refresh = false) => {
+    if (!hasGeminiKey) {
+      setKeyRequired(true);
+      setLoading(false);
+      return;
+    }
+
     if (refresh && msUntilRefreshAllowed() > 0) {
       setCooldownMs(msUntilRefreshAllowed());
       return;
@@ -42,6 +49,7 @@ export function InsightCard({ initialInsight }: InsightCardProps) {
 
     setLoading(true);
     setError(null);
+    setKeyRequired(false);
     try {
       const url = refresh
         ? "/api/gemini/weekly-insight?refresh=1"
@@ -50,6 +58,11 @@ export function InsightCard({ initialInsight }: InsightCardProps) {
       const data = await res.json();
 
       if (!res.ok) {
+        if (isGeminiKeyRequiredResponse(data)) {
+          setKeyRequired(true);
+          setInsight(null);
+          return;
+        }
         if (data.insight) setInsight(data.insight);
         if (data.retryAfterSeconds) {
           const until = Date.now() + data.retryAfterSeconds * 1000;
@@ -73,27 +86,50 @@ export function InsightCard({ initialInsight }: InsightCardProps) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [hasGeminiKey]);
+
+  const initialFetchDone = useRef(false);
 
   useEffect(() => {
-    if (!initialInsight) {
-      fetchInsight(false);
-    }
-  }, [initialInsight, fetchInsight]);
+    if (!hasGeminiKey || initialInsight || initialFetchDone.current) return;
+    initialFetchDone.current = true;
+    const id = window.setTimeout(() => {
+      void fetchInsight(false);
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, [hasGeminiKey, initialInsight, fetchInsight]);
 
   const refreshDisabled = cooldownMs > 0;
   const cooldownHours = Math.ceil(cooldownMs / (60 * 60 * 1000));
 
+  if (keyRequired) {
+    return (
+      <section className="space-y-2">
+        <h2 className="text-sm font-medium text-text-muted">
+          {AI_LABELS.weeklyInsight}
+        </h2>
+        <AiDisabledNotice compact />
+      </section>
+    );
+  }
+
   if (loading) {
     return (
       <section className="rounded-xl border border-border bg-surface p-4 animate-pulse">
-        <p className="text-sm text-text-muted">Loading weekly insight…</p>
+        <p className="text-sm text-text-muted">{AI_LABELS.loadingInsight}</p>
       </section>
     );
   }
 
   if (error && !insight) {
-    return null;
+    return (
+      <section className="rounded-xl border border-border bg-surface p-4">
+        <h2 className="text-sm font-medium text-text-muted">
+          {AI_LABELS.weeklyInsight}
+        </h2>
+        <p className="mt-2 text-sm text-text-muted">{error}</p>
+      </section>
+    );
   }
 
   if (!insight) {
@@ -103,17 +139,19 @@ export function InsightCard({ initialInsight }: InsightCardProps) {
   return (
     <section className="rounded-xl border border-border bg-surface p-4">
       <div className="flex items-start justify-between gap-3">
-        <h2 className="text-sm font-medium text-text-muted">Weekly insight</h2>
+        <h2 className="text-sm font-medium text-text-muted">
+          {AI_LABELS.weeklyInsight}
+        </h2>
         <Button
           type="button"
           variant="ghost"
           className="min-h-8 px-2 py-1 text-xs"
           disabled={refreshDisabled}
-          onClick={() => fetchInsight(true)}
+          onClick={() => void fetchInsight(true)}
           aria-label={
             refreshDisabled
               ? `Refresh available in about ${cooldownHours} hours`
-              : "Refresh weekly insight"
+              : AI_LABELS.refreshInsight
           }
         >
           {refreshDisabled ? `Refresh in ~${cooldownHours}h` : "Refresh"}

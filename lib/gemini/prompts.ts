@@ -24,17 +24,6 @@ Return JSON only:
 }`;
 }
 
-export function buildCategorizePrompt(
-  description: string,
-  categories: Category[],
-) {
-  const categoryList = categories.map((c) => c.name).join(", ");
-  return `Pick the best expense category for this description.
-Categories: ${categoryList}
-Description: "${description}"
-Return JSON only: { "category": "exact category name from list" }`;
-}
-
 export function buildWeeklyInsightPrompt(
   summary: Record<string, number>,
   total: number,

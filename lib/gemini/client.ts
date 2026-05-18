@@ -1,20 +1,14 @@
 import { GoogleGenAI } from "@google/genai";
 
-import { getGeminiApiKey } from "@/lib/env";
+import { AI_LABELS } from "@/lib/gemini/labels";
 
 const MODEL = "gemini-2.5-flash";
 
-let client: GoogleGenAI | null = null;
-
-function getClient() {
-  if (!client) {
-    client = new GoogleGenAI({ apiKey: getGeminiApiKey() });
-  }
-  return client;
-}
-
-export async function generateJson<T>(prompt: string): Promise<T> {
-  const ai = getClient();
+export async function generateJson<T>(
+  prompt: string,
+  apiKey: string,
+): Promise<T> {
+  const ai = new GoogleGenAI({ apiKey });
 
   try {
     const response = await ai.models.generateContent({
@@ -34,7 +28,7 @@ export async function generateJson<T>(prompt: string): Promise<T> {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     if (message.includes("429") || message.toLowerCase().includes("quota")) {
-      const rateErr = new Error("AI busy — try again or use manual entry.");
+      const rateErr = new Error(AI_LABELS.aiBusy);
       rateErr.name = "GeminiRateLimitError";
       throw rateErr;
     }

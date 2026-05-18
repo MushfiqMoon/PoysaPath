@@ -44,7 +44,7 @@ export async function createExpense(input: ExpenseInput) {
 
 export async function updateExpense(id: string, input: ExpenseInput) {
   const parsed = expenseInputSchema.parse(input);
-  const { supabase } = await requireUser();
+  const { supabase, user } = await requireUser();
 
   const { error } = await supabase
     .from("expenses")
@@ -55,16 +55,21 @@ export async function updateExpense(id: string, input: ExpenseInput) {
       note: parsed.note?.trim() || null,
       payment_method: parsed.payment_method ?? null,
     })
-    .eq("id", id);
+    .eq("id", id)
+    .eq("user_id", user.id);
 
   if (error) throw new Error(error.message);
   revalidateExpensePages();
 }
 
 export async function deleteExpense(id: string) {
-  const { supabase } = await requireUser();
+  const { supabase, user } = await requireUser();
 
-  const { error } = await supabase.from("expenses").delete().eq("id", id);
+  const { error } = await supabase
+    .from("expenses")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
 
   if (error) throw new Error(error.message);
   revalidateExpensePages();

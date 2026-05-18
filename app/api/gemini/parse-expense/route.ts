@@ -6,6 +6,12 @@ import { requireApiUser } from "@/lib/gemini/auth";
 import { resolveCategoryId } from "@/lib/gemini/categories";
 import { generateJson } from "@/lib/gemini/client";
 import { buildParseExpensePrompt } from "@/lib/gemini/prompts";
+import {
+  GeminiKeyRequiredError,
+  geminiKeyRequiredResponse,
+  requireUserGeminiKey,
+} from "@/lib/gemini/require-user-key";
+import { AI_LABELS } from "@/lib/gemini/labels";
 import { checkGeminiRateLimit } from "@/lib/gemini/rate-limit";
 import {
   parseExpenseRequestSchema,
@@ -18,9 +24,19 @@ export async function POST(request: Request) {
 
   const { user } = auth;
 
+  let apiKey: string;
+  try {
+    apiKey = await requireUserGeminiKey(user.id);
+  } catch (err) {
+    if (err instanceof GeminiKeyRequiredError) {
+      return geminiKeyRequiredResponse();
+    }
+    throw err;
+  }
+
   if (!checkGeminiRateLimit(user.id)) {
     return NextResponse.json(
-      { error: "AI busy — try again or use manual entry." },
+      { error: AI_LABELS.aiBusy },
       { status: 429 },
     );
   }
@@ -52,7 +68,7 @@ export async function POST(request: Request) {
       categories,
       today,
     );
-    const raw = await generateJson<unknown>(prompt);
+    const raw = await generateJson<unknown>(prompt, apiKey);
     const gemini = parseExpenseResponseSchema.parse(raw);
     const categoryId = resolveCategoryId(gemini.category, categories);
 
