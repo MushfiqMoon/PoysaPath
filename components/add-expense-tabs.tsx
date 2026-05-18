@@ -36,7 +36,7 @@ export function AddExpenseTabs({ categories, hasGeminiKey }: AddExpenseTabsProps
               : "text-text-muted hover:text-text",
           ].join(" ")}
         >
-          {AI_LABELS.quickTab}
+          ✨ {AI_LABELS.quickTab}
         </button>
         <button
           type="button"

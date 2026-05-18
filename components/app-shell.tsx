@@ -47,23 +47,33 @@ const mainNav = [
   },
 ] as const;
 
-const sidebarExtra = [
-  { href: "/categories", label: "Categories" },
-  { href: "/budgets", label: "Budgets" },
-];
+const settingsSubNav = [
+  {
+    href: "/settings/categories",
+    label: "Categories",
+  },
+  {
+    href: "/settings/budget",
+    label: "Budgets",
+  },
+  {
+    href: "/settings/notification-history",
+    label: "Announcements",
+  },
+] as const;
 
 const headerIconClass =
   "flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-muted transition-colors hover:bg-surface/80 hover:text-text active:scale-[0.98]";
 
 function isActive(pathname: string, href: string) {
   if (href === "/settings") {
-    return (
-      pathname.startsWith("/settings") ||
-      pathname.startsWith("/categories") ||
-      pathname.startsWith("/budgets")
-    );
+    return pathname === "/settings";
   }
   return pathname === href || pathname.startsWith(`${href}/`);
+}
+
+function isSettingsSectionActive(pathname: string) {
+  return pathname.startsWith("/settings");
 }
 
 type AppShellProps = {
@@ -91,8 +101,16 @@ export function AppShell({ children, title }: AppShellProps) {
   }
 
   function renderNavLink(item: (typeof mainNav)[number], mobile = false) {
-    const active = isActive(pathname, item.href);
-    const Icon = active ? item.IconActive : item.Icon;
+    const isSettings = item.href === "/settings";
+    const active = isSettings
+      ? mobile
+        ? isSettingsSectionActive(pathname)
+        : isActive(pathname, item.href)
+      : isActive(pathname, item.href);
+    const settingsSectionOpen =
+      !mobile && isSettings && isSettingsSectionActive(pathname);
+    const highlighted = active || settingsSectionOpen;
+    const Icon = highlighted ? item.IconActive : item.Icon;
 
     return (
       <Link
@@ -104,8 +122,9 @@ export function AppShell({ children, title }: AppShellProps) {
           mobile
             ? "flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors active:scale-[0.98]"
             : "flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-          active ? "text-accent" : "text-text-muted hover:text-text",
+          highlighted ? "text-accent" : "text-text-muted hover:text-text",
           !mobile && active ? "bg-accent/10" : "",
+          !mobile && settingsSectionOpen && !active ? "bg-accent/5" : "",
         ].join(" ")}
       >
         <Icon className={mobile ? "h-6 w-6" : "h-5 w-5 shrink-0"} aria-hidden />
@@ -123,27 +142,44 @@ export function AppShell({ children, title }: AppShellProps) {
           <Logo href="/dashboard" size={32} showWordmark />
         </div>
         <nav className="flex flex-1 flex-col gap-1 p-3" aria-label="Main">
-          {mainNav.map((item) => renderNavLink(item))}
-          <div className="my-2 border-t border-glass-border" role="separator" />
-          {sidebarExtra.map((item) => {
-            const active = pathname.startsWith(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                prefetch
-                aria-current={active ? "page" : undefined}
-                className={[
-                  "rounded-xl px-3 py-2 text-sm transition-colors",
-                  active
-                    ? "bg-accent/10 font-medium text-accent"
-                    : "text-text-muted hover:text-text",
-                ].join(" ")}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
+          {mainNav.slice(0, 3).map((item) => renderNavLink(item))}
+          {renderNavLink(mainNav[3])}
+          <div
+            className={[
+              "mt-0.5 ml-4 border-l pl-3",
+              isSettingsSectionActive(pathname)
+                ? "border-accent/35"
+                : "border-glass-border",
+            ].join(" ")}
+            role="group"
+            aria-label="Settings pages"
+          >
+            <p className="mb-1 px-2 pt-1 text-[10px] font-semibold uppercase tracking-wider text-text-muted/60">
+              Settings
+            </p>
+            <ul className="space-y-0.5">
+              {settingsSubNav.map((item) => {
+                const active = isActive(pathname, item.href);
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      prefetch
+                      aria-current={active ? "page" : undefined}
+                      className={[
+                        "block rounded-lg px-2 py-1.5 text-sm transition-colors",
+                        active
+                          ? "bg-accent/10 font-medium text-accent"
+                          : "text-text-muted hover:bg-surface/50 hover:text-text",
+                      ].join(" ")}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </nav>
       </aside>
 
