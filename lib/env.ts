@@ -22,10 +22,13 @@ export function getSupabaseAnonKey(): string {
   return key;
 }
 
-export function getGeminiApiKey(): string {
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) {
-    throw new Error("Missing environment variable: GEMINI_API_KEY");
+/** 32+ character secret for encrypting per-user Gemini keys at rest. */
+export function getEncryptionSecret(): string {
+  const secret = process.env.ENCRYPTION_SECRET;
+  if (!secret || secret.length < 32) {
+    throw new Error(
+      "Missing or invalid ENCRYPTION_SECRET (min 32 characters).",
+    );
   }
-  return key;
+  return secret;
 }

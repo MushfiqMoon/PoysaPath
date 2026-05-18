@@ -4,15 +4,17 @@ import { useState } from "react";
 
 import { ExpenseForm } from "@/components/expense-form";
 import { QuickAdd } from "@/components/quick-add";
+import { AI_LABELS } from "@/lib/gemini/labels";
 import type { Category } from "@/lib/types";
 
 type Tab = "quick" | "manual";
 
 type AddExpenseTabsProps = {
   categories: Category[];
+  hasGeminiKey: boolean;
 };
 
-export function AddExpenseTabs({ categories }: AddExpenseTabsProps) {
+export function AddExpenseTabs({ categories, hasGeminiKey }: AddExpenseTabsProps) {
   const [tab, setTab] = useState<Tab>("manual");
 
   return (
@@ -34,7 +36,7 @@ export function AddExpenseTabs({ categories }: AddExpenseTabsProps) {
               : "text-text-muted hover:text-text",
           ].join(" ")}
         >
-          Quick ✨
+          {AI_LABELS.quickTab}
         </button>
         <button
           type="button"
@@ -53,9 +55,9 @@ export function AddExpenseTabs({ categories }: AddExpenseTabsProps) {
       </div>
 
       {tab === "quick" ? (
-        <QuickAdd categories={categories} />
+        <QuickAdd categories={categories} hasGeminiKey={hasGeminiKey} />
       ) : (
-        <ExpenseForm categories={categories} enableAutoCategorize />
+        <ExpenseForm categories={categories} />
       )}
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import {
   createExpense,
@@ -34,7 +34,6 @@ type ExpenseFormProps = {
   expense?: Expense;
   redirectTo?: string;
   defaults?: FormDefaults;
-  enableAutoCategorize?: boolean;
   highlightParsed?: boolean;
 };
 
@@ -46,12 +45,10 @@ export function ExpenseForm({
   expense,
   redirectTo = "/dashboard",
   defaults,
-  enableAutoCategorize = false,
   highlightParsed = false,
 }: ExpenseFormProps) {
   const router = useRouter();
   const isEdit = Boolean(expense);
-  const categorizeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [amount, setAmount] = useState(
     expense ? String(expense.amount) : (defaults?.amount ?? ""),
@@ -69,40 +66,9 @@ export function ExpenseForm({
   const [paymentMethod, setPaymentMethod] = useState(
     expense?.payment_method ?? defaults?.paymentMethod ?? "",
   );
-  const [suggestingCategory, setSuggestingCategory] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-
-  async function suggestCategory(description: string) {
-    if (!enableAutoCategorize || isEdit || description.trim().length < 3) {
-      return;
-    }
-
-    setSuggestingCategory(true);
-    try {
-      const res = await fetch("/api/gemini/categorize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description: description.trim() }),
-      });
-      const data = await res.json();
-      if (res.ok && data.category_id) {
-        setCategoryId(data.category_id);
-      }
-    } catch {
-      // Non-blocking — user can pick category manually
-    } finally {
-      setSuggestingCategory(false);
-    }
-  }
-
-  function handleNoteBlur() {
-    if (categorizeTimer.current) clearTimeout(categorizeTimer.current);
-    categorizeTimer.current = setTimeout(() => {
-      suggestCategory(note);
-    }, 600);
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -193,14 +159,6 @@ export function ExpenseForm({
             value={categoryId}
             onChange={setCategoryId}
           />
-          {suggestingCategory && (
-            <p className="mt-1 text-xs text-text-muted">Suggesting category…</p>
-          )}
-          {enableAutoCategorize && !isEdit && (
-            <p className="mt-1 text-xs text-text-muted">
-              Category suggested when you leave the note field.
-            </p>
-          )}
         </div>
 
         <div className="w-fit max-w-full">
@@ -226,7 +184,6 @@ export function ExpenseForm({
             id="note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            onBlur={handleNoteBlur}
             placeholder="e.g. lunch, bus fare"
             className={highlightParsed && note ? parsedRing : ""}
           />

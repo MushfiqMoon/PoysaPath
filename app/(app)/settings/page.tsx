@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { SettingsPanel } from "@/components/settings-panel";
 import { getAuthUser } from "@/lib/auth/session";
+import { getGeminiKeyStatus } from "@/lib/data/gemini-credentials";
 import { createClient } from "@/lib/supabase/server";
 
 const menuLinks = [
@@ -21,6 +22,10 @@ export default async function SettingsPage() {
         .eq("id", user.id)
         .maybeSingle()
     : { data: null };
+
+  const geminiStatus = user
+    ? await getGeminiKeyStatus(user.id)
+    : { hasKey: false, keyHint: null };
 
   return (
     <div className="space-y-6">
@@ -42,6 +47,8 @@ export default async function SettingsPage() {
       <SettingsPanel
         email={user?.email ?? ""}
         displayName={profile?.display_name ?? null}
+        hasGeminiKey={geminiStatus.hasKey}
+        keyHint={geminiStatus.keyHint}
       />
     </div>
   );

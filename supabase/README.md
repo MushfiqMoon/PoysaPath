@@ -8,7 +8,8 @@
 4. For weekly AI insights, run `003_insight_cache.sql`.
 5. For budgets, run `004_budgets.sql`.
 6. For in-app notifications (broadcast + per-user read state), run `005_notifications.sql`.
-7. For announcement messages, run each file in `migrations/notifications/` (start with `001_intro.sql`). See `migrations/notifications/README.md`.
+7. For per-user encrypted Gemini API keys (BYOK), run `006_user_gemini_credentials.sql`.
+8. For announcement messages, run each file in `migrations/notifications/` (start with `001_intro.sql`). See `migrations/notifications/README.md`.
 
 ## Verify
 

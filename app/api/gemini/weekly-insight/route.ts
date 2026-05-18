@@ -13,6 +13,12 @@ import {
 import { requireApiUser } from "@/lib/gemini/auth";
 import { generateJson } from "@/lib/gemini/client";
 import { buildWeeklyInsightPrompt } from "@/lib/gemini/prompts";
+import {
+  GeminiKeyRequiredError,
+  geminiKeyRequiredResponse,
+  requireUserGeminiKey,
+} from "@/lib/gemini/require-user-key";
+import { AI_LABELS } from "@/lib/gemini/labels";
 import { checkGeminiRateLimit } from "@/lib/gemini/rate-limit";
 import { weeklyInsightResponseSchema } from "@/lib/gemini/schemas";
 
@@ -26,6 +32,16 @@ export async function POST(request: Request) {
 
   const url = new URL(request.url);
   const forceRefresh = url.searchParams.get("refresh") === "1";
+
+  let apiKey: string;
+  try {
+    apiKey = await requireUserGeminiKey(user.id);
+  } catch (err) {
+    if (err instanceof GeminiKeyRequiredError) {
+      return geminiKeyRequiredResponse();
+    }
+    throw err;
+  }
 
   try {
     if (!forceRefresh) {
@@ -55,7 +71,7 @@ export async function POST(request: Request) {
 
     if (!checkGeminiRateLimit(user.id)) {
       return NextResponse.json(
-        { error: "AI busy — insight unavailable right now." },
+        { error: AI_LABELS.insightUnavailable },
         { status: 429 },
       );
     }
@@ -96,7 +112,7 @@ export async function POST(request: Request) {
     }
 
     const prompt = buildWeeklyInsightPrompt(summary, total);
-    const raw = await generateJson<unknown>(prompt);
+    const raw = await generateJson<unknown>(prompt, apiKey);
     const { insight } = weeklyInsightResponseSchema.parse(raw);
 
     await saveInsightCache(user.id, insight, weekStart);

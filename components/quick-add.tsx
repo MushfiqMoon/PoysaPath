@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 
+import { AiDisabledNotice } from "@/components/ai-disabled-notice";
 import { ExpenseForm } from "@/components/expense-form";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { isGeminiKeyRequiredResponse } from "@/lib/gemini/disabled-message";
+import { AI_LABELS } from "@/lib/gemini/labels";
 import type { Category } from "@/lib/types";
 
 type ParsedExpense = {
@@ -17,16 +20,24 @@ type ParsedExpense = {
 
 type QuickAddProps = {
   categories: Category[];
+  hasGeminiKey: boolean;
 };
 
-export function QuickAdd({ categories }: QuickAddProps) {
+export function QuickAdd({ categories, hasGeminiKey }: QuickAddProps) {
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [keyRequired, setKeyRequired] = useState(!hasGeminiKey);
   const [parsing, setParsing] = useState(false);
   const [parsed, setParsed] = useState<ParsedExpense | null>(null);
 
   async function handleParse() {
+    if (!hasGeminiKey) {
+      setKeyRequired(true);
+      return;
+    }
+
     setError(null);
+    setKeyRequired(false);
     setParsing(true);
     try {
       const res = await fetch("/api/gemini/parse-expense", {
@@ -36,6 +47,10 @@ export function QuickAdd({ categories }: QuickAddProps) {
       });
       const data = await res.json();
       if (!res.ok) {
+        if (isGeminiKeyRequiredResponse(data)) {
+          setKeyRequired(true);
+          return;
+        }
         setError(data.error ?? "Could not parse. Try manual entry.");
         return;
       }
@@ -73,10 +88,14 @@ export function QuickAdd({ categories }: QuickAddProps) {
             setText("");
           }}
         >
-          Parse another
+          {AI_LABELS.parseAnother}
         </Button>
       </div>
     );
+  }
+
+  if (keyRequired) {
+    return <AiDisabledNotice />;
   }
 
   return (
@@ -109,13 +128,13 @@ export function QuickAdd({ categories }: QuickAddProps) {
         type="button"
         fullWidth
         disabled={parsing || text.trim().length < 2}
-        onClick={handleParse}
+        onClick={() => void handleParse()}
       >
-        {parsing ? "Parsing…" : "✨ Parse"}
+        {parsing ? "Parsing…" : AI_LABELS.parse}
       </Button>
 
       <p className="text-center text-xs text-text-muted">
-        Description text is sent to Google AI to parse.
+        {AI_LABELS.parseFooter}
       </p>
     </div>
   );

@@ -1,11 +1,9 @@
+import { PublicShell } from "@/components/public-shell";
+
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="flex min-h-full flex-col justify-center bg-bg">
-      {children}
-    </div>
-  );
+  return <PublicShell variant="auth">{children}</PublicShell>;
 }

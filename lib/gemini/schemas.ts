@@ -7,18 +7,10 @@ export const parseExpenseResponseSchema = z.object({
   expense_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
 
-export const categorizeResponseSchema = z.object({
-  category: z.string().min(1),
-});
-
 export const weeklyInsightResponseSchema = z.object({
   insight: z.string().min(1),
 });
 
 export const parseExpenseRequestSchema = z.object({
   text: z.string().min(1).max(500),
-});
-
-export const categorizeRequestSchema = z.object({
-  description: z.string().min(1).max(300),
 });

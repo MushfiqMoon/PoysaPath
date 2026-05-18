@@ -109,116 +109,127 @@ export function AuthForm({ mode }: AuthFormProps) {
   };
 
   return (
-    <div className="mx-auto w-full max-w-md px-4 py-8">
+    <div className="w-full min-h-[30rem]">
       <Link
         href={mode === "login" ? "/" : "/login"}
-        className="mb-6 block text-sm text-text-muted hover:text-text"
+        className="mb-4 inline-block text-sm text-text-muted transition-colors hover:text-text"
       >
         ← Back
       </Link>
 
-      <Logo size={48} showWordmark className="mb-4" />
-      <h1 className="text-2xl font-semibold text-text">{titles[mode]}</h1>
-      <p className="mt-2 text-text-muted">
-        {mode === "signup"
-          ? "Track every taka, every day."
-          : mode === "forgot"
-            ? "We will email you a reset link."
-            : "Sign in to continue to PoysaPath."}
-      </p>
-
-      <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-        <div>
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+      <div className="glass-panel flex min-h-[24rem] flex-col rounded-2xl border p-6 shadow-sm md:min-h-[22rem] md:p-8">
+        <div className="mb-6 text-center md:text-left">
+          <Logo size={48} showWordmark className="mx-auto justify-center md:mx-0" />
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight text-text">
+            {titles[mode]}
+          </h1>
+          <p className="mt-2 text-sm leading-relaxed text-text-muted">
+            {mode === "signup"
+              ? "Track every taka, every day."
+              : mode === "forgot"
+                ? "We will email you a reset link."
+                : "Sign in to continue to PoysaPath."}
+          </p>
         </div>
 
-        {mode !== "forgot" && (
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
-              id="password"
-              type="password"
-              autoComplete={
-                mode === "signup" ? "new-password" : "current-password"
-              }
+              id="email"
+              type="email"
+              autoComplete="email"
               required
-              minLength={mode === "signup" ? 8 : undefined}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
+
+          {mode !== "forgot" && (
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                autoComplete={
+                  mode === "signup" ? "new-password" : "current-password"
+                }
+                required
+                minLength={mode === "signup" ? 8 : undefined}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          )}
+
+          {mode === "signup" && (
+            <div>
+              <Label htmlFor="confirm-password">Confirm password</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+          )}
+
+          {mode === "login" && (
+            <div className="text-right">
+              <Link
+                href="/forgot-password"
+                className="text-sm font-medium text-accent hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
+          )}
+
+          {error && (
+            <p className="text-sm text-danger" role="alert">
+              {error}
+            </p>
+          )}
+          {message && (
+            <p className="text-sm text-accent" role="status">
+              {message}
+            </p>
+          )}
+
+          <div className="mt-2 pt-2">
+            <Button type="submit" fullWidth disabled={loading}>
+              {loading
+                ? "Please wait…"
+                : mode === "login"
+                  ? "Log in"
+                  : mode === "signup"
+                    ? "Sign up"
+                    : "Send reset link"}
+            </Button>
+          </div>
+        </form>
+
+        {mode === "login" && (
+          <p className="mt-6 text-center text-sm text-text-muted">
+            No account?{" "}
+            <Link href="/signup" className="font-medium text-accent hover:underline">
+              Sign up
+            </Link>
+          </p>
         )}
 
         {mode === "signup" && (
-          <div>
-            <Label htmlFor="confirm-password">Confirm password</Label>
-            <Input
-              id="confirm-password"
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
-        )}
-
-        {mode === "login" && (
-          <div className="text-right">
-            <Link href="/forgot-password" className="text-sm text-accent">
-              Forgot password?
+          <p className="mt-6 text-center text-sm text-text-muted">
+            Already have an account?{" "}
+            <Link href="/login" className="font-medium text-accent hover:underline">
+              Log in
             </Link>
-          </div>
-        )}
-
-        {error && (
-          <p className="text-sm text-danger" role="alert">
-            {error}
           </p>
         )}
-        {message && (
-          <p className="text-sm text-accent" role="status">
-            {message}
-          </p>
-        )}
-
-        <Button type="submit" fullWidth disabled={loading}>
-          {loading
-            ? "Please wait…"
-            : mode === "login"
-              ? "Log in"
-              : mode === "signup"
-                ? "Sign up"
-                : "Send reset link"}
-        </Button>
-      </form>
-
-      {mode === "login" && (
-        <p className="mt-6 text-center text-sm text-text-muted">
-          No account?{" "}
-          <Link href="/signup" className="font-medium text-accent">
-            Sign up
-          </Link>
-        </p>
-      )}
-
-      {mode === "signup" && (
-        <p className="mt-6 text-center text-sm text-text-muted">
-          Already have an account?{" "}
-          <Link href="/login" className="font-medium text-accent">
-            Log in
-          </Link>
-        </p>
-      )}
+      </div>
     </div>
   );
 }

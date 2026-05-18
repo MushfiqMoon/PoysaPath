@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  ),
   title: "PoysaPath — Track every taka, every day",
   description:
     "Multi-user daily expense tracker in BDT with AI-assisted quick entry.",
