@@ -1,7 +1,5 @@
-import Link from "next/link";
-
-import { formatPaymentMethod } from "@/lib/constants";
-import { formatCurrency, formatExpenseTitle, formatRelativeDay } from "@/lib/format";
+import { ExpenseListRow } from "@/components/expense-list-row";
+import { formatExpenseTitle, formatRelativeDay } from "@/lib/format";
 import type { Expense } from "@/lib/types";
 
 type ExpenseListProps = {
@@ -29,46 +27,20 @@ export function ExpenseList({ expenses }: ExpenseListProps) {
     <div className="space-y-6">
       {[...groups.entries()].map(([date, items]) => (
         <section key={date}>
-          <h3 className="mb-2 text-sm font-medium text-text-muted">
+          <h3 className="sticky top-0 z-[1] mb-2 bg-bg/95 py-1 text-sm font-medium text-text-muted backdrop-blur-sm">
             {formatRelativeDay(date)}
           </h3>
           <ul className="space-y-2">
             {items.map((expense) => {
               const categoryName = expense.categories?.name ?? "Expense";
               const title = formatExpenseTitle(expense.note, categoryName);
-              const meta = [
-                categoryName,
-                formatPaymentMethod(expense.payment_method),
-              ]
-                .filter(Boolean)
-                .join(" · ");
-
               return (
-                <li key={expense.id}>
-                  <Link
-                    href={`/expenses/${expense.id}/edit`}
-                    className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 transition-colors hover:border-accent/40"
-                  >
-                    <div className="min-w-0 flex-1 pr-3">
-                      <p className="font-medium text-text">
-                        {expense.categories?.icon && (
-                          <span className="mr-1" aria-hidden>
-                            {expense.categories.icon}
-                          </span>
-                        )}
-                        {title}
-                      </p>
-                      {meta && (
-                        <p className="mt-0.5 truncate text-sm text-text-muted">
-                          {meta}
-                        </p>
-                      )}
-                    </div>
-                    <p className="shrink-0 font-semibold tabular-nums text-text">
-                      {formatCurrency(Number(expense.amount))}
-                    </p>
-                  </Link>
-                </li>
+                <ExpenseListRow
+                  key={expense.id}
+                  expense={expense}
+                  categoryName={categoryName}
+                  title={title}
+                />
               );
             })}
           </ul>

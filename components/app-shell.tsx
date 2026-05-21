@@ -120,14 +120,24 @@ export function AppShell({ children, title }: AppShellProps) {
         aria-current={active ? "page" : undefined}
         className={[
           mobile
-            ? "flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors active:scale-[0.98]"
+            ? [
+                "relative flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium transition-colors active:scale-[0.98]",
+                "after:absolute after:bottom-1 after:left-1/2 after:h-0.5 after:w-6 after:-translate-x-1/2 after:rounded-full after:bg-accent after:transition-transform after:duration-200 motion-reduce:after:transition-none",
+                active ? "after:scale-x-100" : "after:scale-x-0",
+              ].join(" ")
             : "flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
           highlighted ? "text-accent" : "text-text-muted hover:text-text",
           !mobile && active ? "bg-accent/10" : "",
           !mobile && settingsSectionOpen && !active ? "bg-accent/5" : "",
         ].join(" ")}
       >
-        <Icon className={mobile ? "h-6 w-6" : "h-5 w-5 shrink-0"} aria-hidden />
+        <Icon
+          className={[
+            mobile ? "h-6 w-6" : "h-5 w-5 shrink-0",
+            mobile && active ? "motion-safe:scale-105" : "",
+          ].join(" ")}
+          aria-hidden
+        />
         <span className={mobile && active ? "font-semibold" : ""}>
           {item.label}
         </span>

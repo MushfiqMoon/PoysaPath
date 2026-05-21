@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AiDisabledNotice } from "@/components/ai-disabled-notice";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { INSIGHT_REFRESH_COOLDOWN_MS } from "@/lib/constants";
 import { isGeminiKeyRequiredResponse } from "@/lib/gemini/disabled-message";
 import { AI_LABELS } from "@/lib/gemini/labels";
@@ -137,11 +138,7 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
   }
 
   if (loading) {
-    return (
-      <section className="rounded-xl border border-border bg-surface p-4 animate-pulse">
-        <p className="text-sm text-text-muted">{AI_LABELS.loadingInsight}</p>
-      </section>
-    );
+    return <InsightCardSkeleton />;
   }
 
   if (error && !insight) {
@@ -160,9 +157,15 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
   }
 
   return (
-    <section className="rounded-xl border border-border bg-surface p-4">
+    <section
+      className="min-h-[7rem] rounded-xl border border-border bg-surface p-4"
+      aria-labelledby="weekly-insight-heading"
+    >
       <div className="flex items-start justify-between gap-3">
-        <h2 className="text-sm font-medium text-text-muted">
+        <h2
+          id="weekly-insight-heading"
+          className="text-sm font-medium text-text-muted"
+        >
           {AI_LABELS.weeklyInsight}
         </h2>
         <Button
@@ -177,10 +180,33 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
               : AI_LABELS.refreshInsight
           }
         >
-          {refreshDisabled ? `Refresh in ~${cooldownHours}h` : "Refresh"}
+          <span aria-hidden>
+            {refreshDisabled ? `Refresh in ~${cooldownHours}h` : "Refresh"}
+          </span>
+          <span className="sr-only">{AI_LABELS.refreshInsight}</span>
         </Button>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-text">{insight}</p>
+    </section>
+  );
+}
+
+export function InsightCardSkeleton() {
+  return (
+    <section
+      className="min-h-[7rem] rounded-xl border border-border bg-surface p-4"
+      aria-busy="true"
+      aria-label={AI_LABELS.loadingInsight}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="h-8 w-16 rounded-lg" />
+      </div>
+      <div className="mt-3 space-y-2">
+        <Skeleton className="h-3 w-full" />
+        <Skeleton className="h-3 w-[92%]" />
+        <Skeleton className="h-3 w-[75%]" />
+      </div>
     </section>
   );
 }
