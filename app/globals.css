@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-:root {
+:root,
+[data-theme="light"] {
   --bg: #f8fafc;
   --surface: #ffffff;
   --text: #0f172a;
@@ -14,8 +15,19 @@
   --glass-border: color-mix(in srgb, var(--border) 55%, transparent);
 }
 
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --glass-bg: color-mix(in srgb, var(--surface) 72%, transparent);
+  --glass-bg-light: color-mix(in srgb, var(--surface) 52%, transparent);
+  --glass-border: color-mix(in srgb, var(--border) 45%, transparent);
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #0f172a;
     --surface: #1e293b;
     --text: #f1f5f9;
@@ -65,7 +77,7 @@ body {
   background: var(--glass-bg);
   border-color: var(--glass-border);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
-  backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(10px) saturate(150%);
 }
 
 /* Mobile header + bottom nav — slightly more see-through */
@@ -73,7 +85,7 @@ body {
   background: var(--glass-bg-light);
   border-color: var(--glass-border);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
-  backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(10px) saturate(150%);
 }
 
 .public-mesh {
@@ -137,6 +149,22 @@ input[type="date"] {
   100% {
     transform: rotateY(360deg);
   }
+}
+
+@keyframes parsed-flash {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+  40% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.parsed-flash {
+  animation: parsed-flash 1.5s ease-out;
 }
 
 @keyframes swing {

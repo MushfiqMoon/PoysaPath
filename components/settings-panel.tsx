@@ -10,6 +10,7 @@ import {
 } from "@/app/(app)/actions/gemini-credentials";
 import { updateDisplayName } from "@/app/(app)/actions/profile";
 import { AiDisabledNotice } from "@/components/ai-disabled-notice";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -202,6 +203,16 @@ export function SettingsPanel({
             )}
           </div>
         </form>
+      </section>
+
+      <section className="rounded-xl border border-border bg-surface p-4">
+        <h3 className="font-medium text-text">Appearance</h3>
+        <p className="mt-1 text-sm text-text-muted">
+          Choose light, dark, or match your device.
+        </p>
+        <div className="mt-4">
+          <ThemeToggle />
+        </div>
       </section>
 
       <section className="rounded-xl border border-border bg-surface p-4">

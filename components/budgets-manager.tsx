@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { deleteBudget, upsertBudget } from "@/app/(app)/actions/budgets";
+import { BudgetProgressRing } from "@/components/budget-progress-ring";
 import { formatCurrency } from "@/lib/format";
 import type { BudgetRow, Category } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -62,8 +63,14 @@ export function BudgetsManager({
             return (
               <li
                 key={row.id}
-                className="rounded-xl border border-border bg-surface p-4"
+                className="flex gap-4 rounded-xl border border-border bg-surface p-4"
               >
+                <BudgetProgressRing
+                  spent={row.spent}
+                  amount={row.amount}
+                  size={52}
+                />
+                <div className="min-w-0 flex-1">
                 <div className="mb-2 flex justify-between text-sm">
                   <span className="font-medium text-text">
                     {row.category.icon && (
@@ -82,16 +89,7 @@ export function BudgetsManager({
                     {formatCurrency(row.spent)} / {formatCurrency(row.amount)}
                   </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-border">
-                  <div
-                    className={[
-                      "h-full rounded-full transition-all",
-                      over ? "bg-danger" : "bg-accent",
-                    ].join(" ")}
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-                <p className="mt-1 text-xs text-text-muted">{pct}% used</p>
+                <p className="text-xs text-text-muted">{pct}% used</p>
                 <Button
                   type="button"
                   variant="ghost"
@@ -103,6 +101,7 @@ export function BudgetsManager({
                 >
                   Remove budget
                 </Button>
+                </div>
               </li>
             );
           })}

@@ -6,6 +6,7 @@ type CategoryPickerProps = {
   value: string;
   onChange: (id: string) => void;
   id?: string;
+  highlighted?: boolean;
 };
 
 export function CategoryPicker({
@@ -13,6 +14,7 @@ export function CategoryPicker({
   value,
   onChange,
   id = "category",
+  highlighted = false,
 }: CategoryPickerProps) {
   return (
     <div>
@@ -20,9 +22,16 @@ export function CategoryPicker({
       <select
         id={id}
         required
+        aria-label="Expense category"
+        aria-required="true"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1.5 min-h-11 w-full rounded-xl border border-border bg-surface px-3 py-2 text-base text-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className={[
+          "mt-1.5 min-h-11 w-full rounded-xl border border-border bg-surface px-3 py-2 text-base text-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
+          highlighted ? "ring-2 ring-accent/40 ring-offset-2 ring-offset-surface parsed-flash" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
       >
         <option value="" disabled>
           Pick a category

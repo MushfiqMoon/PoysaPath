@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   createExpense,
@@ -35,10 +35,11 @@ type ExpenseFormProps = {
   redirectTo?: string;
   defaults?: FormDefaults;
   highlightParsed?: boolean;
+  autoFocusAmount?: boolean;
 };
 
 const parsedRing =
-  "ring-2 ring-accent/40 ring-offset-2 ring-offset-surface transition-shadow";
+  "ring-2 ring-accent/40 ring-offset-2 ring-offset-surface parsed-flash transition-shadow";
 
 export function ExpenseForm({
   categories,
@@ -46,9 +47,11 @@ export function ExpenseForm({
   redirectTo = "/dashboard",
   defaults,
   highlightParsed = false,
+  autoFocusAmount = false,
 }: ExpenseFormProps) {
   const router = useRouter();
   const isEdit = Boolean(expense);
+  const amountRef = useRef<HTMLInputElement>(null);
 
   const [amount, setAmount] = useState(
     expense ? String(expense.amount) : (defaults?.amount ?? ""),
@@ -69,6 +72,20 @@ export function ExpenseForm({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showParsedHighlight, setShowParsedHighlight] = useState(highlightParsed);
+
+  useEffect(() => {
+    if (!highlightParsed) return;
+    setShowParsedHighlight(true);
+    const t = window.setTimeout(() => setShowParsedHighlight(false), 2000);
+    return () => window.clearTimeout(t);
+  }, [highlightParsed]);
+
+  useEffect(() => {
+    if (!autoFocusAmount && !highlightParsed) return;
+    const t = window.setTimeout(() => amountRef.current?.focus(), 50);
+    return () => window.clearTimeout(t);
+  }, [autoFocusAmount, highlightParsed]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -125,6 +142,8 @@ export function ExpenseForm({
     );
   }
 
+  const flash = showParsedHighlight;
+
   return (
     <>
       <form
@@ -135,6 +154,7 @@ export function ExpenseForm({
         <div>
           <Label htmlFor="amount">Amount (৳)</Label>
           <Input
+            ref={amountRef}
             id="amount"
             type="number"
             inputMode="decimal"
@@ -146,7 +166,7 @@ export function ExpenseForm({
             placeholder="0"
             className={[
               "text-lg",
-              highlightParsed && amount ? parsedRing : "",
+              flash && amount ? parsedRing : "",
             ]
               .filter(Boolean)
               .join(" ")}
@@ -158,6 +178,7 @@ export function ExpenseForm({
             categories={categories}
             value={categoryId}
             onChange={setCategoryId}
+            highlighted={flash && Boolean(categoryId)}
           />
         </div>
 
@@ -171,7 +192,7 @@ export function ExpenseForm({
             onChange={(e) => setExpenseDate(e.target.value)}
             className={[
               "!w-auto min-w-44 max-w-full",
-              highlightParsed ? parsedRing : "",
+              flash ? parsedRing : "",
             ]
               .filter(Boolean)
               .join(" ")}
@@ -185,7 +206,7 @@ export function ExpenseForm({
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="e.g. lunch, bus fare"
-            className={highlightParsed && note ? parsedRing : ""}
+            className={flash && note ? parsedRing : ""}
           />
         </div>
 
