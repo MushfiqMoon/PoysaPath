@@ -2,7 +2,6 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 
 import { ForwardLink } from "@/components/forward-link";
-import { GreetingHand } from "@/components/greeting-hand";
 import { BudgetSummaryRings } from "@/components/budget-summary-rings";
 import { CategoryBreakdown } from "@/components/category-breakdown";
 import { DashboardPullRefresh } from "@/components/dashboard-pull-refresh";
@@ -54,10 +53,9 @@ export default async function DashboardPage() {
   return (
     <DashboardPullRefresh>
       <div className="space-y-6">
-        <section className="dashboard-greeting">
-          <p className="flex flex-wrap items-center gap-x-0.5 font-serif font-medium italic text-accent pl-3">
-            <GreetingHand />
-            <span className="text-xl">Hi, {displayName}</span>
+        <section>
+          <p className="font-serif text-xl font-medium italic text-accent">
+            Hi, {displayName}
           </p>
           <h2
             className="mt-1 text-2xl font-bold tracking-tight text-text"
