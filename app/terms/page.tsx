@@ -43,7 +43,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="relative min-h-full">
+    <div className="relative min-h-dvh">
       <div className="public-mesh pointer-events-none fixed inset-0" aria-hidden />
 
       <article className="relative z-10 mx-auto max-w-2xl space-y-6 px-4 py-10 text-text">

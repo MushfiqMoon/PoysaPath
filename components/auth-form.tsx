@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FaLinkedin, FaWhatsapp } from "react-icons/fa";
+import { FiLinkedin, FiMessageCircle } from "react-icons/fi";
 
 import { BackLink } from "@/components/back-link";
 import { Logo } from "@/components/logo";
@@ -133,7 +133,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               ? "Track every taka, every day."
               : mode === "forgot"
                 ? "Contact the developer to reset your password."
-                : "Sign in to continue to PoysaPath."}
+                : "Sign in to continue."}
           </p>
         </div>
 
@@ -151,7 +151,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                 rel="noopener noreferrer"
                 className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-input)] border border-border bg-bg px-3 py-2 text-sm font-medium text-text transition-[background-image,background-color] duration-[var(--dur-short)] hover:bg-surface/80"
               >
-                <FaLinkedin className="h-4 w-4 text-[#0A66C2]" aria-hidden />
+                <FiLinkedin className="h-4 w-4 text-[#0A66C2]" aria-hidden />
                 LinkedIn
               </a>
               <a
@@ -160,7 +160,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                 rel="noopener noreferrer"
                 className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-input)] border border-border bg-bg px-3 py-2 text-sm font-medium text-text transition-[background-image,background-color] duration-[var(--dur-short)] hover:bg-surface/80"
               >
-                <FaWhatsapp className="h-4 w-4 text-[#25D366]" aria-hidden />
+                <FiMessageCircle className="h-4 w-4 text-[#25D366]" aria-hidden />
                 WhatsApp {GEMINI_CONTACT.whatsapp}
               </a>
             </div>

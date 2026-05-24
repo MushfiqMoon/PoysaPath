@@ -3,15 +3,14 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FiCheck } from "react-icons/fi";
 
 import {
   removeGeminiApiKey,
   saveGeminiApiKey,
 } from "@/app/(app)/actions/gemini-credentials";
-import { updateDisplayName } from "@/app/(app)/actions/profile";
 import { AiDisabledNotice } from "@/components/ai-disabled-notice";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { Button } from "@/components/ui/button";
+import { DeleteButton, SaveButton } from "@/components/ui/action-buttons";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,44 +18,18 @@ import { GEMINI_HELP_URL } from "@/lib/gemini/disabled-message";
 import { AI_LABELS } from "@/lib/gemini/labels";
 
 type SettingsPanelProps = {
-  email: string;
-  displayName: string | null;
   hasGeminiKey: boolean;
   keyHint: string | null;
 };
 
-export function SettingsPanel({
-  email,
-  displayName,
-  hasGeminiKey,
-  keyHint,
-}: SettingsPanelProps) {
+export function SettingsPanel({ hasGeminiKey, keyHint }: SettingsPanelProps) {
   const router = useRouter();
-  const [name, setName] = useState(displayName ?? "");
   const [configured, setConfigured] = useState(hasGeminiKey);
   const [hint, setHint] = useState(keyHint);
   const [apiKey, setApiKey] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
   const [aiMessage, setAiMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
-
-  async function handleSaveProfile(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setMessage(null);
-    try {
-      await updateDisplayName(name);
-      setMessage("Profile saved.");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not save");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   async function handleSaveApiKey(e: React.FormEvent) {
     e.preventDefault();
@@ -97,55 +70,34 @@ export function SettingsPanel({
 
   return (
     <div className="space-y-6">
-      <Card padding="md">
-        <h3 className="font-semibold tracking-tight text-text">Profile</h3>
-        <form onSubmit={handleSaveProfile} className="mt-4 space-y-3">
-          <div>
-            <Label htmlFor="display-name">Display name</Label>
-            <Input
-              id="display-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Your name"
-            />
-          </div>
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" value={email} disabled className="opacity-70" />
-          </div>
-          {message && (
-            <p className="text-sm text-accent" role="status">
-              {message}
-            </p>
-          )}
-          {error && (
-            <p className="text-sm text-danger" role="alert">
-              {error}
-            </p>
-          )}
-          <Button type="submit" disabled={loading}>
-            {loading ? "Saving…" : "Save profile"}
-          </Button>
-        </form>
-      </Card>
-
-      <Card
-        padding="md"
-        id="ai"
-        className="scroll-mt-6"
-      >
-        <h3 className="font-semibold tracking-tight text-text">{AI_LABELS.settingsSection}</h3>
+      <Card padding="md" id="ai" className="scroll-mt-6">
+        <h3 className="font-semibold tracking-tight text-text">
+          {AI_LABELS.settingsSection}
+        </h3>
         <p className="mt-1 text-sm text-text-muted">
-        Your Gemini API key powers  Quick entry and Weekly insights. It is encrypted in our database and never shown again after you save.
+          Your Gemini API key powers Quick entry and Weekly insights. It is
+          encrypted in our database and never shown again after you save.
         </p>
 
         {configured ? (
-          <p className="mt-3 text-sm text-text">
-            Configured{" "}
-            <span className="font-mono text-text-muted">
-              (••••{hint ?? "????"})
+          <div
+            className="mt-4 flex items-center gap-3 rounded-xl border border-accent/30 bg-accent/8 px-3 py-2.5"
+            role="status"
+          >
+            <span
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent"
+              aria-hidden
+            >
+              <FiCheck className="h-4 w-4" strokeWidth={2.5} />
             </span>
-          </p>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-text">API key connected</p>
+              <p className="mt-0.5 text-xs text-text-muted">
+                Ends with{" "}
+                <span className="font-mono text-text">••••{hint ?? "????"}</span>
+              </p>
+            </div>
+          </div>
         ) : (
           <div className="mt-3">
             <AiDisabledNotice compact />
@@ -189,32 +141,33 @@ export function SettingsPanel({
               {aiError}
             </p>
           )}
-          <div className="flex flex-wrap gap-2">
-            <Button type="submit" disabled={aiLoading || apiKey.trim().length < 10}>
-              {aiLoading ? "Saving…" : configured ? "Update key" : "Save key"}
-            </Button>
-            {configured && (
-              <Button
-                type="button"
-                variant="ghost"
-                disabled={aiLoading}
-                onClick={() => void handleRemoveApiKey()}
+          <div className="mt-4 space-y-2 border-t border-glass-border pt-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+              {configured ? "Update or remove" : "Save your key"}
+            </p>
+            <div className="flex flex-col gap-2">
+              <SaveButton
+                type="submit"
+                size="default"
+                fullWidth
+                loading={aiLoading}
+                disabled={apiKey.trim().length < 10}
               >
-                Remove key
-              </Button>
-            )}
+                {configured ? "Update key" : "Save key"}
+              </SaveButton>
+              {configured ? (
+                <DeleteButton
+                  type="button"
+                  disabled={aiLoading}
+                  onClick={() => void handleRemoveApiKey()}
+                  className="self-center"
+                >
+                  Remove key
+                </DeleteButton>
+              ) : null}
+            </div>
           </div>
         </form>
-      </Card>
-
-      <Card padding="md">
-        <h3 className="font-semibold tracking-tight text-text">Appearance</h3>
-        <p className="mt-1 text-sm text-text-muted">
-          Choose light, dark, or match your device.
-        </p>
-        <div className="mt-4">
-          <ThemeToggle />
-        </div>
       </Card>
 
       <Card padding="md">
@@ -233,7 +186,7 @@ export function SettingsPanel({
         </ul>
       </Card>
 
-      <p className="text-center text-xs text-text-muted pb-4">
+      <p className="pb-4 text-center text-xs text-text-muted">
         All rights reserved. Develop by{" "}
         <a
           href="https://github.com/MushfiqMoon"

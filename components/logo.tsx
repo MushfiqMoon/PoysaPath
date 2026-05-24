@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useCallback, useState } from "react";
 
 type LogoProps = {
   size?: number;
@@ -14,18 +17,38 @@ export function Logo({
   href,
   className = "",
 }: LogoProps) {
+  const [flipping, setFlipping] = useState(false);
+
+  const handleFlip = useCallback(() => {
+    if (flipping) return;
+    setFlipping(true);
+  }, [flipping]);
+
+  const handleAnimationEnd = useCallback(() => {
+    setFlipping(false);
+  }, []);
+
   const src = size <= 64 ? "/icon.png" : "/logo.png";
 
   const image = (
-    <Image
-      src={src}
-      alt="PoysaPath"
-      width={size}
-      height={size}
-      sizes={`${size}px`}
-      className="rounded-full ring-1 ring-border/60"
-      priority={size >= 64}
-    />
+    <div className="coin-flip-scene inline-block shrink-0 cursor-pointer" onClick={handleFlip}>
+      <Image
+        src={src}
+        alt="PoysaPath"
+        width={size}
+        height={size}
+        sizes={`${size}px`}
+        className={[
+          "rounded-full ring-1 ring-border/60",
+          flipping ? "coin-flip-once" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+        onAnimationEnd={handleAnimationEnd}
+        priority={size >= 64}
+        draggable={false}
+      />
+    </div>
   );
 
   const content = (
@@ -40,12 +63,7 @@ export function Logo({
     >
       {image}
       {showWordmark && (
-        <span
-          className="text-lg font-bold tracking-tight text-text"
-          style={{ letterSpacing: "-0.02em" }}
-        >
-          PoysaPath
-        </span>
+        <span className="logo-wordmark text-xl text-text">PoysaPath</span>
       )}
     </span>
   );

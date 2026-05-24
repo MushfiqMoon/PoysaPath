@@ -3,15 +3,14 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { CiCircleList } from "react-icons/ci";
-import { FiEdit } from "react-icons/fi";
+import type { IconType } from "react-icons";
 import {
-  IoHome,
-  IoHomeOutline,
-  IoLogOutOutline,
-  IoSettings,
-  IoSettingsOutline,
-} from "react-icons/io5";
+  FiEdit,
+  FiHome,
+  FiList,
+  FiLogOut,
+  FiSettings,
+} from "react-icons/fi";
 
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Logo } from "@/components/logo";
@@ -20,18 +19,23 @@ import { NotificationsPanel } from "@/components/notifications-panel";
 import { useNotifications } from "@/lib/notifications/use-notifications";
 import { createClient } from "@/lib/supabase/client";
 
-const mainNav = [
+const mainNav: {
+  href: string;
+  label: string;
+  Icon: IconType;
+  IconActive: IconType;
+}[] = [
   {
     href: "/dashboard",
     label: "Home",
-    Icon: IoHomeOutline,
-    IconActive: IoHome,
+    Icon: FiHome,
+    IconActive: FiHome,
   },
   {
     href: "/expenses",
     label: "Expenses",
-    Icon: CiCircleList,
-    IconActive: CiCircleList,
+    Icon: FiList,
+    IconActive: FiList,
   },
   {
     href: "/add",
@@ -42,19 +46,20 @@ const mainNav = [
   {
     href: "/settings",
     label: "More",
-    Icon: IoSettingsOutline,
-    IconActive: IoSettings,
+    Icon: FiSettings,
+    IconActive: FiSettings,
   },
-] as const;
+];
 
 const settingsSubNav = [
+  { href: "/settings/profile", label: "Profile" },
   { href: "/settings/categories", label: "Categories" },
   { href: "/settings/budget", label: "Budgets" },
   { href: "/settings/notification-history", label: "Announcements" },
 ] as const;
 
 const headerIconClass =
-  "flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-muted transition-[color,background-color,transform] duration-[var(--dur-short)] hover:bg-surface/90 hover:text-text active:scale-[0.97]";
+  "flex min-h-11 min-w-11 items-center justify-center rounded-xl text-accent transition-[color,background-color,transform] duration-[var(--dur-short)] hover:bg-accent/12 hover:text-accent active:scale-[0.97]";
 
 function isActive(pathname: string, href: string) {
   if (href === "/settings") return pathname === "/settings";
@@ -144,7 +149,7 @@ export function AppShell({ children, title }: AppShellProps) {
   }
 
   return (
-    <div className="flex min-h-full flex-col md:flex-row">
+    <div className="flex min-h-dvh flex-col md:flex-row">
       <aside className="glass-panel fixed inset-y-0 left-0 z-20 hidden w-60 flex-col border-r md:flex">
         <div className="border-b border-glass-border px-5 py-[13px]">
           <Logo href="/dashboard" size={36} showWordmark />
@@ -191,7 +196,7 @@ export function AppShell({ children, title }: AppShellProps) {
         </nav>
       </aside>
 
-      <div className="flex min-h-full flex-1 flex-col md:pl-60">
+      <div className="flex min-h-dvh flex-1 flex-col md:pl-60">
         <header className="glass-panel-light sticky top-0 z-10 hidden border-b px-5 py-3 md:block">
           <div className="mx-auto flex max-w-3xl items-center justify-end gap-1">
             <NotificationsBellButton
@@ -205,7 +210,7 @@ export function AppShell({ children, title }: AppShellProps) {
               className={headerIconClass}
               aria-label="Sign out"
             >
-              <IoLogOutOutline className="h-5 w-5" aria-hidden />
+              <FiLogOut className="h-5 w-5" aria-hidden />
             </button>
           </div>
         </header>
@@ -229,7 +234,7 @@ export function AppShell({ children, title }: AppShellProps) {
                 className={headerIconClass}
                 aria-label="Sign out"
               >
-                <IoLogOutOutline className="h-5 w-5" aria-hidden />
+                <FiLogOut className="h-5 w-5" aria-hidden />
               </button>
             </div>
           </div>
@@ -240,7 +245,7 @@ export function AppShell({ children, title }: AppShellProps) {
         </main>
 
         <nav
-          className="glass-panel-light fixed inset-x-3 bottom-3 z-10 rounded-2xl border p-1.5 shadow-lg shadow-black/5 md:hidden"
+          className="glass-panel-light fixed inset-x-3 bottom-3 z-10 rounded-2xl border p-1.5 shadow-[0_-10px_28px_-14px_rgba(0,0,0,0.14)] md:hidden"
           aria-label="Main"
           style={{ paddingBottom: "max(0.375rem, env(safe-area-inset-bottom))" }}
         >

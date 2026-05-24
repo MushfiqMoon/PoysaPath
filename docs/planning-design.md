@@ -128,7 +128,8 @@ Login, signup, forgot password, sign out from Settings.
 
 ### Settings `/settings`
 
-- Profile, Gemini API key (BYOK), **Appearance** (theme: Light / Dark / System), legal links, sign out. CSV export hidden (API still exists).
+- Hub: grouped menu (Profile, Categories, Budgets, Announcements) + Gemini API key (BYOK) + legal links on `/settings`.
+- **Profile** (`/settings/profile`): display name, email, **Preferences** (theme: Light / Dark / System). CSV export hidden (API still exists).
 
 ---
 
@@ -141,7 +142,7 @@ Login, signup, forgot password, sign out from Settings.
 | `InsightCard` | Dashboard |
 | `CategoryPicker` | Expense form |
 | `app-shell` | Bottom navigation (mobile); sidebar (desktop) |
-| `ThemeToggle` | Settings → Appearance (Light / Dark / System) |
+| `ThemeToggle` | Settings → Profile → Preferences (Light / Dark / System) |
 
 ---
 

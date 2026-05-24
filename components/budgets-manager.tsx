@@ -7,6 +7,7 @@ import { deleteBudget, upsertBudget } from "@/app/(app)/actions/budgets";
 import { BudgetProgressRing } from "@/components/budget-progress-ring";
 import { formatCurrency } from "@/lib/format";
 import type { BudgetRow, Category } from "@/lib/types";
+import { DeleteButton } from "@/components/ui/action-buttons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -85,17 +86,16 @@ export function BudgetsManager({
                   </span>
                 </div>
                 <p className="text-xs text-text-muted">{pct}% used</p>
-                <Button
+                <DeleteButton
                   type="button"
-                  variant="ghost"
-                  className="mt-2 min-h-8 px-0 text-xs text-danger"
+                  className="mt-2 min-h-8 justify-start px-0"
                   onClick={async () => {
                     await deleteBudget(row.id);
                     router.refresh();
                   }}
                 >
                   Remove budget
-                </Button>
+                </DeleteButton>
                 </div>
                 </Card>
               </li>

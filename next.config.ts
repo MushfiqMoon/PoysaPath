@@ -23,6 +23,11 @@ const nextConfig: NextConfig = {
         destination: "/settings/categories",
         permanent: true,
       },
+      {
+        source: "/features",
+        destination: "/",
+        permanent: true,
+      },
     ];
   },
   images: {
