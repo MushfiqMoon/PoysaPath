@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { BackLink } from "@/components/back-link";
 
 type PageHeaderProps = {
   title: string;
@@ -10,21 +10,23 @@ type PageHeaderProps = {
 export function PageHeader({
   title,
   backHref = "/settings",
-  backLabel = "← Back",
+  backLabel = "Back",
   action,
 }: PageHeaderProps) {
   return (
-    <div className="flex items-center justify-between gap-3">
-      <div>
-        {backHref && (
-          <Link
-            href={backHref}
-            className="mb-2 inline-block text-sm text-text-muted hover:text-text"
-          >
+    <div className="flex items-start justify-between gap-3">
+      <div className="min-w-0">
+        {backHref ? (
+          <BackLink href={backHref} className="mb-2">
             {backLabel}
-          </Link>
-        )}
-        <h2 className="text-lg font-semibold text-text">{title}</h2>
+          </BackLink>
+        ) : null}
+        <h2
+          className="text-xl font-semibold tracking-tight text-text"
+          style={{ letterSpacing: "-0.02em" }}
+        >
+          {title}
+        </h2>
       </div>
       {action}
     </div>

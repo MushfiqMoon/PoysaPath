@@ -16,10 +16,10 @@ export function CategoryBreakdown({
 
   return (
     <section className="space-y-3">
-      <h2 className="text-sm font-medium text-text-muted">
+      <h2 className="text-sm font-semibold text-text-muted">
         Spending by category
       </h2>
-      <ul className="space-y-2">
+      <ul className="space-y-3">
         {totals.map((row) => {
           const pct =
             monthTotal > 0
@@ -29,20 +29,20 @@ export function CategoryBreakdown({
             <li key={row.category_id}>
               <Link
                 href={`/expenses?category=${row.category_id}`}
-                className="block rounded-lg transition-colors hover:bg-surface/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="block rounded-lg py-0.5 transition-colors hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
-                <div className="mb-1 flex justify-between text-sm">
-                  <span className="text-text">
+                <div className="mb-1.5 flex justify-between gap-2 text-sm">
+                  <span className="min-w-0 truncate font-medium text-text">
                     {row.icon && <span aria-hidden>{row.icon} </span>}
                     {row.name}
                   </span>
-                  <span className="font-medium tabular-nums text-text">
+                  <span className="shrink-0 font-semibold tabular-nums text-text">
                     {formatCurrency(row.total)}
                   </span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-border">
+                <div className="h-1.5 overflow-hidden rounded-full bg-border">
                   <div
-                    className="h-full rounded-full bg-accent"
+                    className="h-full rounded-full bg-accent transition-[width] duration-[var(--dur-medium)]"
                     style={{ width: `${pct}%` }}
                     aria-hidden
                   />

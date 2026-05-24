@@ -1,7 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { BackLink } from "@/components/back-link";
+import { NavPath } from "@/components/forward-link";
 import { Logo } from "@/components/logo";
+import { Card } from "@/components/ui/card";
 import { GEMINI_CONTACT } from "@/lib/gemini/disabled-message";
 
 const title = "Terms of use — PoysaPath";
@@ -40,20 +43,30 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-full bg-bg px-4 py-10">
-      <article className="mx-auto max-w-2xl space-y-6 text-text">
-        <Logo href="/" size={40} showWordmark />
-        <h1 className="text-2xl font-semibold">Terms of use</h1>
-        <p className="text-sm text-text-muted">Last updated: May 18, 2026</p>
+    <div className="relative min-h-full">
+      <div className="public-mesh pointer-events-none fixed inset-0" aria-hidden />
 
-        <section className="space-y-3 text-sm leading-relaxed text-text-muted">
+      <article className="relative z-10 mx-auto max-w-2xl space-y-6 px-4 py-10 text-text">
+        <Logo href="/" size={40} showWordmark />
+        <Card elevated padding="lg" className="space-y-6">
+          <div>
+            <h1
+              className="text-2xl font-semibold tracking-tight text-text"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              Terms of use
+            </h1>
+            <p className="mt-2 text-sm text-text-muted">Last updated: May 18, 2026</p>
+          </div>
+
+          <section className="space-y-3 text-sm leading-relaxed text-text-muted">
           <p>
             By using PoysaPath (including this website and a registered account)
             you agree to these terms. If you do not agree, do not use the
             service.
           </p>
 
-          <h2 className="text-base font-medium text-text">Service</h2>
+          <h2 className="text-base font-semibold text-text">Service</h2>
           <p>
             PoysaPath is provided as-is for personal expense tracking in BDT.
             Features may change; we aim to give reasonable notice for important
@@ -61,11 +74,11 @@ export default function TermsPage() {
             practical.
           </p>
 
-          <h2 className="text-base font-medium text-text">AI features</h2>
+          <h2 className="text-base font-semibold text-text">AI features</h2>
           <p>
             AI features (Quick entry parsing and weekly insights) are optional.
-            They are disabled until you add your own Google Gemini API key in
-            Settings → AI. You are responsible for obtaining and complying with
+            They are disabled until you add your own Google Gemini API key in{" "}
+            <NavPath parts={["Settings", "AI"]} />. You are responsible for obtaining and complying with
             Google&apos;s terms, quotas, and billing for that key. PoysaPath does
             not provide a shared paid AI quota for all users.
           </p>
@@ -75,27 +88,27 @@ export default function TermsPage() {
             financial, tax, or legal advice.
           </p>
 
-          <h2 className="text-base font-medium text-text">Your responsibility</h2>
+          <h2 className="text-base font-semibold text-text">Your responsibility</h2>
           <ul className="list-disc space-y-1 pl-5">
             <li>Keep your login and API key secure</li>
             <li>You are responsible for the accuracy of amounts and categories you enter</li>
             <li>Do not share your account or API key with others</li>
           </ul>
 
-          <h2 className="text-base font-medium text-text">Acceptable use</h2>
+          <h2 className="text-base font-semibold text-text">Acceptable use</h2>
           <p>
             Do not abuse the service or APIs, attempt to access other users&apos;
             data, scrape the app, or use PoysaPath for unlawful purposes.
           </p>
 
-          <h2 className="text-base font-medium text-text">In-app announcements</h2>
+          <h2 className="text-base font-semibold text-text">In-app announcements</h2>
           <p>
             We may show product updates inside the app. These are informational
             only and do not change these terms unless we publish an updated
             version with a new date.
           </p>
 
-          <h2 className="text-base font-medium text-text">Limitation of liability</h2>
+          <h2 className="text-base font-semibold text-text">Limitation of liability</h2>
           <p>
             To the extent permitted by law, we are not liable for indirect
             damages, loss of profits, or data loss. You are responsible for
@@ -103,7 +116,7 @@ export default function TermsPage() {
             important records yourself where export is offered.
           </p>
 
-          <h2 className="text-base font-medium text-text">Contact</h2>
+          <h2 className="text-base font-semibold text-text">Contact</h2>
           <p>
             Questions about these terms? Contact {GEMINI_CONTACT.name}:{" "}
             <a
@@ -131,9 +144,10 @@ export default function TermsPage() {
           </p>
         </section>
 
-        <Link href="/" className="text-sm text-accent hover:underline">
-          ← Back to home
-        </Link>
+          <BackLink href="/" className="text-accent hover:underline">
+            Back to home
+          </BackLink>
+        </Card>
       </article>
     </div>
   );

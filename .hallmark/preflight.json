@@ -1,0 +1,10 @@
+{
+  "scannedAt": "2026-05-24",
+  "framework": "Next.js 16 App Router",
+  "fontStack": "system-ui (no next/font)",
+  "palette": "hex CSS vars in app/globals.css :root",
+  "motion": "motion-cut (no framer-motion)",
+  "spacing": "Tailwind defaults + min-h-11 tap targets",
+  "preserve": ["route structure", "nav IA", "BDT formatting", "glass pattern", "theme toggle"],
+  "introduce": ["OKLCH tokens", "Plus Jakarta Sans", "Card primitive", "8-state controls", "design.md system"]
+}

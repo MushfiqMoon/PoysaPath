@@ -10,7 +10,7 @@ export default async function SettingsNotificationHistoryPage() {
       <PageHeader
         title="Past announcements"
         backHref="/settings"
-        backLabel="← Settings"
+        backLabel="Settings"
       />
       <NotificationHistory items={readNotifications} />
     </div>

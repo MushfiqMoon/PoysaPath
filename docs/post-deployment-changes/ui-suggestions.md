@@ -2,7 +2,7 @@
 
 
 
-> **Last updated:** May 22, 2026  
+> **Last updated:** May 24, 2026  
 
 > Design baseline: [planning-design.md](../planning-design.md)
 
@@ -34,7 +34,9 @@ Status: `[ ]` open · `[x]` done
 
 - [x] **P1 — Bottom nav icons** — `react-icons` in `app-shell.tsx` (Home, Expenses, Add, More).
 
-- [x] **P2 — Active tab animation** — Subtle scale or underline on active route.
+- [x] **P2 — Active tab animation** — Sliding accent pill on glass track (`app-shell.tsx`); active tab white icon/label, inactive muted.
+
+- [x] **P2 — Theme segmented control** — Sliding accent pill on Light / Dark / System (`theme-toggle.tsx`, Settings → Appearance).
 
 
 
@@ -106,7 +108,9 @@ Status: `[ ]` open · `[x]` done
 
 - [ ] **P1 — Re-enable CSV block** — Deferred (API remains at `GET /api/export/csv`).
 
-- [x] **P2 — Theme toggle** — Light/dark/system in Settings.
+- [x] **P2 — Theme toggle** — Light/dark/system in Settings (sliding pill UI).
+
+- [x] **P2 — Gradient borders** — `border-border` / `border-border-soft` utilities in `app/globals.css` (teal-tinted gradient; hover via `--border-gradient-hover`).
 
 
 

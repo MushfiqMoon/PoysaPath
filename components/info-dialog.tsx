@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 type InfoDialogProps = {
   open: boolean;
@@ -21,22 +22,22 @@ export function InfoDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 backdrop-blur-[2px] sm:items-center"
       role="dialog"
       aria-modal="true"
       aria-labelledby="info-dialog-title"
     >
-      <div className="w-full max-w-sm rounded-xl border border-border bg-surface p-5 shadow-lg">
-        <h2 id="info-dialog-title" className="text-lg font-semibold text-text">
+      <Card elevated padding="md" className="w-full max-w-sm">
+        <h2 id="info-dialog-title" className="text-lg font-semibold tracking-tight text-text">
           {title}
         </h2>
-        <p className="mt-2 text-sm text-text-muted">{message}</p>
+        <p className="mt-2 text-sm leading-relaxed text-text-muted">{message}</p>
         <div className="mt-5">
           <Button fullWidth onClick={onClose}>
             {confirmLabel}
           </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

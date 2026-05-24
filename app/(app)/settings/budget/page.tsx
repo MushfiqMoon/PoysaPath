@@ -24,7 +24,7 @@ export default async function SettingsBudgetPage() {
       <PageHeader
         title={`Budgets — ${monthLabel}`}
         backHref="/settings"
-        backLabel="← Settings"
+        backLabel="Settings"
       />
       <BudgetsManager
         budgets={budgets}

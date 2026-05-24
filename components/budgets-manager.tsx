@@ -8,6 +8,7 @@ import { BudgetProgressRing } from "@/components/budget-progress-ring";
 import { formatCurrency } from "@/lib/format";
 import type { BudgetRow, Category } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EmptyState } from "@/components/empty-state";
@@ -61,10 +62,8 @@ export function BudgetsManager({
                 : 0;
             const over = row.spent > row.amount;
             return (
-              <li
-                key={row.id}
-                className="flex gap-4 rounded-xl border border-border bg-surface p-4"
-              >
+              <li key={row.id}>
+                <Card padding="md" className="flex gap-4">
                 <BudgetProgressRing
                   spent={row.spent}
                   amount={row.amount}
@@ -98,6 +97,7 @@ export function BudgetsManager({
                   Remove budget
                 </Button>
                 </div>
+                </Card>
               </li>
             );
           })}
@@ -105,18 +105,16 @@ export function BudgetsManager({
       )}
 
       {unbudgetedCategories.length > 0 && (
-        <form
-          onSubmit={handleSetBudget}
-          className="space-y-3 rounded-xl border border-border bg-surface p-4"
-        >
-          <p className="font-medium text-text">Set budget</p>
+        <Card padding="md">
+          <form onSubmit={handleSetBudget} className="space-y-3">
+            <p className="font-semibold tracking-tight text-text">Set budget</p>
           <div>
             <Label htmlFor="budget-category">Category</Label>
             <select
               id="budget-category"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
-              className="mt-1.5 min-h-11 w-full rounded-xl border border-border bg-surface px-3 py-2"
+              className="mt-1.5 min-h-11 w-full rounded-[var(--radius-input)] border border-border bg-surface px-3 py-2"
               required
             >
               {unbudgetedCategories.map((c) => (
@@ -146,7 +144,8 @@ export function BudgetsManager({
           <Button type="submit" fullWidth disabled={loading || !categoryId}>
             {loading ? "Saving…" : "Set budget"}
           </Button>
-        </form>
+          </form>
+        </Card>
       )}
     </div>
   );

@@ -29,4 +29,4 @@ export function formatPaymentMethod(value: string | null | undefined): string | 
 export const TIMEZONE = "Asia/Dhaka";
 
 /** Minimum time between manual weekly-insight refreshes (client + server). */
-export const INSIGHT_REFRESH_COOLDOWN_MS = 4 * 60 * 60 * 1000;
+export const INSIGHT_REFRESH_COOLDOWN_MS = 1 * 60 * 60 * 1000;

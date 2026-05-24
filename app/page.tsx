@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Logo } from "@/components/logo";
 import { PublicShell } from "@/components/public-shell";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { AI_LABELS } from "@/lib/gemini/labels";
 
 const title = "PoysaPath | BDT Expense Tracker for Bangladesh";
@@ -73,7 +74,10 @@ export default function LandingPage() {
             showWordmark
             className="mx-auto justify-center md:mx-0 md:justify-start"
           />
-          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-text md:text-5xl">
+          <h1
+            className="mt-6 text-[length:var(--text-display)] font-semibold leading-tight tracking-tight text-text md:text-5xl"
+            style={{ letterSpacing: "-0.02em" }}
+          >
             Daily expense tracker for Bangladesh
           </h1>
           <p className="mt-3 text-lg leading-relaxed text-text-muted">
@@ -83,14 +87,18 @@ export default function LandingPage() {
 
         <ul className="hidden gap-3 md:grid">
           {featureCards.map((card) => (
-            <li key={card.title} className="glass-panel rounded-xl border p-4">
-              <p className="font-medium text-text">{card.title}</p>
-              <p className="mt-1 text-sm text-text-muted">{card.description}</p>
+            <li key={card.title}>
+              <Card padding="md" className="border-accent/10 bg-surface/80">
+                <p className="font-semibold text-text">{card.title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-text-muted">
+                  {card.description}
+                </p>
+              </Card>
             </li>
           ))}
         </ul>
 
-        <div className="glass-panel rounded-2xl border p-6 shadow-sm">
+        <Card elevated padding="lg">
           <p className="text-center text-sm text-text-muted md:text-left">
             Free to start. Create an account in under a minute.
           </p>
@@ -104,7 +112,7 @@ export default function LandingPage() {
               </Button>
             </Link>
           </div>
-        </div>
+        </Card>
       </div>
     </PublicShell>
   );

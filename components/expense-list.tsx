@@ -1,4 +1,5 @@
 import { ExpenseListRow } from "@/components/expense-list-row";
+import { Card } from "@/components/ui/card";
 import { formatExpenseTitle, formatRelativeDay } from "@/lib/format";
 import type { Expense } from "@/lib/types";
 
@@ -9,9 +10,9 @@ type ExpenseListProps = {
 export function ExpenseList({ expenses }: ExpenseListProps) {
   if (expenses.length === 0) {
     return (
-      <p className="rounded-xl border border-dashed border-border bg-surface p-6 text-center text-text-muted">
+      <Card padding="lg" className="border-dashed bg-surface/60 text-center text-text-muted">
         Nothing this period yet.
-      </p>
+      </Card>
     );
   }
 
@@ -27,7 +28,7 @@ export function ExpenseList({ expenses }: ExpenseListProps) {
     <div className="space-y-6">
       {[...groups.entries()].map(([date, items]) => (
         <section key={date}>
-          <h3 className="sticky top-0 z-[1] mb-2 bg-bg/95 py-1 text-sm font-medium text-text-muted backdrop-blur-sm">
+          <h3 className="sticky top-0 z-[1] -mx-2 mb-2 px-2 py-2 text-xs font-semibold uppercase tracking-wide text-text-muted backdrop-blur-md">
             {formatRelativeDay(date)}
           </h3>
           <ul className="space-y-2">

@@ -11,6 +11,7 @@ import {
 import { CategoryPicker } from "@/components/category-picker";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -132,7 +133,7 @@ export function ExpenseForm({
 
   if (categories.length === 0) {
     return (
-      <section className="rounded-xl border border-border bg-surface p-6 text-center">
+      <section className="surface-card p-6 text-center">
         <p className="text-text-muted">
           No categories yet. Run Supabase migrations and sign up again, or run
           the backfill script in{" "}
@@ -146,6 +147,7 @@ export function ExpenseForm({
 
   return (
     <>
+      <Card elevated padding="md">
       <form
         id="expense-form"
         onSubmit={handleSubmit}
@@ -216,7 +218,7 @@ export function ExpenseForm({
             id="payment"
             value={paymentMethod}
             onChange={(e) => setPaymentMethod(e.target.value)}
-            className="mt-1.5 min-h-11 w-full rounded-xl border border-border bg-surface px-3 py-2 text-base text-text"
+            className="mt-1.5 min-h-11 w-full appearance-none rounded-xl border border-border bg-surface px-3 py-2 text-base text-text transition-[background-image] duration-[var(--dur-short)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <option value="">—</option>
             {paymentMethod &&
@@ -240,8 +242,8 @@ export function ExpenseForm({
         )}
 
         <div className="space-y-3 pt-1">
-          <Button type="submit" fullWidth disabled={loading}>
-            {loading ? "Saving…" : isEdit ? "Save changes" : "Save expense"}
+          <Button type="submit" fullWidth loading={loading}>
+            {isEdit ? "Save changes" : "Save expense"}
           </Button>
           {isEdit && (
             <Button
@@ -256,6 +258,7 @@ export function ExpenseForm({
           )}
         </div>
       </form>
+      </Card>
 
       <ConfirmDialog
         open={confirmDelete}

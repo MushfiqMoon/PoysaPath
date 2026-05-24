@@ -23,7 +23,7 @@ export function Logo({
       width={size}
       height={size}
       sizes={`${size}px`}
-      className="rounded-full"
+      className="rounded-full ring-1 ring-border/60"
       priority={size >= 64}
     />
   );
@@ -32,7 +32,7 @@ export function Logo({
     <span
       className={[
         "inline-flex items-center gap-2.5",
-        href ? "transition-opacity hover:opacity-90" : "",
+        href ? "transition-opacity hover:opacity-90 active:opacity-80" : "",
         className,
       ]
         .filter(Boolean)
@@ -40,7 +40,10 @@ export function Logo({
     >
       {image}
       {showWordmark && (
-        <span className="text-lg font-semibold tracking-tight text-text">
+        <span
+          className="text-lg font-bold tracking-tight text-text"
+          style={{ letterSpacing: "-0.02em" }}
+        >
           PoysaPath
         </span>
       )}

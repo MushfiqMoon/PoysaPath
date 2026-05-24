@@ -2,11 +2,13 @@
 
 > **Companion:** [planning.md](./planning.md) · [planning-db.md](./planning-db.md)  
 > **Security / AI disclosure:** [planning.md §3–4](./planning.md)  
-> **Last updated:** May 18, 2026
+> **Last updated:** May 24, 2026
 
 ## Current state
 
-- Mobile-first (375px+), bottom nav: Home, Expenses, Add, More.
+- Mobile-first (375px+), bottom nav: Home, Expenses, Add, More — glass track with **sliding accent pill** on the active tab (white icon/label).
+- Settings → Appearance: Light / Dark / System with the **same sliding-pill** control (`ThemeToggle`).
+- Default control borders: **`border-border`** gradient (teal-tinted rule); hover shifts to `--border-gradient-hover`.
 - `/add`: **Quick** (Gemini parse + preview) and **Manual** (no AI).
 - Dashboard: totals, category breakdown, weekly insight, recent expenses.
 
@@ -92,7 +94,7 @@ User picks category manually. No blur/API categorization.
 
 - If cached insight for week → show card.
 - Else POST `weekly-insight` → cache in DB.
-- Refresh: manual, 24h cooldown (client + server rules).
+- Refresh: manual, 1h cooldown (client + server rules).
 
 ### 3.4 Edit / delete
 
@@ -126,7 +128,7 @@ Login, signup, forgot password, sign out from Settings.
 
 ### Settings `/settings`
 
-- Profile name, sign out, privacy/terms. CSV export hidden (API still exists).
+- Profile, Gemini API key (BYOK), **Appearance** (theme: Light / Dark / System), legal links, sign out. CSV export hidden (API still exists).
 
 ---
 
@@ -138,17 +140,21 @@ Login, signup, forgot password, sign out from Settings.
 | `ExpenseForm` | Manual tab, parse preview, edit |
 | `InsightCard` | Dashboard |
 | `CategoryPicker` | Expense form |
-| `app-shell` | Bottom navigation |
+| `app-shell` | Bottom navigation (mobile); sidebar (desktop) |
+| `ThemeToggle` | Settings → Appearance (Light / Dark / System) |
 
 ---
 
 ## 6. UI tokens (summary)
 
-- Surfaces: `bg-bg`, `bg-surface`, `border-border`
+- Surfaces: `bg-bg`, `bg-surface`, `glass-panel`, `glass-panel-light`
+- Borders: `border-border` (gradient ring via `app/globals.css` `@utility`), `border-border-soft` (subtle dividers), solid `border-danger` / `border-accent/*` for state
 - Text: `text-text`, `text-text-muted`
-- Accent: primary actions, active nav
+- Accent: primary actions, sliding pills on segmented controls (nav + theme)
 - Danger: errors, delete
 - Currency: `৳` + tabular nums
+
+**Segmented control pattern** (nav + theme): neutral track → absolutely positioned accent pill (`width: 25%` or `33.333%`) → `translate3d(index * 100%, 0, 0)` with 300ms ease; active label `text-white`.
 
 ---
 
