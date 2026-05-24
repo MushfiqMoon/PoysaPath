@@ -1,4 +1,4 @@
-import { Plus_Jakarta_Sans, Sora } from "next/font/google";
+import { Instrument_Serif, Plus_Jakarta_Sans, Sora } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 
 import { ThemeProvider } from "@/components/theme-provider";
@@ -15,6 +15,15 @@ const sora = Sora({
   subsets: ["latin"],
   weight: ["600", "700"],
   variable: "--font-brand",
+  display: "swap",
+});
+
+/** Hallmark / Tally italic accent — e.g. emphasized words in marketing headlines */
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-instrument",
   display: "swap",
 });
 
@@ -54,7 +63,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${plusJakarta.variable} ${sora.variable} min-h-dvh`}
+      className={`${plusJakarta.variable} ${sora.variable} ${instrumentSerif.variable} min-h-dvh`}
       suppressHydrationWarning
     >
       <head>

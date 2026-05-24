@@ -133,7 +133,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               ? "Track every taka, every day."
               : mode === "forgot"
                 ? "Contact the developer to reset your password."
-                : "Sign in to continue to PoysaPath."}
+                : "Sign in to continue."}
           </p>
         </div>
 

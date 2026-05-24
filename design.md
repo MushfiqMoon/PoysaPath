@@ -48,6 +48,7 @@ CSS cannot set `border-color` to a gradient. Default borders use the `border-bor
 ## Typography
 
 - **Display + Body:** Plus Jakarta Sans (400, 500, 600, 700) via `next/font/google`
+- **Brand wordmark + marketing accent (Hallmark / Tally):** Instrument Serif — `.logo-wordmark` for “PoysaPath”; `.marketing-em` / `<em>` for italic accent words in split headlines (`"Times New Roman", serif` fallback via `--font-instrument`)
 - **Mono:** ui-monospace stack for amounts (`tabular-nums`)
 - **Scale:** `--text-xs` 0.75rem · `--text-sm` 0.875rem · `--text-md` 1rem · `--text-lg` 1.125rem · `--text-xl` 1.375rem · `--text-2xl` 1.75rem · `--text-display` clamp(1.75rem, 4vw + 0.5rem, 2.25rem)
 - **Tracking:** `-0.02em` on headings
@@ -81,7 +82,8 @@ CSS cannot set `border-color` to a gradient. Default borders use the `border-bor
 
 - Glass panels on app chrome, filter bars, mobile nav track (neutral glass; accent only on active tab pill)
 - App pages: no hero enrichment, no decorative imagery
-- Marketing: mesh gradient only
+- Marketing (`/`, auth): mesh gradient only
+- Marketing home (`/`): mesh + Tally Marquee Hero (64px grid mask, keyword marquee); preview card is illustrative only (no live user data). `/features` redirects here.
 
 ## App chrome
 

@@ -63,12 +63,7 @@ export function Logo({
     >
       {image}
       {showWordmark && (
-        <span
-          className="text-lg font-bold tracking-tight text-text"
-          style={{ letterSpacing: "-0.02em" }}
-        >
-          PoysaPath
-        </span>
+        <span className="logo-wordmark text-xl text-text">PoysaPath</span>
       )}
     </span>
   );
