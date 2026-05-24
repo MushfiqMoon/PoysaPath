@@ -33,13 +33,12 @@ export function BudgetSummaryRings({ budgets }: BudgetSummaryRingsProps) {
               key={row.id}
               className="flex min-w-[5.5rem] flex-col items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-3"
             >
-              <BudgetProgressRing spent={row.spent} amount={row.amount} />
+              <BudgetProgressRing
+                spent={row.spent}
+                amount={row.amount}
+                icon={row.category.icon}
+              />
               <span className="max-w-[5.5rem] truncate text-center text-xs font-medium text-text">
-                {row.category.icon && (
-                  <span className="mr-0.5" aria-hidden>
-                    {row.category.icon}
-                  </span>
-                )}
                 {row.category.name}
               </span>
               <span

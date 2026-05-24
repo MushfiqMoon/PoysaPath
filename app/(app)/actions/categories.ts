@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
+import { isValidCategoryIcon } from "@/lib/category-icon";
 
 async function requireUser() {
   const supabase = await createClient();
@@ -19,6 +20,15 @@ function revalidateCategoryPaths() {
   revalidatePath("/expenses");
   revalidatePath("/dashboard");
   revalidatePath("/settings/budget");
+}
+
+function normalizeIcon(icon?: string | null) {
+  const trimmed = icon?.trim() || "";
+  if (!trimmed) return null;
+  if (!isValidCategoryIcon(trimmed)) {
+    throw new Error("Icon must be at most 2 characters or one emoji.");
+  }
+  return trimmed;
 }
 
 export async function createCategory(name: string, icon?: string | null) {
@@ -40,7 +50,7 @@ export async function createCategory(name: string, icon?: string | null) {
   const { error } = await supabase.from("categories").insert({
     user_id: user.id,
     name: trimmed,
-    icon: icon?.trim() || null,
+    icon: normalizeIcon(icon),
     sort_order: sortOrder,
   });
 
@@ -60,7 +70,7 @@ export async function updateCategory(
 
   const { error } = await supabase
     .from("categories")
-    .update({ name: trimmed, icon: icon?.trim() || null })
+    .update({ name: trimmed, icon: normalizeIcon(icon) })
     .eq("id", id);
 
   if (error) throw new Error(error.message);
