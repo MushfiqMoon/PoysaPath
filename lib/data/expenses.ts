@@ -25,8 +25,25 @@ function normalizeExpense(row: {
   return { ...row, categories };
 }
 
+export async function getEarliestExpenseMonthStart(): Promise<string | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("expenses")
+    .select("expense_date")
+    .order("expense_date", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  if (!data?.expense_date) return null;
+
+  const [y, m] = data.expense_date.split("-");
+  return `${y}-${m}-01`;
+}
+
 export async function getExpenses(options?: {
   categoryId?: string;
+  paymentMethod?: string;
   monthStart?: string;
 }): Promise<Expense[]> {
   const supabase = await createClient();
@@ -38,6 +55,10 @@ export async function getExpenses(options?: {
 
   if (options?.categoryId) {
     query = query.eq("category_id", options.categoryId);
+  }
+
+  if (options?.paymentMethod) {
+    query = query.eq("payment_method", options.paymentMethod);
   }
 
   if (options?.monthStart) {

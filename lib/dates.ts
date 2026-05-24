@@ -27,6 +27,61 @@ export function getMonthStartInDhaka(date = new Date()): string {
   return `${y}-${m}-01`;
 }
 
+/** First day of month, offset by `months` from a YYYY-MM-01 anchor. */
+export function addMonthsToMonthStart(monthStart: string, months: number): string {
+  const [y, m] = monthStart.split("-").map(Number);
+  const date = new Date(Date.UTC(y, m - 1 + months, 1));
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}-01`;
+}
+
+/** Month starts from `from` through `to`, inclusive, newest first. */
+export function listMonthStarts(from: string, to: string): string[] {
+  const result: string[] = [];
+  let current = to;
+  while (current >= from) {
+    result.push(current);
+    if (current === from) break;
+    current = addMonthsToMonthStart(current, -1);
+  }
+  return result;
+}
+
+export function monthStartToParam(monthStart: string): string {
+  return monthStart.slice(0, 7);
+}
+
+export function parseMonthStartParam(
+  value: string | undefined,
+  fallback: string,
+): string {
+  if (!value) return fallback;
+
+  const normalized = /^\d{4}-\d{2}$/.test(value) ? `${value}-01` : value;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) return fallback;
+
+  const [y, m, d] = normalized.split("-").map(Number);
+  if (d !== 1 || m < 1 || m > 12) return fallback;
+
+  const current = getMonthStartInDhaka();
+  if (normalized > current) return fallback;
+
+  return normalized;
+}
+
+export function formatMonthLabel(
+  monthStart: string,
+  currentMonthStart = getMonthStartInDhaka(),
+): string {
+  if (monthStart === currentMonthStart) return "This month";
+
+  const [y, m] = monthStart.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-GB", {
+    month: "long",
+    year: "numeric",
+    timeZone: TIMEZONE,
+  }).format(new Date(Date.UTC(y, m - 1, 1)));
+}
+
 export function addDaysYmd(ymd: string, days: number): string {
   const [y, m, d] = ymd.split("-").map(Number);
   const dt = new Date(Date.UTC(y, m - 1, d + days));

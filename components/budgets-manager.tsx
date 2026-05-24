@@ -69,15 +69,11 @@ export function BudgetsManager({
                   spent={row.spent}
                   amount={row.amount}
                   size={52}
+                  icon={row.category.icon}
                 />
                 <div className="min-w-0 flex-1">
                 <div className="mb-2 flex justify-between text-sm">
                   <span className="font-medium text-text">
-                    {row.category.icon && (
-                      <span className="mr-1" aria-hidden>
-                        {row.category.icon}
-                      </span>
-                    )}
                     {row.category.name}
                   </span>
                   <span

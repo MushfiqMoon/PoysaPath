@@ -7,25 +7,59 @@ import { ExpenseFilters } from "@/components/expense-filters";
 import { ExpenseList } from "@/components/expense-list";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { formatPaymentMethod } from "@/lib/constants";
 import { getUserCategories } from "@/lib/data/categories";
-import { getMonthStartInDhaka } from "@/lib/dates";
-import { getExpenses } from "@/lib/data/expenses";
+import {
+  formatMonthLabel,
+  getMonthStartInDhaka,
+  listMonthStarts,
+  monthStartToParam,
+  parseMonthStartParam,
+} from "@/lib/dates";
+import { getEarliestExpenseMonthStart, getExpenses } from "@/lib/data/expenses";
 
 type ExpensesPageProps = {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; payment?: string; month?: string }>;
 };
 
 export default async function ExpensesPage({ searchParams }: ExpensesPageProps) {
-  const { category: categoryId } = await searchParams;
-  const monthStart = getMonthStartInDhaka();
-  const [expenses, categories] = await Promise.all([
-    getExpenses({ monthStart, categoryId: categoryId || undefined }),
+  const { category: categoryId, payment: paymentMethod, month: monthParam } =
+    await searchParams;
+
+  const currentMonthStart = getMonthStartInDhaka();
+  const monthStart = parseMonthStartParam(monthParam, currentMonthStart);
+
+  const [expenses, categories, earliestMonth] = await Promise.all([
+    getExpenses({
+      monthStart,
+      categoryId: categoryId || undefined,
+      paymentMethod: paymentMethod || undefined,
+    }),
     getUserCategories(),
+    getEarliestExpenseMonthStart(),
   ]);
+
+  const fromMonth = earliestMonth ?? currentMonthStart;
+  const monthOptions = listMonthStarts(fromMonth, currentMonthStart).map(
+    (start) => ({
+      value: monthStartToParam(start),
+      label: formatMonthLabel(start, currentMonthStart),
+    }),
+  );
 
   const categoryName = categoryId
     ? categories.find((c) => c.id === categoryId)?.name
     : null;
+  const paymentLabel = paymentMethod
+    ? formatPaymentMethod(paymentMethod)
+    : null;
+  const filterLabels = [categoryName, paymentLabel].filter(Boolean).join(" · ");
+  const monthLabel = formatMonthLabel(monthStart, currentMonthStart);
+
+  const emptyDescription =
+    filterLabels.length > 0
+      ? `No expenses matching ${filterLabels} in ${monthLabel.toLowerCase()}.`
+      : `No expenses in ${monthLabel.toLowerCase()}.`;
 
   return (
     <div className="space-y-4">
@@ -33,8 +67,8 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
         <div>
           <h2 className="text-lg font-semibold text-text">Expenses</h2>
           <p className="text-sm text-text-muted">
-            This month
-            {categoryName ? ` · ${categoryName}` : ""} · Asia/Dhaka
+            {monthLabel}
+            {filterLabels ? ` · ${filterLabels}` : ""} · Asia/Dhaka
           </p>
         </div>
         <Link href="/add">
@@ -44,18 +78,25 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
         </Link>
       </div>
 
-      <Suspense fallback={<Skeleton className="h-11 w-full" />}>
-        <ExpenseFilters categories={categories} />
+      <Suspense
+        fallback={
+          <div className="glass-panel space-y-3 rounded-2xl border p-3 sm:p-4">
+            <Skeleton className="h-4 w-16" />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <Skeleton className="h-17 sm:col-span-2 lg:col-span-1" />
+              <Skeleton className="h-17" />
+              <Skeleton className="h-17" />
+            </div>
+          </div>
+        }
+      >
+        <ExpenseFilters categories={categories} months={monthOptions} />
       </Suspense>
 
       {expenses.length === 0 ? (
         <EmptyState
           title="Nothing this period"
-          description={
-            categoryName
-              ? `No expenses in ${categoryName} this month.`
-              : "Add your first expense to see it here."
-          }
+          description={emptyDescription}
           actionLabel="Add expense"
           actionHref="/add"
         />

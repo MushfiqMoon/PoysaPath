@@ -13,6 +13,7 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { truncateCategoryIcon } from "@/lib/category-icon";
 import type { Category } from "@/lib/types";
 
 type CategoriesManagerProps = {
@@ -135,10 +136,16 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
                 />
                 <Input
                   value={editIcon}
-                  onChange={(e) => setEditIcon(e.target.value)}
-                  placeholder="Icon emoji (optional)"
+                  onChange={(e) =>
+                    setEditIcon(truncateCategoryIcon(e.target.value))
+                  }
+                  placeholder="e.g. 💼"
                   aria-label="Category icon"
+                  inputMode="text"
                 />
+                <p className="text-xs text-text-muted">
+                  Up to 2 characters or one emoji
+                </p>
                 <div className="flex gap-2">
                   <Button
                     type="button"
@@ -216,10 +223,13 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
           <Input
             id="cat-icon"
             value={icon}
-            onChange={(e) => setIcon(e.target.value)}
+            onChange={(e) => setIcon(truncateCategoryIcon(e.target.value))}
             placeholder="e.g. 💼"
-            maxLength={4}
+            inputMode="text"
           />
+          <p className="mt-1 text-xs text-text-muted">
+            Up to 2 characters or one emoji
+          </p>
         </div>
         {error && (
           <p className="text-sm text-danger" role="alert">

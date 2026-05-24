@@ -1,6 +1,7 @@
 type BudgetProgressRingProps = {
   spent: number;
   amount: number;
+  icon?: string | null;
   size?: number;
   strokeWidth?: number;
 };
@@ -8,6 +9,7 @@ type BudgetProgressRingProps = {
 export function BudgetProgressRing({
   spent,
   amount,
+  icon,
   size = 56,
   strokeWidth = 5,
 }: BudgetProgressRingProps) {
@@ -18,34 +20,50 @@ export function BudgetProgressRing({
   const offset = circumference - (pct / 100) * circumference;
   const stroke = over ? "var(--danger)" : "var(--accent)";
 
+  const iconSize = Math.round(size * 0.38);
+
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox={`0 0 ${size} ${size}`}
-      className="shrink-0 -rotate-90"
-      aria-hidden
+    <div
+      className="relative shrink-0"
+      style={{ width: size, height: size }}
     >
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={radius}
-        fill="none"
-        stroke="var(--border)"
-        strokeWidth={strokeWidth}
-      />
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={radius}
-        fill="none"
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeDasharray={circumference}
-        strokeDashoffset={offset}
-        className="transition-[stroke-dashoffset] duration-300"
-      />
-    </svg>
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        className="absolute inset-0 -rotate-90"
+        aria-hidden
+      >
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="var(--border)"
+          strokeWidth={strokeWidth}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={stroke}
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="transition-[stroke-dashoffset] duration-300"
+        />
+      </svg>
+      {icon ? (
+        <span
+          className="absolute inset-0 flex items-center justify-center leading-none select-none"
+          style={{ fontSize: iconSize }}
+          aria-hidden
+        >
+          {icon}
+        </span>
+      ) : null}
+    </div>
   );
 }
