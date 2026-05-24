@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 type EmptyStateProps = {
   title: string;
@@ -16,16 +17,21 @@ export function EmptyState({
   actionHref,
 }: EmptyStateProps) {
   return (
-    <section className="rounded-xl border border-dashed border-border bg-surface px-6 py-10 text-center">
-      <p className="font-medium text-text">{title}</p>
+    <Card
+      padding="lg"
+      className="border-dashed bg-surface/60 text-center"
+    >
+      <p className="font-semibold text-text">{title}</p>
       {description && (
-        <p className="mt-2 text-sm text-text-muted">{description}</p>
+        <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-text-muted">
+          {description}
+        </p>
       )}
       {actionLabel && actionHref && (
-        <Link href={actionHref} className="mt-4 inline-block">
+        <Link href={actionHref} className="mt-5 inline-block">
           <Button>{actionLabel}</Button>
         </Link>
       )}
-    </section>
+    </Card>
   );
 }

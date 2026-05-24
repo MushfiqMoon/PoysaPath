@@ -63,10 +63,15 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
+      <section className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-text">Expenses</h2>
-          <p className="text-sm text-text-muted">
+          <h2
+            className="text-2xl font-bold tracking-tight text-text"
+            style={{ letterSpacing: "-0.02em" }}
+          >
+            Expenses
+          </h2>
+          <p className="mt-1 text-sm text-text-muted">
             {monthLabel}
             {filterLabels ? ` · ${filterLabels}` : ""} · Asia/Dhaka
           </p>
@@ -76,16 +81,14 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
             <FiEdit className="h-5 w-5" aria-hidden />
           </Button>
         </Link>
-      </div>
+      </section>
 
       <Suspense
         fallback={
-          <div className="glass-panel space-y-3 rounded-2xl border p-3 sm:p-4">
-            <Skeleton className="h-4 w-16" />
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <Skeleton className="h-17 sm:col-span-2 lg:col-span-1" />
-              <Skeleton className="h-17" />
-              <Skeleton className="h-17" />
+          <div className="glass-panel rounded-2xl border p-3 sm:p-4">
+            <div className="flex items-end gap-2">
+              <Skeleton className="h-17 min-w-0 flex-1" />
+              <Skeleton className="h-11 w-[5.25rem] shrink-0 rounded-xl" />
             </div>
           </div>
         }

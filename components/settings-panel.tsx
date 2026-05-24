@@ -12,6 +12,7 @@ import { updateDisplayName } from "@/app/(app)/actions/profile";
 import { AiDisabledNotice } from "@/components/ai-disabled-notice";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GEMINI_HELP_URL } from "@/lib/gemini/disabled-message";
@@ -96,8 +97,8 @@ export function SettingsPanel({
 
   return (
     <div className="space-y-6">
-      <section className="rounded-xl border border-border bg-surface p-4">
-        <h3 className="font-medium text-text">Profile</h3>
+      <Card padding="md">
+        <h3 className="font-semibold tracking-tight text-text">Profile</h3>
         <form onSubmit={handleSaveProfile} className="mt-4 space-y-3">
           <div>
             <Label htmlFor="display-name">Display name</Label>
@@ -126,13 +127,14 @@ export function SettingsPanel({
             {loading ? "Saving…" : "Save profile"}
           </Button>
         </form>
-      </section>
+      </Card>
 
-      <section
+      <Card
+        padding="md"
         id="ai"
-        className="scroll-mt-6 rounded-xl border border-border bg-surface p-4"
+        className="scroll-mt-6"
       >
-        <h3 className="font-medium text-text">{AI_LABELS.settingsSection}</h3>
+        <h3 className="font-semibold tracking-tight text-text">{AI_LABELS.settingsSection}</h3>
         <p className="mt-1 text-sm text-text-muted">
         Your Gemini API key powers  Quick entry and Weekly insights. It is encrypted in our database and never shown again after you save.
         </p>
@@ -203,20 +205,20 @@ export function SettingsPanel({
             )}
           </div>
         </form>
-      </section>
+      </Card>
 
-      <section className="rounded-xl border border-border bg-surface p-4">
-        <h3 className="font-medium text-text">Appearance</h3>
+      <Card padding="md">
+        <h3 className="font-semibold tracking-tight text-text">Appearance</h3>
         <p className="mt-1 text-sm text-text-muted">
           Choose light, dark, or match your device.
         </p>
         <div className="mt-4">
           <ThemeToggle />
         </div>
-      </section>
+      </Card>
 
-      <section className="rounded-xl border border-border bg-surface p-4">
-        <h3 className="font-medium text-text">Legal</h3>
+      <Card padding="md">
+        <h3 className="font-semibold tracking-tight text-text">Legal</h3>
         <ul className="mt-3 space-y-2 text-sm">
           <li>
             <Link href="/privacy" className="text-accent hover:underline">
@@ -229,7 +231,7 @@ export function SettingsPanel({
             </Link>
           </li>
         </ul>
-      </section>
+      </Card>
 
       <p className="text-center text-xs text-text-muted pb-4">
         All rights reserved. Develop by{" "}

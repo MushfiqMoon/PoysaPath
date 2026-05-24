@@ -1,7 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { BackLink } from "@/components/back-link";
+import { NavPath } from "@/components/forward-link";
 import { Logo } from "@/components/logo";
+import { Card } from "@/components/ui/card";
 import { GEMINI_CONTACT } from "@/lib/gemini/disabled-message";
 
 const title = "Privacy policy — PoysaPath";
@@ -40,13 +43,23 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-full bg-bg px-4 py-10">
-      <article className="mx-auto max-w-2xl space-y-6 text-text">
-        <Logo href="/" size={40} showWordmark />
-        <h1 className="text-2xl font-semibold">Privacy policy</h1>
-        <p className="text-sm text-text-muted">Last updated: May 18, 2026</p>
+    <div className="relative min-h-full">
+      <div className="public-mesh pointer-events-none fixed inset-0" aria-hidden />
 
-        <section className="space-y-3 text-sm leading-relaxed text-text-muted">
+      <article className="relative z-10 mx-auto max-w-2xl space-y-6 px-4 py-10 text-text">
+        <Logo href="/" size={40} showWordmark />
+        <Card elevated padding="lg" className="space-y-6">
+          <div>
+            <h1
+              className="text-2xl font-semibold tracking-tight text-text"
+              style={{ letterSpacing: "-0.02em" }}
+            >
+              Privacy policy
+            </h1>
+            <p className="mt-2 text-sm text-text-muted">Last updated: May 18, 2026</p>
+          </div>
+
+          <section className="space-y-3 text-sm leading-relaxed text-text-muted">
           <p>
             PoysaPath helps you track personal expenses in BDT. This policy
             describes what we collect and how we use it when you visit our
@@ -54,7 +67,7 @@ export default function PrivacyPage() {
             collect expense data until you register.
           </p>
 
-          <h2 className="text-base font-medium text-text">What we collect</h2>
+          <h2 className="text-base font-semibold text-text">What we collect</h2>
           <ul className="list-disc space-y-1 pl-5">
             <li>Account email and display name (Supabase Auth)</li>
             <li>Expenses, categories, budgets, and optional weekly AI insight text</li>
@@ -62,13 +75,13 @@ export default function PrivacyPage() {
               In-app product announcements and whether you have marked them read
             </li>
             <li>
-              Your Google Gemini API key, stored encrypted, if you enable AI in
-              Settings → AI (optional)
+              Your Google Gemini API key, stored encrypted, if you enable AI in{" "}
+              <NavPath parts={["Settings", "AI"]} /> (optional)
             </li>
             <li>Technical logs from hosting (e.g. Vercel) for reliability and security</li>
           </ul>
 
-          <h2 className="text-base font-medium text-text">How we use data</h2>
+          <h2 className="text-base font-semibold text-text">How we use data</h2>
           <p>
             Your data powers the app for you only. Row-level security in our
             database (Supabase) ensures each user sees only their own records.
@@ -88,7 +101,7 @@ export default function PrivacyPage() {
             updates). We store which messages you have marked as read.
           </p>
 
-          <h2 className="text-base font-medium text-text">Third-party services</h2>
+          <h2 className="text-base font-semibold text-text">Third-party services</h2>
           <ul className="list-disc space-y-1 pl-5">
             <li>
               <strong className="font-medium text-text">Supabase</strong> —
@@ -105,9 +118,11 @@ export default function PrivacyPage() {
             </li>
           </ul>
 
-          <h2 className="text-base font-medium text-text">Your choices</h2>
+          <h2 className="text-base font-semibold text-text">Your choices</h2>
           <ul className="list-disc space-y-1 pl-5">
-            <li>Remove your Gemini API key anytime in Settings → AI</li>
+            <li>
+              Remove your Gemini API key anytime in <NavPath parts={["Settings", "AI"]} />
+            </li>
             <li>Mark in-app announcements as read; view past ones in Settings</li>
             <li>
               Request a copy of your data or account deletion by contacting us
@@ -119,7 +134,7 @@ export default function PrivacyPage() {
             may exist before it appears in the Settings UI.
           </p>
 
-          <h2 className="text-base font-medium text-text">Contact</h2>
+          <h2 className="text-base font-semibold text-text">Contact</h2>
           <p>
             Questions about privacy? Contact {GEMINI_CONTACT.name}:{" "}
             <a
@@ -143,9 +158,10 @@ export default function PrivacyPage() {
           </p>
         </section>
 
-        <Link href="/" className="text-sm text-accent hover:underline">
-          ← Back to home
-        </Link>
+          <BackLink href="/" className="text-accent hover:underline">
+            Back to home
+          </BackLink>
+        </Card>
       </article>
     </div>
   );

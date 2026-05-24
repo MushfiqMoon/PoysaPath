@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaLinkedin, FaWhatsapp } from "react-icons/fa";
 
+import { BackLink } from "@/components/back-link";
 import { Logo } from "@/components/logo";
 import { GEMINI_CONTACT } from "@/lib/gemini/disabled-message";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
@@ -113,17 +115,17 @@ export function AuthForm({ mode }: AuthFormProps) {
 
   return (
     <div className="w-full min-h-[30rem]">
-      <Link
-        href={mode === "login" ? "/" : "/login"}
-        className="mb-4 inline-block text-sm text-text-muted transition-colors hover:text-text"
-      >
-        ← Back
-      </Link>
+      <BackLink href={mode === "login" ? "/" : "/login"} className="mb-4">
+        Back
+      </BackLink>
 
-      <div className="glass-panel flex min-h-[24rem] flex-col rounded-2xl border p-6 shadow-sm md:min-h-[22rem] md:p-8">
+      <Card elevated padding="lg" className="flex min-h-[24rem] flex-col md:min-h-[22rem]">
         <div className="mb-6 text-center md:text-left">
           <Logo size={48} showWordmark className="mx-auto justify-center md:mx-0" />
-          <h1 className="mt-4 text-2xl font-semibold tracking-tight text-text">
+          <h1
+            className="mt-4 text-2xl font-semibold tracking-tight text-text"
+            style={{ letterSpacing: "-0.02em" }}
+          >
             {titles[mode]}
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-text-muted">
@@ -147,7 +149,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                 href={GEMINI_CONTACT.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-bg px-3 py-2 text-sm font-medium text-text transition-colors hover:border-accent/40"
+                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-input)] border border-border bg-bg px-3 py-2 text-sm font-medium text-text transition-[background-image,background-color] duration-[var(--dur-short)] hover:bg-surface/80"
               >
                 <FaLinkedin className="h-4 w-4 text-[#0A66C2]" aria-hidden />
                 LinkedIn
@@ -156,7 +158,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                 href={GEMINI_CONTACT.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-border bg-bg px-3 py-2 text-sm font-medium text-text transition-colors hover:border-accent/40"
+                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-[var(--radius-input)] border border-border bg-bg px-3 py-2 text-sm font-medium text-text transition-[background-image,background-color] duration-[var(--dur-short)] hover:bg-surface/80"
               >
                 <FaWhatsapp className="h-4 w-4 text-[#25D366]" aria-hidden />
                 WhatsApp {GEMINI_CONTACT.whatsapp}
@@ -164,7 +166,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             </div>
             <Link
               href="/login"
-              className="inline-flex min-h-10 w-full items-center justify-center rounded-lg border border-accent/30 bg-accent/10 px-3 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/15"
+              className="inline-flex min-h-10 w-full items-center justify-center rounded-[var(--radius-input)] border border-accent/30 bg-accent/10 px-3 py-2 text-sm font-medium text-accent transition-[background-color] duration-[var(--dur-short)] hover:bg-accent/15"
             >
               Back to log in
             </Link>
@@ -264,7 +266,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             </Link>
           </p>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

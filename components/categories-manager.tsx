@@ -11,6 +11,7 @@ import {
 } from "@/app/(app)/actions/categories";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { truncateCategoryIcon } from "@/lib/category-icon";
@@ -123,10 +124,8 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
     <div className="space-y-6">
       <ul className="space-y-2">
         {categories.map((cat) => (
-          <li
-            key={cat.id}
-            className="rounded-xl border border-border bg-surface p-4"
-          >
+          <li key={cat.id}>
+            <Card padding="md">
             {editingId === cat.id ? (
               <div className="space-y-3">
                 <Input
@@ -199,15 +198,14 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
                 </div>
               </div>
             )}
+            </Card>
           </li>
         ))}
       </ul>
 
-      <form
-        onSubmit={handleAdd}
-        className="space-y-3 rounded-xl border border-border bg-surface p-4"
-      >
-        <p className="font-medium text-text">Add category</p>
+      <Card padding="md">
+        <form onSubmit={handleAdd} className="space-y-3">
+          <p className="font-semibold tracking-tight text-text">Add category</p>
         <div>
           <Label htmlFor="cat-name">Name</Label>
           <Input
@@ -239,7 +237,8 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
         <Button type="submit" fullWidth disabled={loading}>
           {loading ? "Adding…" : "+ Add category"}
         </Button>
-      </form>
+        </form>
+      </Card>
 
       <ConfirmDialog
         open={Boolean(deleteId)}
@@ -256,7 +255,7 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
               id="reassign-category"
               value={reassignToId}
               onChange={(e) => setReassignToId(e.target.value)}
-              className="mt-1.5 min-h-11 w-full rounded-xl border border-border bg-surface px-3 py-2 text-base text-text"
+              className="mt-1.5 min-h-11 w-full rounded-[var(--radius-input)] border border-border bg-surface px-3 py-2 text-base text-text"
             >
               {reassignOptions.map((c) => (
                 <option key={c.id} value={c.id}>

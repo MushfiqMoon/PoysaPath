@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 type ConfirmDialogProps = {
   open: boolean;
@@ -27,36 +28,31 @@ export function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 p-4 backdrop-blur-[2px] sm:items-center"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-title"
     >
-      <div className="w-full max-w-sm rounded-xl border border-border bg-surface p-5 shadow-lg">
-        <h2 id="confirm-title" className="text-lg font-semibold text-text">
+      <Card elevated padding="md" className="w-full max-w-sm">
+        <h2 id="confirm-title" className="text-lg font-semibold tracking-tight text-text">
           {title}
         </h2>
-        <p className="mt-2 text-sm text-text-muted">{message}</p>
+        <p className="mt-2 text-sm leading-relaxed text-text-muted">{message}</p>
         {children}
         <div className="mt-5 flex gap-3">
-          <Button
-            variant="secondary"
-            fullWidth
-            onClick={onCancel}
-            disabled={loading}
-          >
+          <Button variant="secondary" fullWidth onClick={onCancel} disabled={loading}>
             Cancel
           </Button>
           <Button
             variant="danger"
             fullWidth
             onClick={onConfirm}
-            disabled={loading}
+            loading={loading}
           >
-            {loading ? "Please wait…" : confirmLabel}
+            {confirmLabel}
           </Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

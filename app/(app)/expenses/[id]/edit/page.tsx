@@ -1,9 +1,8 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-
+import { BackLink } from "@/components/back-link";
 import { ExpenseForm } from "@/components/expense-form";
 import { getUserCategories } from "@/lib/data/categories";
 import { getExpenseById } from "@/lib/data/expenses";
+import { notFound } from "next/navigation";
 
 type EditExpensePageProps = {
   params: Promise<{ id: string }>;
@@ -22,12 +21,7 @@ export default async function EditExpensePage({ params }: EditExpensePageProps) 
 
   return (
     <div className="space-y-4">
-      <Link
-        href="/expenses"
-        className="text-sm text-text-muted hover:text-text"
-      >
-        ← Back to expenses
-      </Link>
+      <BackLink href="/expenses">Back to expenses</BackLink>
       <h2 className="text-lg font-semibold text-text">Edit expense</h2>
       <ExpenseForm
         categories={categories}

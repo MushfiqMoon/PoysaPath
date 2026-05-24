@@ -4,12 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AiDisabledNotice } from "@/components/ai-disabled-notice";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { INSIGHT_REFRESH_COOLDOWN_MS } from "@/lib/constants";
 import { isGeminiKeyRequiredResponse } from "@/lib/gemini/disabled-message";
 import { AI_LABELS } from "@/lib/gemini/labels";
 
-/** Bumped when cooldown changed 24h → 4h so old localStorage entries are ignored. */
 const REFRESH_KEY = "poysapath-insight-refresh-at-v2";
 
 type InsightCardProps = {
@@ -129,7 +129,7 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
   if (keyRequired) {
     return (
       <section className="space-y-2">
-        <h2 className="text-sm font-medium text-text-muted">
+        <h2 className="text-sm font-semibold text-text-muted">
           {AI_LABELS.weeklyInsight}
         </h2>
         <AiDisabledNotice compact />
@@ -143,12 +143,12 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
 
   if (error && !insight) {
     return (
-      <section className="rounded-xl border border-border bg-surface p-4">
-        <h2 className="text-sm font-medium text-text-muted">
+      <Card padding="md">
+        <h2 className="text-sm font-semibold text-text-muted">
           {AI_LABELS.weeklyInsight}
         </h2>
         <p className="mt-2 text-sm text-text-muted">{error}</p>
-      </section>
+      </Card>
     );
   }
 
@@ -157,14 +157,16 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
   }
 
   return (
-    <section
-      className="min-h-[7rem] rounded-xl border border-border bg-surface p-4"
+    <Card
+      elevated
+      padding="md"
+      className="min-h-28 border-accent/15"
       aria-labelledby="weekly-insight-heading"
     >
       <div className="flex items-start justify-between gap-3">
         <h2
           id="weekly-insight-heading"
-          className="text-sm font-medium text-text-muted"
+          className="text-sm font-semibold text-text-muted"
         >
           {AI_LABELS.weeklyInsight}
         </h2>
@@ -187,14 +189,15 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
         </Button>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-text">{insight}</p>
-    </section>
+    </Card>
   );
 }
 
 export function InsightCardSkeleton() {
   return (
-    <section
-      className="min-h-[7rem] rounded-xl border border-border bg-surface p-4"
+    <Card
+      padding="md"
+      className="min-h-28"
       aria-busy="true"
       aria-label={AI_LABELS.loadingInsight}
     >
@@ -207,6 +210,6 @@ export function InsightCardSkeleton() {
         <Skeleton className="h-3 w-[92%]" />
         <Skeleton className="h-3 w-[75%]" />
       </div>
-    </section>
+    </Card>
   );
 }

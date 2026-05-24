@@ -62,7 +62,7 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 
 - [x] **P1 — Per-user encrypted API keys (BYOK)** — Settings → AI; `006_user_gemini_credentials.sql`
 - [x] **P1 — Per-user rate limits** — `lib/gemini/rate-limit.ts`
-- [x] **P1 — Insight refresh control** — 24h cooldown + `insight_cache`
+- [x] **P1 — Insight refresh control** — 1h cooldown + `insight_cache`
 - [ ] **P2 — Chat assistant** — Q&A on aggregates only
 - [ ] **P2 — Smarter categorization** — Learn from user overrides (future; not manual blur)
 

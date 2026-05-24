@@ -47,7 +47,7 @@ export function AiDisabledNotice({ compact = false }: AiDisabledNoticeProps) {
         </a>
         <Link
           href={GEMINI_SETTINGS_PATH}
-          className="inline-flex min-h-10 items-center justify-center rounded-lg border border-border bg-bg px-3 py-2 font-medium text-text transition-colors hover:border-accent/40"
+          className="inline-flex min-h-10 items-center justify-center rounded-lg border border-border bg-bg px-3 py-2 font-medium text-text transition-[background-image,colors]"
         >
           Open {AI_LABELS.settingsPath}
         </Link>
@@ -60,7 +60,7 @@ export function AiDisabledNotice({ compact = false }: AiDisabledNoticeProps) {
           href={GEMINI_CONTACT.linkedin}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-border bg-bg px-3 py-1.5 text-xs font-medium text-text transition-colors hover:border-accent/40"
+          className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-border bg-bg px-3 py-1.5 text-xs font-medium text-text transition-[background-image,colors]"
         >
           <FaLinkedin className="h-4 w-4 text-[#0A66C2]" aria-hidden />
           LinkedIn
@@ -69,7 +69,7 @@ export function AiDisabledNotice({ compact = false }: AiDisabledNoticeProps) {
           href={GEMINI_CONTACT.whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-border bg-bg px-3 py-1.5 text-xs font-medium text-text transition-colors hover:border-accent/40"
+          className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-border bg-bg px-3 py-1.5 text-xs font-medium text-text transition-[background-image,colors]"
         >
           <FaWhatsapp className="h-4 w-4 text-[#25D366]" aria-hidden />
           WhatsApp {GEMINI_CONTACT.whatsapp}

@@ -10,7 +10,7 @@ export default async function SettingsCategoriesPage() {
       <PageHeader
         title="Categories"
         backHref="/settings"
-        backLabel="← Settings"
+        backLabel="Settings"
       />
       <CategoriesManager categories={categories} />
     </div>
