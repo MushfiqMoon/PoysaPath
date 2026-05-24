@@ -10,6 +10,14 @@ import {
   updateCategory,
 } from "@/app/(app)/actions/categories";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import {
+  CancelLink,
+  DeleteButton,
+  EditButton,
+  FormSaveActions,
+  InlineActionGroup,
+  SaveButton,
+} from "@/components/ui/action-buttons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -145,24 +153,16 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
                 <p className="text-xs text-text-muted">
                   Up to 2 characters or one emoji
                 </p>
-                <div className="flex gap-2">
-                  <Button
+                <FormSaveActions>
+                  <SaveButton
                     type="button"
                     fullWidth
-                    disabled={loading}
+                    size="default"
+                    loading={loading}
                     onClick={() => handleSaveEdit(cat.id)}
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    fullWidth
-                    onClick={() => setEditingId(null)}
-                  >
-                    Cancel
-                  </Button>
-                </div>
+                  />
+                  <CancelLink onClick={() => setEditingId(null)} />
+                </FormSaveActions>
               </div>
             ) : (
               <div className="flex items-center justify-between gap-3">
@@ -174,28 +174,20 @@ export function CategoriesManager({ categories }: CategoriesManagerProps) {
                   )}
                   {cat.name}
                 </span>
-                <div className="flex shrink-0 gap-2">
-                  <Button
+                <InlineActionGroup>
+                  <EditButton
                     type="button"
-                    variant="ghost"
-                    className="min-h-9 px-2 text-sm"
                     onClick={() => {
                       setEditingId(cat.id);
                       setEditName(cat.name);
                       setEditIcon(cat.icon ?? "");
                     }}
-                  >
-                    Edit
-                  </Button>
-                  <Button
+                  />
+                  <DeleteButton
                     type="button"
-                    variant="ghost"
-                    className="min-h-9 px-2 text-sm text-danger"
                     onClick={() => setDeleteId(cat.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
+                  />
+                </InlineActionGroup>
               </div>
             )}
             </Card>

@@ -25,5 +25,6 @@ export async function updateDisplayName(displayName: string) {
   if (error) throw new Error(error.message);
 
   revalidatePath("/settings");
+  revalidatePath("/settings/profile");
   revalidatePath("/dashboard");
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { CancelButton, DeleteDangerButton } from "@/components/ui/action-buttons";
 import { Card } from "@/components/ui/card";
 
 type ConfirmDialogProps = {
@@ -39,18 +39,23 @@ export function ConfirmDialog({
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-text-muted">{message}</p>
         {children}
-        <div className="mt-5 flex gap-3">
-          <Button variant="secondary" fullWidth onClick={onCancel} disabled={loading}>
-            Cancel
-          </Button>
-          <Button
-            variant="danger"
+        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:[&>button]:flex-1">
+          <CancelButton
+            type="button"
             fullWidth
+            size="default"
+            onClick={onCancel}
+            disabled={loading}
+          />
+          <DeleteDangerButton
+            type="button"
+            fullWidth
+            size="default"
             onClick={onConfirm}
             loading={loading}
           >
             {confirmLabel}
-          </Button>
+          </DeleteDangerButton>
         </div>
       </Card>
     </div>

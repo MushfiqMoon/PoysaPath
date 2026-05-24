@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FaLinkedin, FaWhatsapp } from "react-icons/fa";
+import { FiLinkedin, FiMessageCircle } from "react-icons/fi";
 
 import {
   GEMINI_CONTACT,
@@ -62,7 +62,7 @@ export function AiDisabledNotice({ compact = false }: AiDisabledNoticeProps) {
           rel="noopener noreferrer"
           className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-border bg-bg px-3 py-1.5 text-xs font-medium text-text transition-[background-image,colors]"
         >
-          <FaLinkedin className="h-4 w-4 text-[#0A66C2]" aria-hidden />
+          <FiLinkedin className="h-4 w-4 text-[#0A66C2]" aria-hidden />
           LinkedIn
         </a>
         <a
@@ -71,7 +71,7 @@ export function AiDisabledNotice({ compact = false }: AiDisabledNoticeProps) {
           rel="noopener noreferrer"
           className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-border bg-bg px-3 py-1.5 text-xs font-medium text-text transition-[background-image,colors]"
         >
-          <FaWhatsapp className="h-4 w-4 text-[#25D366]" aria-hidden />
+          <FiMessageCircle className="h-4 w-4 text-[#25D366]" aria-hidden />
           WhatsApp {GEMINI_CONTACT.whatsapp}
         </a>
       </div>

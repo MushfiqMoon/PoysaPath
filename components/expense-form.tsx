@@ -10,7 +10,7 @@ import {
 } from "@/app/(app)/actions/expenses";
 import { CategoryPicker } from "@/components/category-picker";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { Button } from "@/components/ui/button";
+import { DeleteDangerButton, SaveButton } from "@/components/ui/action-buttons";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -242,19 +242,23 @@ export function ExpenseForm({
         )}
 
         <div className="space-y-3 pt-1">
-          <Button type="submit" fullWidth loading={loading}>
+          <SaveButton
+            type="submit"
+            fullWidth
+            size="default"
+            loading={loading}
+          >
             {isEdit ? "Save changes" : "Save expense"}
-          </Button>
+          </SaveButton>
           {isEdit && (
-            <Button
+            <DeleteDangerButton
               type="button"
-              variant="danger"
               fullWidth
               disabled={loading}
               onClick={() => setConfirmDelete(true)}
             >
               Delete expense
-            </Button>
+            </DeleteDangerButton>
           )}
         </div>
       </form>
