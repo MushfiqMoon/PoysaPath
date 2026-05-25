@@ -11,6 +11,10 @@ export const weeklyInsightResponseSchema = z.object({
   insight: z.string().min(1),
 });
 
+export const monthlyReportResponseSchema = z.object({
+  report: z.string().min(1),
+});
+
 export const parseExpenseRequestSchema = z.object({
   text: z.string().min(1).max(500),
 });

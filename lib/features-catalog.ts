@@ -20,10 +20,10 @@ export type FeatureSection = {
 export const FEATURE_SECTIONS: FeatureSection[] = [
   {
     eyebrow: "◇ track",
-    title: "See spending at a",
+    title: "Track every taka at a",
     titleEm: "glance",
     description:
-      "Your dashboard and expense list are built for daily checks in BDT — today, this month, and by category.",
+      "Your dashboard and expense list are built for daily BDT checks — today, this month, active goals, and upcoming reminders.",
     items: [
       {
         id: "dashboard",
@@ -80,17 +80,38 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
   },
   {
     eyebrow: "◇ understand",
-    title: "Know where your",
-    titleEm: "money goes",
+    title: "Understand every",
+    titleEm: "habit",
     description:
-      "Summaries and budgets help you spot patterns without spreadsheets.",
+      "Goals, recurring reminders, and AI coaching help turn spending history into practical next steps.",
     items: [
       {
         id: "weekly-insight",
-        title: AI_LABELS.weeklyInsight,
+        title: "AI Money Coach",
         description:
-          "A short AI summary of your last seven days on the dashboard. Refresh manually with a cooldown between updates.",
+          "A practical dashboard card compares recent spending, checks budget context, and suggests one next action.",
         icon: "weekly-insight",
+      },
+      {
+        id: "goals",
+        title: "Goals with history",
+        description:
+          "Add savings or debt payments over time, review contribution history, and remove mistakes safely.",
+        icon: "goals",
+      },
+      {
+        id: "spend-less-challenges",
+        title: "Spend-less challenges",
+        description:
+          "Set a monthly category target, like Food under ৳6,000, and let expenses update progress automatically.",
+        icon: "category-breakdown",
+      },
+      {
+        id: "recurring",
+        title: "Recurring payments",
+        description:
+          "Remember rent, subscriptions, internet, tuition, DPS installments, and record payments as expenses.",
+        icon: "recurring",
       },
       {
         id: "category-breakdown",
@@ -100,11 +121,11 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
         icon: "category-breakdown",
       },
       {
-        id: "budgets",
-        title: "Monthly budgets",
+        id: "monthly-report",
+        title: "Monthly AI report",
         description:
-          "Set a BDT limit per category for the current month. Progress rings on the dashboard show spent vs limit.",
-        icon: "budgets",
+          "Generate a friendly monthly summary with wins, problem areas, category changes, and a next-month plan.",
+        icon: "monthly-report",
       },
     ],
   },
@@ -135,6 +156,13 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
         description:
           "Set or remove monthly limits per category from the dedicated budgets screen.",
         icon: "budgets-settings",
+      },
+      {
+        id: "goals-settings",
+        title: "Goals & reminders",
+        description:
+          "Manage financial goals, contribution history, spend-less challenges, and recurring money reminders from Settings.",
+        icon: "goals",
       },
       {
         id: "gemini-key",

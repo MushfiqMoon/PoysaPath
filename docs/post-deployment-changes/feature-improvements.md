@@ -1,6 +1,6 @@
 # Feature improvements (post-deployment)
 
-> **Last updated:** May 18, 2026  
+> **Last updated:** May 26, 2026  
 > Product baseline: [planning.md](../planning.md) · Security: [planning.md §3](../planning.md#3-security-canonical)
 
 | Priority | Meaning |
@@ -16,10 +16,10 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 ## Already shipped (do not re-plan)
 
 - Auth, RLS schema, expense CRUD, categories, budgets
-- **Gemini:** Quick parse (`/add`), weekly insight (`/dashboard`); Manual add has no AI
+- **Gemini:** Quick parse (`/add`), Money Coach (`/dashboard`), monthly report (`/settings/reports`); Manual add has no AI
 - **BYOK:** Per-user encrypted Gemini API key in Settings → AI (no shared `GEMINI_API_KEY`)
 - Per-user Gemini rate limit (~40/hr, in-memory), insight cache + refresh cooldown
-- CSV export API (Settings UI hidden), privacy/terms, notifications (`005`)
+- Goals with contribution history, spend-less challenges, recurring money reminders, CSV export API (Settings UI hidden), privacy/terms, notifications (`005`)
 
 ---
 
@@ -46,7 +46,8 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 
 - [~] **P1 — CSV export** — API live at `GET /api/export/csv`; UI hidden in Settings. Re-enable in `settings-panel.tsx` when needed.
 - [ ] **P1 — Full JSON export** — GDPR-style self-service.
-- [ ] **P1 — Recurring expenses** — Templates + schema.
+- [x] **P1 — Recurring expenses** — Templates, reminders, and record-as-expense flow via `007_goals_recurring.sql`; default expense handling via `008_recurring_payments_default_expense.sql`.
+- [x] **P1 — Financial goals** — Savings, emergency fund, debt payoff, spend-less category challenges, additive contribution history, and safe complete/delete confirmations.
 - [ ] **P2 — Income tracking, receipt OCR, multi-wallet**
 
 ---
@@ -63,6 +64,8 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 - [x] **P1 — Per-user encrypted API keys (BYOK)** — Settings → AI; `006_user_gemini_credentials.sql`
 - [x] **P1 — Per-user rate limits** — `lib/gemini/rate-limit.ts`
 - [x] **P1 — Insight refresh control** — 1h cooldown + `insight_cache`
+- [x] **P1 — Money Coach** — Dashboard coaching card with recent-vs-previous spending and budget context.
+- [x] **P1 — Monthly AI report** — Wins, problem areas, biggest category changes, and next-month plan.
 - [ ] **P2 — Chat assistant** — Q&A on aggregates only
 - [ ] **P2 — Smarter categorization** — Learn from user overrides (future; not manual blur)
 
@@ -95,6 +98,7 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 
 | Date | Note |
 |------|------|
+| 2026-05-26 | Added goal contribution history, collapsed goal panels, safer confirmations, recurring reminder polish, and announcement `003_goals_recurring_updates.sql`. |
 | | |
 
 ---

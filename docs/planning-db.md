@@ -2,13 +2,13 @@
 
 > **Companion:** [planning.md](./planning.md) · [planning-design.md](./planning-design.md)  
 > **Security rules:** [planning.md §3](./planning.md#3-security-canonical)  
-> **Last updated:** May 18, 2026
+> **Last updated:** May 26, 2026
 
 ## Current state
 
 - PostgreSQL on Supabase; RLS enabled on user-owned tables.
 - Sign-up copies **9 system categories** into per-user rows (`user_id = new user`).
-- Migrations `001`–`005` in `supabase/migrations/`.
+- Migrations `001`–`007` in `supabase/migrations/`.
 - **Before production:** run two-user RLS test (`supabase/README.md`).
 
 ---
@@ -21,9 +21,13 @@ erDiagram
     PROFILES ||--o{ CATEGORIES : owns
     PROFILES ||--o{ EXPENSES : owns
     PROFILES ||--o{ BUDGETS : owns
+    PROFILES ||--o{ FINANCIAL_GOALS : owns
+    PROFILES ||--o{ RECURRING_ITEMS : owns
     PROFILES ||--o{ INSIGHT_CACHE : owns
     CATEGORIES ||--o{ EXPENSES : classifies
     CATEGORIES ||--o{ BUDGETS : limits
+    CATEGORIES ||--o{ FINANCIAL_GOALS : challenges
+    CATEGORIES ||--o{ RECURRING_ITEMS : classifies
     PROFILES ||--o{ USER_NOTIFICATION_READS : reads
     NOTIFICATIONS ||--o{ USER_NOTIFICATION_READS : broadcast
 ```
@@ -34,6 +38,8 @@ erDiagram
 | `categories` | Per-user copies of defaults + custom |
 | `expenses` | Amount, category, date, note, payment_method |
 | `budgets` | Per category per month |
+| `financial_goals` | Savings, emergency, debt payoff, and category spend-less goals |
+| `recurring_items` | Recurring expenses and income reminders |
 | `insight_cache` | Cached weekly Gemini text |
 | `notifications` | App-wide announcements (read via `user_notification_reads`) |
 
@@ -64,6 +70,8 @@ All policies assume `auth.uid()` from the user JWT (anon key + session).
 | `categories` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
 | `expenses` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
 | `budgets` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
+| `financial_goals` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
+| `recurring_items` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
 | `insight_cache` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
 | `notifications` | authenticated read (broadcast) | service/admin only | — | — |
 | `user_notification_reads` | `user_id = auth.uid()` | `user_id = auth.uid()` | — | `user_id = auth.uid()` |
@@ -76,6 +84,8 @@ All policies assume `auth.uid()` from the user JWT (anon key + session).
 
 **expenses:** `user_id`, `category_id`, `amount` (>0), `expense_date`, `note?`, `payment_method?`  
 **budgets:** unique `(user_id, category_id, month)` — `month` = first day of month  
+**financial_goals:** `goal_type`, `target_amount`, `current_amount`, optional `category_id`, `target_month`, `due_date`  
+**recurring_items:** `recurring_type`, `amount`, optional `category_id`, `frequency`, `next_due_date`, `reminder_days`  
 **insight_cache:** unique `(user_id, week_start)`
 
 **Indexes (main):** `expenses(user_id, expense_date DESC)`, `expenses(user_id, category_id)`.
@@ -91,6 +101,8 @@ All policies assume `auth.uid()` from the user JWT (anon key + session).
 | `003_insight_cache.sql` | Weekly insight cache |
 | `004_budgets.sql` | Budgets table + RLS |
 | `005_notifications.sql` | Broadcast notifications + read state |
+| `006_user_gemini_credentials.sql` | Encrypted per-user Gemini API keys |
+| `007_goals_recurring.sql` | Financial goals, recurring money reminders, RLS |
 
 Apply in order via Supabase SQL Editor or CLI.
 

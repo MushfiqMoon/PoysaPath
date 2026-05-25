@@ -6,12 +6,16 @@ import { BudgetSummaryRings } from "@/components/budget/budget-summary-rings";
 import { CategoryBreakdown } from "@/components/budget/category-breakdown";
 import { DashboardPullRefresh } from "@/components/dashboard/dashboard-pull-refresh";
 import { EmptyState } from "@/components/shared/empty-state";
+import { GoalsDashboardCard } from "@/components/dashboard/goals-dashboard-card";
+import { RecurringDashboardCard } from "@/components/dashboard/recurring-dashboard-card";
 import { Card } from "@/components/ui/card";
 import { InsightCardSkeleton } from "@/components/dashboard/insight-card";
 import { getAuthUser, getDisplayName } from "@/lib/auth/session";
 import { getBudgetsWithSpent } from "@/lib/data/budgets";
 import { getGeminiKeyStatus } from "@/lib/data/gemini-credentials";
+import { getDashboardGoals } from "@/lib/data/goals";
 import { getCachedInsight } from "@/lib/data/insights";
+import { getRecurringAlerts } from "@/lib/data/recurring";
 import {
   getMonthCategoryTotals,
   getMonthTotal,
@@ -31,8 +35,17 @@ const InsightCard = dynamic(
 );
 
 export default async function DashboardPage() {
-  const [displayName, user, todayTotal, monthTotal, categoryTotals, recent, budgets] =
-    await Promise.all([
+  const [
+    displayName,
+    user,
+    todayTotal,
+    monthTotal,
+    categoryTotals,
+    recent,
+    budgets,
+    goals,
+    recurringAlerts,
+  ] = await Promise.all([
       getDisplayName(),
       getAuthUser(),
       getTodayTotal(),
@@ -40,6 +53,8 @@ export default async function DashboardPage() {
       getMonthCategoryTotals(),
       getRecentExpenses(5),
       getBudgetsWithSpent(),
+      getDashboardGoals(),
+      getRecurringAlerts(),
     ]);
 
   const geminiStatus = user
@@ -90,6 +105,8 @@ export default async function DashboardPage() {
               hasGeminiKey={geminiStatus.hasKey}
               initialInsight={cachedInsight}
             />
+            <RecurringDashboardCard items={recurringAlerts} />
+            <GoalsDashboardCard goals={goals} />
             <BudgetSummaryRings budgets={budgets} />
             <CategoryBreakdown totals={categoryTotals} monthTotal={monthTotal} />
 

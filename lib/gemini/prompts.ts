@@ -40,3 +40,77 @@ Total: ৳${total}
 
 Return JSON only: { "insight": "your summary text" }`;
 }
+
+export function buildMoneyCoachPrompt(input: {
+  currentSummary: Record<string, number>;
+  currentTotal: number;
+  previousSummary: Record<string, number>;
+  previousTotal: number;
+  budgetLines: string[];
+}) {
+  const currentLines =
+    Object.entries(input.currentSummary)
+      .map(([name, amount]) => `- ${name}: ৳${amount}`)
+      .join("\n") || "- No spending";
+  const previousLines =
+    Object.entries(input.previousSummary)
+      .map(([name, amount]) => `- ${name}: ৳${amount}`)
+      .join("\n") || "- No spending";
+  const budgets = input.budgetLines.length
+    ? input.budgetLines.map((line) => `- ${line}`).join("\n")
+    : "- No active budgets";
+
+  return `You are Money Coach inside a Bangladesh BDT expense tracker.
+Write one practical coaching card, not a generic report.
+Use a friendly professional tone, specific ৳ amounts, and one clear next action.
+If there is enough data, compare the last 7 days with the previous 7 days.
+Do not shame the user. Do not invent categories.
+
+Last 7 days:
+${currentLines}
+Total: ৳${input.currentTotal}
+
+Previous 7 days:
+${previousLines}
+Total: ৳${input.previousTotal}
+
+Current budget context:
+${budgets}
+
+Return JSON only:
+{ "insight": "2-3 sentences with one concrete action" }`;
+}
+
+export function buildMonthlyReportPrompt(input: {
+  monthLabel: string;
+  currentSummary: Record<string, number>;
+  currentTotal: number;
+  previousSummary: Record<string, number>;
+  previousTotal: number;
+}) {
+  const currentLines =
+    Object.entries(input.currentSummary)
+      .map(([name, amount]) => `- ${name}: ৳${amount}`)
+      .join("\n") || "- No spending";
+  const previousLines =
+    Object.entries(input.previousSummary)
+      .map(([name, amount]) => `- ${name}: ৳${amount}`)
+      .join("\n") || "- No spending";
+
+  return `Write a friendly end-of-month expense report for ${input.monthLabel}.
+Audience: Bangladesh personal expense tracker user. Currency: BDT.
+Include wins, problem areas, biggest category changes, and a simple next-month plan.
+Keep it concise and practical. Use bullet-like short paragraphs inside one string.
+Do not invent categories or data.
+
+This month:
+${currentLines}
+Total: ৳${input.currentTotal}
+
+Previous month:
+${previousLines}
+Total: ৳${input.previousTotal}
+
+Return JSON only:
+{ "report": "monthly report text" }`;
+}

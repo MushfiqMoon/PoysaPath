@@ -10,7 +10,7 @@ import { INSIGHT_REFRESH_COOLDOWN_MS } from "@/lib/constants";
 import { isGeminiKeyRequiredResponse } from "@/lib/gemini/disabled-message";
 import { AI_LABELS } from "@/lib/gemini/labels";
 
-const REFRESH_KEY = "poysapath-insight-refresh-at-v2";
+const REFRESH_KEY = "poysapath-money-coach-refresh-at-v1";
 
 type InsightCardProps = {
   hasGeminiKey: boolean;
@@ -108,10 +108,6 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
   const initialFetchDone = useRef(false);
 
   useEffect(() => {
-    setCooldownMs(msUntilRefreshAllowed());
-  }, []);
-
-  useEffect(() => {
     if (!hasGeminiKey || initialInsight || initialFetchDone.current) return;
     initialFetchDone.current = true;
     const id = window.setTimeout(() => {
@@ -161,11 +157,11 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
       elevated
       padding="md"
       className="min-h-28 border-accent/15"
-      aria-labelledby="weekly-insight-heading"
+      aria-labelledby="money-coach-heading"
     >
       <div className="flex items-start justify-between gap-3">
         <h2
-          id="weekly-insight-heading"
+          id="money-coach-heading"
           className="text-sm font-semibold text-text-muted"
         >
           {AI_LABELS.weeklyInsight}

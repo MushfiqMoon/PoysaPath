@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 
 const MARQUEE_ITEMS = [
   "LOG",
-  "BUDGET",
-  "INSIGHT",
+  "GOALS",
+  "MONEY COACH",
+  "REPORTS",
+  "REMINDERS",
   "CATEGORIES",
   "QUICK ENTRY",
   "BDT",
@@ -41,13 +43,13 @@ export function FeaturesHero() {
           <div>
             <h1 id="features-hero-title" className="features-hero__title">
               <MarketingHeadline
-                title="Everything you need to track every"
-                titleEm="taka"
+                title="Track every taka. Understand every"
+                titleEm="habit"
               />
             </h1>
             <p className="features-hero__sub">
-              A full look at PoysaPath — daily BDT tracking, budgets, categories, and
-              optional Gemini helpers for quick entry and weekly insight.
+              Track every taka, understand every habit, and use optional Gemini
+              AI to turn daily spending into clear next steps.
             </p>
             <div className="features-hero__ctas">
               <Link href="/signup" className="features-hero__cta">
@@ -60,9 +62,9 @@ export function FeaturesHero() {
               </Link>
             </div>
             <div className="features-hero__fineprint">
-              <span>free to start</span>
+              <span>built for BDT</span>
               <span>private account</span>
-              <span>works on mobile</span>
+              <span>optional AI coach</span>
             </div>
           </div>
 

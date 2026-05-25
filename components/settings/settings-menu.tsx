@@ -3,8 +3,11 @@ import type { IconType } from "react-icons";
 import {
   FiBell,
   FiChevronRight,
+  FiFileText,
   FiPieChart,
+  FiRefreshCw,
   FiTag,
+  FiTarget,
   FiUser,
 } from "react-icons/fi";
 
@@ -33,6 +36,24 @@ const menuLinks: {
     label: "Budgets",
     desc: "Monthly limits per category",
     Icon: FiPieChart,
+  },
+  {
+    href: "/settings/goals",
+    label: "Goals",
+    desc: "Savings, debt, and spend-less targets",
+    Icon: FiTarget,
+  },
+  {
+    href: "/settings/recurring",
+    label: "Recurring payments",
+    desc: "Bills, subscriptions, DPS reminders",
+    Icon: FiRefreshCw,
+  },
+  {
+    href: "/settings/reports",
+    label: "Monthly report",
+    desc: "AI summary and next-month plan",
+    Icon: FiFileText,
   },
   {
     href: "/settings/announcements",

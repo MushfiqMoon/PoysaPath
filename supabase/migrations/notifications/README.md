@@ -10,6 +10,7 @@ Broadcast messages shown in the app bell until each user taps **Mark as read**.
 |------|-------|-------------|
 | `001_intro.sql` | Notifications | Intro: new features will appear here |
 | `002_may_2026_updates.sql` | What's new today | Recent tap-to-edit, BYOK Gemini key in Settings |
+| `003_goals_recurring_updates.sql` | New planning and AI tools | Goals/challenges, recurring reminders, dashboard Money Coach, Monthly AI report |
 
 ## Add a new notification
 

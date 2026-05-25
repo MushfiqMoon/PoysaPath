@@ -10,6 +10,7 @@
    - `004_budgets.sql`
    - `005_notifications.sql`
    - `006_user_gemini_credentials.sql`
+   - `007_goals_recurring.sql`
 3. **Authentication → URL configuration** — add your production URL, e.g. `https://your-app.vercel.app`.
 4. **Authentication → Providers → Email** — turn on/off **Confirm email** as you prefer.
 5. Copy **Project URL** and **anon/publishable key** for Vercel env.
@@ -33,7 +34,7 @@
 ## 3. After deploy
 
 - Sign up / log in on production URL.
-- Add an expense; each user adds their own Gemini API key in **Settings → AI** (free key from [Google AI Studio](https://aistudio.google.com/api-keys)), then test Quick parse.
+- Add an expense; each user adds their own Gemini API key in **Settings → AI** (free key from [Google AI Studio](https://aistudio.google.com/api-keys)), then test Quick parse, Money Coach, and Monthly report.
 - Run `supabase/migrations/notifications/002_may_2026_updates.sql` for the release announcement (bell icon).
 - Optional: configure [custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp) for auth emails.
 
