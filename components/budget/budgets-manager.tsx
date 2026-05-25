@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { deleteBudget, upsertBudget } from "@/app/(app)/actions/budgets";
-import { BudgetProgressRing } from "@/components/budget-progress-ring";
+import { BudgetProgressRing } from "@/components/budget/budget-progress-ring";
 import { formatCurrency } from "@/lib/format";
 import type { BudgetRow, Category } from "@/lib/types";
 import { DeleteButton } from "@/components/ui/action-buttons";
@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EmptyState } from "@/components/empty-state";
+import { EmptyState } from "@/components/shared/empty-state";
 
 type BudgetsManagerProps = {
   budgets: BudgetRow[];

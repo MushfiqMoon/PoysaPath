@@ -1,5 +1,5 @@
-import { BackLink } from "@/components/back-link";
-import { ExpenseForm } from "@/components/expense-form";
+import { BackLink } from "@/components/shared/back-link";
+import { ExpenseForm } from "@/components/expenses/expense-form";
 import { getUserCategories } from "@/lib/data/categories";
 import { getExpenseById } from "@/lib/data/expenses";
 import { notFound } from "next/navigation";

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { MarketingHomePage } from "@/components/marketing-home-page";
+import { MarketingHomePage } from "@/components/marketing/marketing-home-page";
 import { buildFeaturesPageMetadata } from "@/lib/seo/features-page";
 
 export const metadata: Metadata = buildFeaturesPageMetadata();

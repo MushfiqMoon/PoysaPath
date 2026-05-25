@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { AiDisabledNotice } from "@/components/ai-disabled-notice";
+import { AiDisabledNotice } from "@/components/shared/ai-disabled-notice";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";

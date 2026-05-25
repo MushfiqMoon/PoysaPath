@@ -1,5 +1,5 @@
-import { ForwardLink } from "@/components/forward-link";
-import { BudgetBorderProgressCard } from "@/components/budget-progress-ring";
+import { ForwardLink } from "@/components/shared/forward-link";
+import { BudgetBorderProgressCard } from "@/components/budget/budget-progress-ring";
 import { formatCurrency } from "@/lib/format";
 import type { BudgetRow } from "@/lib/types";
 

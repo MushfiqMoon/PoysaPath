@@ -2,9 +2,9 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { FiEdit } from "react-icons/fi";
 
-import { EmptyState } from "@/components/empty-state";
-import { ExpenseFilters } from "@/components/expense-filters";
-import { ExpenseList } from "@/components/expense-list";
+import { EmptyState } from "@/components/shared/empty-state";
+import { ExpenseFilters } from "@/components/expenses/expense-filters";
+import { ExpenseList } from "@/components/expenses/expense-list";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPaymentMethod } from "@/lib/constants";

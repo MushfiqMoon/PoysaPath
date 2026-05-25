@@ -1,5 +1,5 @@
-import { BudgetsManager } from "@/components/budgets-manager";
-import { PageHeader } from "@/components/page-header";
+import { BudgetsManager } from "@/components/budget/budgets-manager";
+import { PageHeader } from "@/components/layout/page-header";
 import {
   getBudgetsWithSpent,
   getCategoriesWithoutBudget,

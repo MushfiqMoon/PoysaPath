@@ -1,5 +1,5 @@
-import { NotificationHistory } from "@/components/notification-history";
-import { PageHeader } from "@/components/page-header";
+import { NotificationHistory } from "@/components/notifications/notification-history";
+import { PageHeader } from "@/components/layout/page-header";
 import { getReadNotifications } from "@/lib/data/notifications";
 
 export default async function SettingsNotificationHistoryPage() {

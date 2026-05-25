@@ -9,7 +9,7 @@ import {
   getCategoryExpenseCount,
   updateCategory,
 } from "@/app/(app)/actions/categories";
-import { ConfirmDialog } from "@/components/confirm-dialog";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import {
   CancelLink,
   DeleteButton,

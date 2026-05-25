@@ -3,7 +3,7 @@
 import { createPortal } from "react-dom";
 import { useEffect, useState } from "react";
 
-import { ForwardLink } from "@/components/forward-link";
+import { ForwardLink } from "@/components/shared/forward-link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatNotificationDate } from "@/lib/notifications/format";

@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-import { FeaturesHero } from "@/components/features-hero";
-import { FeaturesMarketing } from "@/components/features-marketing";
-import { PublicFooter } from "@/components/public-footer";
+import { FeaturesHero } from "@/components/marketing/features-hero";
+import { FeaturesMarketing } from "@/components/marketing/features-marketing";
+import { PublicFooter } from "@/components/marketing/public-footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

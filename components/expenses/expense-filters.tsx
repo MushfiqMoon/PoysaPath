@@ -35,6 +35,7 @@ type FilterFieldProps = {
   label: string;
   icon: typeof FiCalendar;
   active?: boolean;
+  action?: ReactNode;
   className?: string;
   children: ReactNode;
 };
@@ -43,23 +44,27 @@ function FilterField({
   label,
   icon: Icon,
   active = false,
+  action,
   className = "",
   children,
 }: FilterFieldProps) {
   return (
-    <div
-      className={[
-        "min-w-0",
-        active ? "rounded-xl ring-1 ring-accent/35" : "",
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-text-muted">
-        <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden />
-        {label}
-      </span>
+    <div className={["min-w-0", className].filter(Boolean).join(" ")}>
+      <div className="mb-1.5 flex items-center justify-between gap-2">
+        <span className="flex items-center gap-1.5 text-xs font-medium text-text-muted">
+          <Icon
+            className={[
+              "h-3.5 w-3.5 shrink-0 transition-colors duration-[var(--dur-short)]",
+              active ? "text-accent" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            aria-hidden
+          />
+          {label}
+        </span>
+        {action}
+      </div>
       <div className="relative">{children}</div>
     </div>
   );
@@ -109,6 +114,18 @@ export function ExpenseFilters({ categories, months }: ExpenseFiltersProps) {
           icon={FiTag}
           active={Boolean(category)}
           className="min-w-0 flex-1"
+          action={
+            category ? (
+              <button
+                type="button"
+                onClick={() => updateParam("category", "")}
+                className="inline-flex min-h-6 items-center gap-1 rounded-lg px-2 text-xs font-medium text-accent transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              >
+                <FiX className="h-3.5 w-3.5" aria-hidden />
+                Clear
+              </button>
+            ) : null
+          }
         >
           <select
             value={category}
@@ -189,7 +206,14 @@ export function ExpenseFilters({ categories, months }: ExpenseFiltersProps) {
                 value={month}
                 onChange={(e) => updateParam("month", e.target.value)}
                 aria-label="Filter by month"
-                className={selectClass}
+                className={[
+                  selectClass,
+                  defaultMonth && month !== defaultMonth
+                    ? "border-accent/40 bg-accent/5"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
               >
                 {months.map((m) => (
                   <option key={m.value} value={m.value}>

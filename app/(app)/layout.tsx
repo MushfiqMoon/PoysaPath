@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
-import { AppShell } from "@/components/app-shell";
-import { CoinLoader } from "@/components/coin-loader";
+import { AppShell } from "@/components/layout/app-shell";
+import { CoinLoader } from "@/components/shared/coin-loader";
 
 export default function AppLayout({
   children,

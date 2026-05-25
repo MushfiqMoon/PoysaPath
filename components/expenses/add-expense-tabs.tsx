@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-import { ExpenseForm } from "@/components/expense-form";
-import { QuickAdd } from "@/components/quick-add";
+import { ExpenseForm } from "@/components/expenses/expense-form";
+import { QuickAdd } from "@/components/expenses/quick-add";
 import { Card } from "@/components/ui/card";
 import { AI_LABELS } from "@/lib/gemini/labels";
 import type { Category } from "@/lib/types";

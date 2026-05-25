@@ -12,10 +12,10 @@ import {
   FiSettings,
 } from "react-icons/fi";
 
-import { ConfirmDialog } from "@/components/confirm-dialog";
-import { Logo } from "@/components/logo";
-import { NotificationsBellButton } from "@/components/notifications-bell-button";
-import { NotificationsPanel } from "@/components/notifications-panel";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
+import { Logo } from "@/components/shared/logo";
+import { NotificationsBellButton } from "@/components/notifications/notifications-bell-button";
+import { NotificationsPanel } from "@/components/notifications/notifications-panel";
 import { useNotifications } from "@/lib/notifications/use-notifications";
 import { createClient } from "@/lib/supabase/client";
 
