@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-import { AiDisabledNotice } from "@/components/ai-disabled-notice";
-import { ExpenseForm } from "@/components/expense-form";
+import { AiDisabledNotice } from "@/components/shared/ai-disabled-notice";
+import { ExpenseForm } from "@/components/expenses/expense-form";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { isGeminiKeyRequiredResponse } from "@/lib/gemini/disabled-message";

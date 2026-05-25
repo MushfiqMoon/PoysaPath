@@ -1,7 +1,7 @@
 import { Instrument_Serif, Plus_Jakarta_Sans, Sora } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/shared/theme-provider";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({

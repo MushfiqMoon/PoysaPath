@@ -1,4 +1,4 @@
-import { ExpenseListRow } from "@/components/expense-list-row";
+import { ExpenseListRow } from "@/components/expenses/expense-list-row";
 import { Card } from "@/components/ui/card";
 import { formatExpenseTitle, formatRelativeDay } from "@/lib/format";
 import type { Expense } from "@/lib/types";

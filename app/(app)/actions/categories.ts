@@ -19,7 +19,7 @@ function revalidateCategoryPaths() {
   revalidatePath("/add");
   revalidatePath("/expenses");
   revalidatePath("/dashboard");
-  revalidatePath("/settings/budget");
+  revalidatePath("/settings/budgets");
 }
 
 function normalizeIcon(icon?: string | null) {

@@ -1,13 +1,13 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 
-import { ForwardLink } from "@/components/forward-link";
-import { BudgetSummaryRings } from "@/components/budget-summary-rings";
-import { CategoryBreakdown } from "@/components/category-breakdown";
-import { DashboardPullRefresh } from "@/components/dashboard-pull-refresh";
-import { EmptyState } from "@/components/empty-state";
+import { ForwardLink } from "@/components/shared/forward-link";
+import { BudgetSummaryRings } from "@/components/budget/budget-summary-rings";
+import { CategoryBreakdown } from "@/components/budget/category-breakdown";
+import { DashboardPullRefresh } from "@/components/dashboard/dashboard-pull-refresh";
+import { EmptyState } from "@/components/shared/empty-state";
 import { Card } from "@/components/ui/card";
-import { InsightCardSkeleton } from "@/components/insight-card";
+import { InsightCardSkeleton } from "@/components/dashboard/insight-card";
 import { getAuthUser, getDisplayName } from "@/lib/auth/session";
 import { getBudgetsWithSpent } from "@/lib/data/budgets";
 import { getGeminiKeyStatus } from "@/lib/data/gemini-credentials";
@@ -22,7 +22,7 @@ import { formatCurrency, formatExpenseTitle, formatRelativeDay } from "@/lib/for
 
 const InsightCard = dynamic(
   () =>
-    import("@/components/insight-card").then((mod) => ({
+    import("@/components/dashboard/insight-card").then((mod) => ({
       default: mod.InsightCard,
     })),
   {
@@ -68,7 +68,7 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-2 gap-3">
           <Card elevated padding="md">
             <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
-              Today
+            ◇ Today
             </p>
             <p className="mt-2 text-2xl font-bold tabular-nums text-text">
               {formatCurrency(todayTotal)}
@@ -76,7 +76,7 @@ export default async function DashboardPage() {
           </Card>
           <Card elevated padding="md">
             <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
-              This month
+            ◇ This month
             </p>
             <p className="mt-2 text-2xl font-bold tabular-nums text-text">
               {formatCurrency(monthTotal)}

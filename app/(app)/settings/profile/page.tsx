@@ -1,5 +1,5 @@
-import { PageHeader } from "@/components/page-header";
-import { ProfileSettings } from "@/components/profile-settings";
+import { PageHeader } from "@/components/layout/page-header";
+import { ProfileSettings } from "@/components/settings/profile-settings";
 import { getAuthUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 

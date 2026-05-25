@@ -1,4 +1,4 @@
-import { MarketingHeadline } from "@/components/marketing-headline";
+import { MarketingHeadline } from "@/components/marketing/marketing-headline";
 import type { FeatureItem, FeatureSection } from "@/lib/features-catalog";
 import { FEATURE_ICONS } from "@/lib/features-icons";
 

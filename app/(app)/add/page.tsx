@@ -1,4 +1,4 @@
-import { AddExpenseTabs } from "@/components/add-expense-tabs";
+import { AddExpenseTabs } from "@/components/expenses/add-expense-tabs";
 import { getAuthUser } from "@/lib/auth/session";
 import { getUserCategories } from "@/lib/data/categories";
 import { getGeminiKeyStatus } from "@/lib/data/gemini-credentials";

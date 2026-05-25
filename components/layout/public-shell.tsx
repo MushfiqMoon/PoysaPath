@@ -1,6 +1,6 @@
-import { Logo } from "@/components/logo";
-import { MarketingHeadline } from "@/components/marketing-headline";
-import { PublicFooter } from "@/components/public-footer";
+import { Logo } from "@/components/shared/logo";
+import { MarketingHeadline } from "@/components/marketing/marketing-headline";
+import { PublicFooter } from "@/components/marketing/public-footer";
 import { Card } from "@/components/ui/card";
 import { FEATURE_SECTIONS } from "@/lib/features-catalog";
 

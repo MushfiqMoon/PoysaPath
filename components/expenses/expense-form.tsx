@@ -8,8 +8,8 @@ import {
   deleteExpense,
   updateExpense,
 } from "@/app/(app)/actions/expenses";
-import { CategoryPicker } from "@/components/category-picker";
-import { ConfirmDialog } from "@/components/confirm-dialog";
+import { CategoryPicker } from "@/components/categories/category-picker";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { DeleteDangerButton, SaveButton } from "@/components/ui/action-buttons";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

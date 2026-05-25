@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 import { deleteExpense } from "@/app/(app)/actions/expenses";
-import { ConfirmDialog } from "@/components/confirm-dialog";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Card } from "@/components/ui/card";
 import { formatPaymentMethod } from "@/lib/constants";
 import { formatCurrency } from "@/lib/format";

@@ -9,7 +9,7 @@ import {
   removeGeminiApiKey,
   saveGeminiApiKey,
 } from "@/app/(app)/actions/gemini-credentials";
-import { AiDisabledNotice } from "@/components/ai-disabled-notice";
+import { AiDisabledNotice } from "@/components/shared/ai-disabled-notice";
 import { DeleteButton, SaveButton } from "@/components/ui/action-buttons";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";

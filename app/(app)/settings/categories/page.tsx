@@ -1,5 +1,5 @@
-import { CategoriesManager } from "@/components/categories-manager";
-import { PageHeader } from "@/components/page-header";
+import { CategoriesManager } from "@/components/categories/categories-manager";
+import { PageHeader } from "@/components/layout/page-header";
 import { getUserCategories } from "@/lib/data/categories";
 
 export default async function SettingsCategoriesPage() {

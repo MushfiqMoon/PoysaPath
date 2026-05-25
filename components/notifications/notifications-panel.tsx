@@ -3,7 +3,7 @@
 import { createPortal } from "react-dom";
 import { useEffect, useState } from "react";
 
-import { ForwardLink } from "@/components/forward-link";
+import { ForwardLink } from "@/components/shared/forward-link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatNotificationDate } from "@/lib/notifications/format";
@@ -91,7 +91,7 @@ export function NotificationsPanel({
               <div className="py-8 text-center text-sm text-text-muted">
                 <p>No new notifications.</p>
                 <ForwardLink
-                  href="/settings/notification-history"
+                  href="/settings/announcements"
                   onClick={onClose}
                   className="mt-3 hover:underline"
                 >

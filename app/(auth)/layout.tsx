@@ -1,4 +1,4 @@
-import { PublicShell } from "@/components/public-shell";
+import { PublicShell } from "@/components/layout/public-shell";
 
 export default function AuthLayout({
   children,

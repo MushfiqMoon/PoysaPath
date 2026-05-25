@@ -63,7 +63,7 @@ export function Logo({
     >
       {image}
       {showWordmark && (
-        <span className="logo-wordmark text-xl text-text">PoysaPath</span>
+        <span className="logo-wordmark text-[22px] text-accent">PoysaPath</span>
       )}
     </span>
   );

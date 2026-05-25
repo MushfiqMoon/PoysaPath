@@ -29,13 +29,13 @@ const menuLinks: {
     Icon: FiTag,
   },
   {
-    href: "/settings/budget",
+    href: "/settings/budgets",
     label: "Budgets",
     desc: "Monthly limits per category",
     Icon: FiPieChart,
   },
   {
-    href: "/settings/notification-history",
+    href: "/settings/announcements",
     label: "Announcements",
     desc: "Updates you have already read",
     Icon: FiBell,

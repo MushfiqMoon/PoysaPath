@@ -1,4 +1,4 @@
-import { BackLink } from "@/components/back-link";
+import { BackLink } from "@/components/shared/back-link";
 
 type PageHeaderProps = {
   title: string;

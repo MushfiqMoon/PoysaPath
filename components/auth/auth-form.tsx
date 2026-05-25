@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FiLinkedin, FiMessageCircle } from "react-icons/fi";
 
-import { BackLink } from "@/components/back-link";
-import { Logo } from "@/components/logo";
+import { BackLink } from "@/components/shared/back-link";
+import { Logo } from "@/components/shared/logo";
 import { GEMINI_CONTACT } from "@/lib/gemini/disabled-message";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

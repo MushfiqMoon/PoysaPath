@@ -1,8 +1,8 @@
 import Link from "next/link";
 
-import { FeaturesPreviewCard } from "@/components/features-preview-card";
-import { Logo } from "@/components/logo";
-import { MarketingHeadline } from "@/components/marketing-headline";
+import { FeaturesPreviewCard } from "@/components/marketing/features-preview-card";
+import { Logo } from "@/components/shared/logo";
+import { MarketingHeadline } from "@/components/marketing/marketing-headline";
 import { Button } from "@/components/ui/button";
 
 const MARQUEE_ITEMS = [

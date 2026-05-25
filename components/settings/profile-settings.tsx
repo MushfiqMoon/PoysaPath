@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { updateDisplayName } from "@/app/(app)/actions/profile";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { SaveButton } from "@/components/ui/action-buttons";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
