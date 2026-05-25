@@ -54,8 +54,8 @@ const mainNav: {
 const settingsSubNav = [
   { href: "/settings/profile", label: "Profile" },
   { href: "/settings/categories", label: "Categories" },
-  { href: "/settings/budget", label: "Budgets" },
-  { href: "/settings/notification-history", label: "Announcements" },
+  { href: "/settings/budgets", label: "Budgets" },
+  { href: "/settings/announcements", label: "Announcements" },
 ] as const;
 
 const headerIconClass =

@@ -68,7 +68,7 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-2 gap-3">
           <Card elevated padding="md">
             <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
-              Today
+            ◇ Today
             </p>
             <p className="mt-2 text-2xl font-bold tabular-nums text-text">
               {formatCurrency(todayTotal)}
@@ -76,7 +76,7 @@ export default async function DashboardPage() {
           </Card>
           <Card elevated padding="md">
             <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
-              This month
+            ◇ This month
             </p>
             <p className="mt-2 text-2xl font-bold tabular-nums text-text">
               {formatCurrency(monthTotal)}

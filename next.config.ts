@@ -5,12 +5,22 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/budgets",
-        destination: "/settings/budget",
+        destination: "/settings/budgets",
         permanent: true,
       },
       {
         source: "/budgets/:path*",
-        destination: "/settings/budget",
+        destination: "/settings/budgets",
+        permanent: true,
+      },
+      {
+        source: "/settings/budget",
+        destination: "/settings/budgets",
+        permanent: true,
+      },
+      {
+        source: "/settings/notification-history",
+        destination: "/settings/announcements",
         permanent: true,
       },
       {

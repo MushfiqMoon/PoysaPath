@@ -16,7 +16,7 @@ export function BudgetSummaryRings({ budgets }: BudgetSummaryRingsProps) {
     <section className="space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold text-text-muted">Budgets</h2>
-        <ForwardLink href="/settings/budget">Manage</ForwardLink>
+        <ForwardLink href="/settings/budgets">Manage</ForwardLink>
       </div>
       <ul className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1">
         {top.map((row) => {

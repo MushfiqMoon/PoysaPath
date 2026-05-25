@@ -91,7 +91,7 @@ export function NotificationsPanel({
               <div className="py-8 text-center text-sm text-text-muted">
                 <p>No new notifications.</p>
                 <ForwardLink
-                  href="/settings/notification-history"
+                  href="/settings/announcements"
                   onClick={onClose}
                   className="mt-3 hover:underline"
                 >

@@ -73,6 +73,9 @@ function FilterField({
 const selectClass =
   "min-h-11 w-full appearance-none rounded-xl border border-border bg-surface py-2 pl-3 pr-9 text-sm text-text transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
+const clearButtonClass =
+  "inline-flex min-h-8 items-center gap-1 rounded-lg px-2 text-xs font-medium text-accent transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
+
 export function ExpenseFilters({ categories, months }: ExpenseFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -119,7 +122,7 @@ export function ExpenseFilters({ categories, months }: ExpenseFiltersProps) {
               <button
                 type="button"
                 onClick={() => updateParam("category", "")}
-                className="inline-flex min-h-6 items-center gap-1 rounded-lg px-2 text-xs font-medium text-accent transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className={clearButtonClass}
               >
                 <FiX className="h-3.5 w-3.5" aria-hidden />
                 Clear
@@ -178,7 +181,7 @@ export function ExpenseFilters({ categories, months }: ExpenseFiltersProps) {
       {moreOpen ? (
         <div
           id="expense-more-filters"
-          className="mt-3 space-y-3 border-t border-border pt-3"
+          className="mt-3 space-y-3 border-t pt-3"
         >
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
@@ -188,7 +191,7 @@ export function ExpenseFilters({ categories, months }: ExpenseFiltersProps) {
               <button
                 type="button"
                 onClick={clearMoreFilters}
-                className="inline-flex min-h-8 items-center gap-1 rounded-lg px-2 text-xs font-medium text-accent transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className={clearButtonClass}
               >
                 <FiX className="h-3.5 w-3.5" aria-hidden />
                 Clear
