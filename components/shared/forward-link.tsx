@@ -1,10 +1,11 @@
-import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import { FiArrowRight, FiChevronRight } from "react-icons/fi";
+
+import { CompactActionLink } from "@/components/ui/compact-action";
 
 type ForwardLinkProps = {
   href: string;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   onClick?: () => void;
 };
@@ -16,19 +17,14 @@ export function ForwardLink({
   onClick,
 }: ForwardLinkProps) {
   return (
-    <Link
+    <CompactActionLink
       href={href}
       onClick={onClick}
-      className={[
-        "inline-flex min-h-8 items-center gap-1.5 text-sm font-medium text-accent transition-colors hover:text-accent-hover",
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      className={className}
     >
       {children}
       <FiArrowRight className="h-4 w-4 shrink-0" aria-hidden />
-    </Link>
+    </CompactActionLink>
   );
 }
 

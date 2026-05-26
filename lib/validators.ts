@@ -53,6 +53,7 @@ export const financialGoalInputSchema = z
       .regex(/^\d{4}-\d{2}-\d{2}$/)
       .optional()
       .nullable(),
+    show_on_dashboard: z.coerce.boolean().optional().default(false),
   })
   .superRefine((value, ctx) => {
     if (value.goal_type === "category_challenge") {

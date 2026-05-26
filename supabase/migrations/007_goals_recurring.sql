@@ -13,12 +13,18 @@ CREATE TABLE IF NOT EXISTS public.financial_goals (
   target_month date,
   due_date date,
   status text NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused', 'completed')),
+  show_on_dashboard boolean NOT NULL DEFAULT false,
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+ALTER TABLE public.financial_goals
+  ADD COLUMN IF NOT EXISTS show_on_dashboard boolean NOT NULL DEFAULT false;
+
 CREATE INDEX IF NOT EXISTS idx_financial_goals_user_status
   ON public.financial_goals (user_id, status);
+CREATE INDEX IF NOT EXISTS idx_financial_goals_user_dashboard
+  ON public.financial_goals (user_id, show_on_dashboard, status);
 CREATE INDEX IF NOT EXISTS idx_financial_goals_user_target_month
   ON public.financial_goals (user_id, target_month);
 

@@ -1,5 +1,5 @@
-import { ForwardLink } from "@/components/shared/forward-link";
 import { BudgetBorderProgressCard } from "@/components/budget/budget-progress-ring";
+import { CompactActionLink } from "@/components/ui/compact-action";
 import { formatCurrency } from "@/lib/format";
 import type { BudgetRow } from "@/lib/types";
 
@@ -16,7 +16,9 @@ export function BudgetSummaryRings({ budgets }: BudgetSummaryRingsProps) {
     <section className="space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold text-text-muted">Budgets</h2>
-        <ForwardLink href="/settings/budgets">Manage</ForwardLink>
+        <CompactActionLink href="/settings/budgets" variant="soft">
+          Manage
+        </CompactActionLink>
       </div>
       <ul className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1">
         {top.map((row) => {

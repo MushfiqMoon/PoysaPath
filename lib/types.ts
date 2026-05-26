@@ -75,6 +75,7 @@ export type FinancialGoal = {
   target_month: string | null;
   due_date: string | null;
   status: FinancialGoalStatus;
+  show_on_dashboard: boolean;
   created_at: string;
   category: Pick<Category, "name" | "icon"> | null;
   progress_amount: number;

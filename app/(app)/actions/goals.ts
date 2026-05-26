@@ -41,6 +41,7 @@ export async function createFinancialGoal(input: FinancialGoalInput) {
       current_amount: 0,
       target_month: isChallenge ? parsed.target_month : null,
       due_date: isChallenge ? null : (parsed.due_date ?? null),
+      show_on_dashboard: parsed.show_on_dashboard,
     })
     .select("id")
     .single();
@@ -132,7 +133,22 @@ export async function completeFinancialGoal(id: string) {
   const { supabase, user } = await requireUser();
   const { error } = await supabase
     .from("financial_goals")
-    .update({ status: "completed" })
+    .update({ status: "completed", show_on_dashboard: false })
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) throw new Error(error.message);
+  revalidateGoalPages();
+}
+
+export async function updateFinancialGoalDashboardVisibility(
+  id: string,
+  showOnDashboard: boolean,
+) {
+  const { supabase, user } = await requireUser();
+  const { error } = await supabase
+    .from("financial_goals")
+    .update({ show_on_dashboard: showOnDashboard })
     .eq("id", id)
     .eq("user_id", user.id);
 

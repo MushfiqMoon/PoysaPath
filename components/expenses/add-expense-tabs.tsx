@@ -12,6 +12,11 @@ const TAB_STORAGE_KEY = "poysapath-add-tab";
 
 type Tab = "quick" | "manual";
 
+const tabs: { value: Tab; label: string }[] = [
+  { value: "quick", label: `${AI_LABELS.sparkle} ${AI_LABELS.quickTab}` },
+  { value: "manual", label: "Manual" },
+];
+
 function readStoredTab(): Tab {
   if (typeof window === "undefined") return "manual";
   try {
@@ -33,8 +38,12 @@ export function AddExpenseTabs({ categories, hasGeminiKey }: AddExpenseTabsProps
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setTab(readStoredTab());
-    setHydrated(true);
+    const frame = window.requestAnimationFrame(() => {
+      setTab(readStoredTab());
+      setHydrated(true);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   function selectTab(next: Tab) {
@@ -46,42 +55,49 @@ export function AddExpenseTabs({ categories, hasGeminiKey }: AddExpenseTabsProps
     }
   }
 
+  const activeIndex = Math.max(
+    0,
+    tabs.findIndex((item) => item.value === tab),
+  );
+
   return (
     <div className="space-y-5">
       <Card
         padding="none"
-        className="grid grid-cols-2 gap-1 p-1"
+        className="bg-bg/50 p-1.5"
         role="tablist"
         aria-label="Add expense mode"
       >
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "quick"}
-          onClick={() => selectTab("quick")}
-          className={[
-            "min-h-11 rounded-[calc(var(--radius-card)-4px)] text-sm font-semibold transition-[color,background-color] duration-[var(--dur-short)]",
-            tab === "quick"
-              ? "bg-accent text-white shadow-sm shadow-accent/20"
-              : "text-text-muted hover:bg-bg hover:text-text",
-          ].join(" ")}
-        >
-          {AI_LABELS.sparkle}{" "}{AI_LABELS.quickTab}
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "manual"}
-          onClick={() => selectTab("manual")}
-          className={[
-            "min-h-11 rounded-[calc(var(--radius-card)-4px)] text-sm font-semibold transition-[color,background-color] duration-[var(--dur-short)]",
-            tab === "manual"
-              ? "bg-accent text-white shadow-sm shadow-accent/20"
-              : "text-text-muted hover:bg-bg hover:text-text",
-          ].join(" ")}
-        >
-          Manual
-        </button>
+        <div className="relative">
+          <div
+            className="pointer-events-none absolute inset-y-0 left-0 rounded-xl bg-accent transition-[transform] duration-300 ease-in-out motion-reduce:transition-none"
+            style={{
+              width: `${100 / tabs.length}%`,
+              transform: `translate3d(${activeIndex * 100}%, 0, 0)`,
+            }}
+            aria-hidden
+          />
+          <div className="relative z-10 grid grid-cols-2">
+            {tabs.map((item) => {
+              const active = tab === item.value;
+              return (
+                <button
+                  key={item.value}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => selectTab(item.value)}
+                  className={[
+                    "min-h-11 rounded-xl text-sm font-semibold transition-colors duration-300 motion-reduce:transition-none",
+                    active ? "text-white" : "text-text-muted hover:text-text",
+                  ].join(" ")}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </Card>
 
       {hydrated && tab === "quick" ? (

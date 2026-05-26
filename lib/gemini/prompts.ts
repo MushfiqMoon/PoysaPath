@@ -1,4 +1,5 @@
 import type { Category } from "@/lib/types";
+import type { MonthlyReportLanguage } from "@/lib/data/monthly-reports";
 
 export function buildParseExpensePrompt(
   text: string,
@@ -83,6 +84,7 @@ Return JSON only:
 
 export function buildMonthlyReportPrompt(input: {
   monthLabel: string;
+  language: MonthlyReportLanguage;
   currentSummary: Record<string, number>;
   currentTotal: number;
   previousSummary: Record<string, number>;
@@ -96,11 +98,16 @@ export function buildMonthlyReportPrompt(input: {
     Object.entries(input.previousSummary)
       .map(([name, amount]) => `- ${name}: ৳${amount}`)
       .join("\n") || "- No spending";
+  const languageInstruction =
+    input.language === "bn"
+      ? "Write all user-facing text in Bangla for a Bangladesh user. Keep currency as ৳ and use natural Bangla, not word-for-word translation."
+      : "Write all user-facing text in English for a Bangladesh user. Keep currency as ৳ and use clear, simple wording.";
 
-  return `Write a friendly end-of-month expense report for ${input.monthLabel}.
+  return `Write a friendly monthly expense report for ${input.monthLabel}.
 Audience: Bangladesh personal expense tracker user. Currency: BDT.
+${languageInstruction}
 Include wins, problem areas, biggest category changes, and a simple next-month plan.
-Keep it concise and practical. Use bullet-like short paragraphs inside one string.
+Keep it concise and practical. Each array item should be one short sentence.
 Do not invent categories or data.
 
 This month:
@@ -112,5 +119,12 @@ ${previousLines}
 Total: ৳${input.previousTotal}
 
 Return JSON only:
-{ "report": "monthly report text" }`;
+{
+  "title": "short report title",
+  "overview": "1-2 sentence summary",
+  "wins": ["1-3 specific wins"],
+  "watchouts": ["1-3 practical problem areas"],
+  "categoryChanges": ["1-3 biggest category changes"],
+  "nextMonthPlan": ["2-4 concrete next-month actions"]
+}`;
 }

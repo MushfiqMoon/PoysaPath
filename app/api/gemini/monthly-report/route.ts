@@ -4,7 +4,9 @@ import {
   addMonthsToMonthStart,
   formatMonthLabel,
   getMonthStartInDhaka,
+  parseMonthStartParam,
 } from "@/lib/dates";
+import { getProfileReportLanguage } from "@/lib/data/monthly-reports";
 import { requireApiUser } from "@/lib/gemini/auth";
 import { generateJson } from "@/lib/gemini/client";
 import { AI_LABELS } from "@/lib/gemini/labels";
@@ -15,39 +17,63 @@ import {
   geminiKeyRequiredResponse,
   requireUserGeminiKey,
 } from "@/lib/gemini/require-user-key";
-import { monthlyReportResponseSchema } from "@/lib/gemini/schemas";
+import {
+  monthlyReportRequestSchema,
+  monthlyReportResponseSchema,
+} from "@/lib/gemini/schemas";
 
-export async function POST() {
+async function parseRequestBody(request: Request) {
+  try {
+    const body = await request.json();
+    return monthlyReportRequestSchema.parse(body ?? {});
+  } catch {
+    return monthlyReportRequestSchema.parse({});
+  }
+}
+
+function noDataMessage(language: "en" | "bn") {
+  return language === "bn"
+    ? "মাসিক রিপোর্ট তৈরির জন্য এখনও খরচের ডেটা নেই।"
+    : "No spending data yet for a monthly report.";
+}
+
+export async function POST(request: Request) {
   const auth = await requireApiUser();
   if ("error" in auth) return auth.error;
 
   const { supabase, user } = auth;
 
-  let apiKey: string;
   try {
-    apiKey = await requireUserGeminiKey(user.id);
-  } catch (err) {
-    if (err instanceof GeminiKeyRequiredError) {
-      return geminiKeyRequiredResponse();
-    }
-    throw err;
-  }
-
-  if (!checkGeminiRateLimit(user.id)) {
-    return NextResponse.json(
-      { error: AI_LABELS.insightUnavailable },
-      { status: 429 },
-    );
-  }
-
-  try {
+    const body = await parseRequestBody(request);
+    const defaultLanguage = await getProfileReportLanguage(user.id);
+    const language = body.language ?? defaultLanguage;
     const currentMonth = getMonthStartInDhaka();
-    const nextMonth = addMonthsToMonthStart(currentMonth, 1);
-    const previousMonth = addMonthsToMonthStart(currentMonth, -1);
+    const reportMonth = parseMonthStartParam(body.month, currentMonth);
+
+    let apiKey: string;
+    try {
+      apiKey = await requireUserGeminiKey(user.id);
+    } catch (err) {
+      if (err instanceof GeminiKeyRequiredError) {
+        return geminiKeyRequiredResponse();
+      }
+      throw err;
+    }
+
+    if (!checkGeminiRateLimit(user.id)) {
+      return NextResponse.json(
+        { error: AI_LABELS.insightUnavailable },
+        { status: 429 },
+      );
+    }
+
+    const nextMonth = addMonthsToMonthStart(reportMonth, 1);
+    const previousMonth = addMonthsToMonthStart(reportMonth, -1);
 
     const { data: expenses, error } = await supabase
       .from("expenses")
       .select("amount, expense_date, categories(name)")
+      .eq("user_id", user.id)
       .gte("expense_date", previousMonth)
       .lt("expense_date", nextMonth);
 
@@ -64,12 +90,12 @@ export async function POST() {
       const name = Array.isArray(cat) ? cat[0]?.name : cat?.name;
       const key = name ?? "Other";
 
-      if (row.expense_date >= currentMonth && row.expense_date < nextMonth) {
+      if (row.expense_date >= reportMonth && row.expense_date < nextMonth) {
         currentSummary[key] = (currentSummary[key] ?? 0) + amount;
         currentTotal += amount;
       } else if (
         row.expense_date >= previousMonth &&
-        row.expense_date < currentMonth
+        row.expense_date < reportMonth
       ) {
         previousSummary[key] = (previousSummary[key] ?? 0) + amount;
         previousTotal += amount;
@@ -79,13 +105,17 @@ export async function POST() {
     if (currentTotal === 0 && previousTotal === 0) {
       return NextResponse.json({
         report: null,
-        message: "No spending data yet for a monthly report.",
+        content: null,
+        month: reportMonth,
+        language,
+        message: noDataMessage(language),
       });
     }
 
     const raw = await generateJson<unknown>(
       buildMonthlyReportPrompt({
-        monthLabel: formatMonthLabel(currentMonth),
+        monthLabel: formatMonthLabel(reportMonth, ""),
+        language,
         currentSummary,
         currentTotal,
         previousSummary,
@@ -93,9 +123,19 @@ export async function POST() {
       }),
       apiKey,
     );
-    const { report } = monthlyReportResponseSchema.parse(raw);
+    const report = monthlyReportResponseSchema.parse(raw);
+    const content = JSON.stringify(report);
+    const generatedAt = new Date().toISOString();
 
-    return NextResponse.json({ report });
+    return NextResponse.json({
+      report,
+      content,
+      month: reportMonth,
+      language,
+      generatedAt,
+      message: "Report generated. Save it to keep it.",
+      source: "generated",
+    });
   } catch (err) {
     if (err instanceof Error && err.name === "GeminiRateLimitError") {
       return NextResponse.json({ error: err.message }, { status: 429 });

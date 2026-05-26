@@ -99,6 +99,8 @@ export default async function DashboardPage() {
           </Card>
         </div>
 
+        {hasExpenses || goals.length > 0 ? <GoalsDashboardCard goals={goals} /> : null}
+
         {hasExpenses ? (
           <>
             <InsightCard
@@ -106,7 +108,6 @@ export default async function DashboardPage() {
               initialInsight={cachedInsight}
             />
             <RecurringDashboardCard items={recurringAlerts} />
-            <GoalsDashboardCard goals={goals} />
             <BudgetSummaryRings budgets={budgets} />
             <CategoryBreakdown totals={categoryTotals} monthTotal={monthTotal} />
 
@@ -123,7 +124,7 @@ export default async function DashboardPage() {
                       <Link href={`/expenses/${expense.id}/edit`}>
                         <Card
                           padding="sm"
-                          className="flex items-center justify-between transition-[border-color,box-shadow] duration-[var(--dur-short)] hover:border-accent/35 hover:shadow-sm"
+                          className="flex items-center justify-between transition-[border-color,box-shadow] duration-(--dur-short) hover:border-accent/35 hover:shadow-sm"
                         >
                           <div className="min-w-0 flex-1 pr-3">
                             <p className="text-xs text-text-muted">

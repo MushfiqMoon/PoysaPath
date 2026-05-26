@@ -12,6 +12,7 @@ type GoalRow = {
   target_month: string | null;
   due_date: string | null;
   status: FinancialGoal["status"];
+  show_on_dashboard: boolean;
   created_at: string;
   categories:
     | { name: string; icon: string | null }
@@ -36,7 +37,7 @@ export async function getFinancialGoals(): Promise<FinancialGoal[]> {
   const { data, error } = await supabase
     .from("financial_goals")
     .select(
-      "id, title, goal_type, category_id, target_amount, current_amount, target_month, due_date, status, created_at, categories(name, icon)",
+      "id, title, goal_type, category_id, target_amount, current_amount, target_month, due_date, status, show_on_dashboard, created_at, categories(name, icon)",
     )
     .order("status", { ascending: true })
     .order("created_at", { ascending: false });
@@ -122,6 +123,7 @@ export async function getFinancialGoals(): Promise<FinancialGoal[]> {
       target_month: goal.target_month,
       due_date: goal.due_date,
       status: goal.status,
+      show_on_dashboard: goal.show_on_dashboard,
       created_at: goal.created_at,
       category,
       progress_amount: progress,
@@ -133,13 +135,14 @@ export async function getFinancialGoals(): Promise<FinancialGoal[]> {
   });
 }
 
-export async function getDashboardGoals(limit = 2): Promise<FinancialGoal[]> {
+export async function getDashboardGoals(limit?: number): Promise<FinancialGoal[]> {
   const goals = await getFinancialGoals();
-  return goals
-    .filter((goal) => goal.status === "active")
+  const dashboardGoals = goals
+    .filter((goal) => goal.status === "active" && goal.show_on_dashboard)
     .sort((a, b) => {
       if (a.is_over_target !== b.is_over_target) return a.is_over_target ? -1 : 1;
       return b.progress_percent - a.progress_percent;
-    })
-    .slice(0, limit);
+    });
+
+  return typeof limit === "number" ? dashboardGoals.slice(0, limit) : dashboardGoals;
 }

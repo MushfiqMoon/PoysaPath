@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import { Card } from "@/components/ui/card";
+import { CompactActionLink } from "@/components/ui/compact-action";
 import { formatCurrency, formatRelativeDay } from "@/lib/format";
 import type { RecurringItem } from "@/lib/types";
 
@@ -17,12 +16,9 @@ export function RecurringDashboardCard({ items }: RecurringDashboardCardProps) {
         <h2 className="text-sm font-semibold text-text-muted">
           Upcoming payments
         </h2>
-        <Link
-          href="/settings/recurring"
-          className="text-sm font-semibold text-accent"
-        >
+        <CompactActionLink href="/settings/recurring" variant="soft">
           Manage
-        </Link>
+        </CompactActionLink>
       </div>
       <ul className="space-y-2">
         {items.map((item) => (

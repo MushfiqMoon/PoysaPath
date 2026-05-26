@@ -10,6 +10,7 @@ import {
   createFinancialGoal,
   deleteFinancialGoalContribution,
   deleteFinancialGoal,
+  updateFinancialGoalDashboardVisibility,
 } from "@/app/(app)/actions/goals";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
@@ -45,7 +46,36 @@ function GoalCard({ goal }: { goal: FinancialGoal }) {
   const isChallenge = goal.goal_type === "category_challenge";
   const isActive = goal.status === "active";
   const progressLabel = isChallenge ? "spent" : "saved / paid";
-  const progressClass = goal.is_over_target ? "text-danger" : "text-accent";
+  const isAtChallengeLimit =
+    isChallenge && !goal.is_over_target && goal.progress_percent >= 100;
+  const isChallengeAchieved =
+    isChallenge && !goal.is_over_target && goal.progress_percent < 100;
+  const progressClass = goal.is_over_target
+    ? "text-danger"
+    : isAtChallengeLimit
+      ? "text-text-muted"
+      : "text-accent";
+  const progressStatusLabel = isChallenge
+    ? goal.is_over_target
+      ? `${formatCurrency(goal.progress_amount - goal.target_amount)} over target`
+      : isAtChallengeLimit
+        ? "At the limit"
+        : `${formatCurrency(goal.remaining_amount)} left this month`
+    : `${formatCurrency(goal.remaining_amount)} remaining`;
+  const progressPercentLabel = isChallenge
+    ? `${Math.min(100, goal.progress_percent)}% of limit used`
+    : `${Math.min(100, goal.progress_percent)}% complete`;
+  const completeConfirmMessage = isChallenge
+    ? goal.is_over_target
+      ? `${goal.title} is over its spend-less target. Mark it complete anyway?`
+      : `${goal.title} has used ${Math.min(
+          100,
+          goal.progress_percent,
+        )}% of its spend limit. Mark it complete anyway?`
+    : `${goal.title} is only ${Math.min(
+        100,
+        goal.progress_percent,
+      )}% complete. Mark it complete anyway?`;
   const statusClass = goal.status === "completed"
     ? "bg-accent/12 text-accent ring-accent/25"
     : isActive
@@ -83,7 +113,7 @@ function GoalCard({ goal }: { goal: FinancialGoal }) {
   }
 
   function requestComplete() {
-    if (goal.progress_percent >= 100) {
+    if ((!isChallenge && goal.progress_percent >= 100) || isChallengeAchieved) {
       void runAction(() => completeFinancialGoal(goal.id));
       return;
     }
@@ -102,6 +132,12 @@ function GoalCard({ goal }: { goal: FinancialGoal }) {
     if (await runAction(() => deleteFinancialGoal(goal.id))) {
       setConfirmDelete(false);
     }
+  }
+
+  function handleDashboardVisibilityChange(checked: boolean) {
+    void runAction(() =>
+      updateFinancialGoalDashboardVisibility(goal.id, checked),
+    );
   }
 
   return (
@@ -164,12 +200,12 @@ function GoalCard({ goal }: { goal: FinancialGoal }) {
             </div>
             <div className="mt-2 flex items-center justify-between gap-3 text-xs">
               <span className="text-text-muted">
-                {Math.min(100, goal.progress_percent)}% complete
+                {progressPercentLabel}
               </span>
-              <span className={goal.is_over_target ? "text-danger" : "text-text-muted"}>
-                {goal.is_over_target
-                  ? `${formatCurrency(goal.progress_amount - goal.target_amount)} over`
-                  : `${formatCurrency(goal.remaining_amount)} remaining`}
+              <span
+                className={goal.is_over_target ? "text-danger" : "text-text-muted"}
+              >
+                {progressStatusLabel}
               </span>
             </div>
           </div>
@@ -275,12 +311,33 @@ function GoalCard({ goal }: { goal: FinancialGoal }) {
             </p>
           ) : null}
 
-          <div className="flex flex-col gap-2 border-t border-border/60 pt-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs text-text-muted">
-              {isChallenge
-                ? "Challenge progress updates from matching expenses."
-                : "Add amounts as you save or pay down this goal."}
-            </p>
+          <div className="flex flex-col gap-3 border-t border-border/60 pt-3 sm:flex-row sm:items-center sm:justify-between">
+            <label
+              className={[
+                "flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-border/70 bg-bg/45 px-3 py-2 text-sm transition-[border-color,background-color,opacity] duration-(--dur-short) hover:border-accent/40 hover:bg-accent/6",
+                !isActive ? "cursor-not-allowed opacity-65" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+            >
+              <input
+                type="checkbox"
+                checked={goal.show_on_dashboard}
+                disabled={loading || !isActive}
+                onChange={(e) => handleDashboardVisibilityChange(e.target.checked)}
+                className="h-4 w-4 shrink-0 accent-accent"
+              />
+              <span className="min-w-0">
+                <span className="block font-medium text-text">
+                  Show on Dashboard
+                </span>
+                <span className="block text-xs text-text-muted">
+                  {isActive
+                    ? "Pin this goal to the home card."
+                    : "Only active goals can appear on the dashboard."}
+                </span>
+              </span>
+            </label>
             <div className="flex flex-wrap items-center gap-3">
               {goal.status !== "completed" ? (
                 <Button
@@ -311,10 +368,7 @@ function GoalCard({ goal }: { goal: FinancialGoal }) {
       <ConfirmDialog
         open={confirmComplete}
         title="Mark goal complete?"
-        message={`${goal.title} is only ${Math.min(
-          100,
-          goal.progress_percent,
-        )}% complete. Mark it complete anyway?`}
+        message={completeConfirmMessage}
         confirmLabel="Mark complete"
         loading={loading}
         onCancel={() => setConfirmComplete(false)}
@@ -342,6 +396,7 @@ export function GoalsManager({ goals, categories, currentMonth }: GoalsManagerPr
   const [currentAmount, setCurrentAmount] = useState("");
   const [targetMonth, setTargetMonth] = useState(currentMonth.slice(0, 7));
   const [dueDate, setDueDate] = useState("");
+  const [showOnDashboard, setShowOnDashboard] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -361,11 +416,13 @@ export function GoalsManager({ goals, categories, currentMonth }: GoalsManagerPr
         current_amount: isChallenge ? 0 : Number(currentAmount || 0),
         target_month: isChallenge ? `${targetMonth}-01` : null,
         due_date: isChallenge || !dueDate ? null : dueDate,
+        show_on_dashboard: showOnDashboard,
       });
       setTitle("");
       setTargetAmount("");
       setCurrentAmount("");
       setDueDate("");
+      setShowOnDashboard(false);
       setIsFormOpen(false);
       router.refresh();
     } catch (err) {
@@ -513,6 +570,23 @@ export function GoalsManager({ goals, categories, currentMonth }: GoalsManagerPr
                 />
               </div>
             ) : null}
+
+            <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-border/70 bg-bg/45 p-3 text-sm transition-[border-color,background-color] duration-(--dur-short) hover:border-accent/40 hover:bg-accent/6">
+              <input
+                type="checkbox"
+                checked={showOnDashboard}
+                onChange={(e) => setShowOnDashboard(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-accent"
+              />
+              <span>
+                <span className="block font-medium text-text">
+                  Show on Dashboard
+                </span>
+                <span className="mt-0.5 block text-xs text-text-muted">
+                  Use this for goals you want to track from Home.
+                </span>
+              </span>
+            </label>
 
             {error ? (
               <p className="text-sm text-danger" role="alert">

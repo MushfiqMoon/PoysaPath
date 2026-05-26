@@ -3,8 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AiDisabledNotice } from "@/components/shared/ai-disabled-notice";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CompactActionButton } from "@/components/ui/compact-action";
 import { Skeleton } from "@/components/ui/skeleton";
 import { INSIGHT_REFRESH_COOLDOWN_MS } from "@/lib/constants";
 import { isGeminiKeyRequiredResponse } from "@/lib/gemini/disabled-message";
@@ -166,10 +166,8 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
         >
           {AI_LABELS.weeklyInsight}
         </h2>
-        <Button
-          type="button"
-          variant="ghost"
-          className="min-h-8 px-2 py-1 text-xs"
+        <CompactActionButton
+          size="xs"
           disabled={refreshDisabled}
           onClick={() => void fetchInsight(true)}
           aria-label={
@@ -182,7 +180,7 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
             {refreshDisabled ? `Refresh in ~${cooldownHours}h` : "Refresh"}
           </span>
           <span className="sr-only">{AI_LABELS.refreshInsight}</span>
-        </Button>
+        </CompactActionButton>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-text">{insight}</p>
     </Card>
