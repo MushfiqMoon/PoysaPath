@@ -2,7 +2,7 @@
 
 > **Companion:** [planning.md](./planning.md) · [planning-db.md](./planning-db.md)  
 > **Security / AI disclosure:** [planning.md §3–4](./planning.md)  
-> **Last updated:** May 24, 2026
+> **Last updated:** May 26, 2026
 
 ## Current state
 
@@ -10,7 +10,7 @@
 - Settings → Appearance: Light / Dark / System with the **same sliding-pill** control (`ThemeToggle`).
 - Default control borders: **`border-border`** gradient (teal-tinted rule); hover shifts to `--border-gradient-hover`.
 - `/add`: **Quick** (Gemini parse + preview) and **Manual** (no AI).
-- Dashboard: totals, category breakdown, weekly insight, recent expenses.
+- Dashboard: totals, Money Coach, goals, recurring reminders, category breakdown, recent expenses.
 
 ---
 
@@ -20,6 +20,7 @@
 |------|----------|
 | Fast logging | Dashboard → Add in ≤2 taps; Quick parse for NL input |
 | Clear totals | Today + month on dashboard |
+| Retention loops | Goals, recurring reminders, and monthly reports |
 | Private accounts | No shared UI between users |
 | Safe AI | Preview before save; Manual tab never calls Gemini |
 | Mobile comfort | Bottom nav, 44px+ tap targets |
@@ -90,17 +91,28 @@ flowchart TD
 
 User picks category manually. No blur/API categorization.
 
-### 3.3 Dashboard insight
+### 3.3 Money Coach
 
-- If cached insight for week → show card.
-- Else POST `weekly-insight` → cache in DB.
+- If cached coach text for today → show card.
+- Else POST `weekly-insight` → generate Money Coach text and cache in DB.
 - Refresh: manual, 1h cooldown (client + server rules).
 
-### 3.4 Edit / delete
+### 3.4 Goals and recurring reminders
+
+- Settings → Goals creates savings, emergency, debt payoff, or spend-less category challenges.
+- Settings → Recurring money creates rent, subscription, bill, tuition, salary, or allowance reminders.
+- Dashboard surfaces active goals and upcoming or missed recurring items.
+
+### 3.5 Monthly AI report
+
+- Settings → Monthly report calls `POST /api/gemini/monthly-report`.
+- Report includes wins, problem areas, category changes, and next-month plan.
+
+### 3.6 Edit / delete
 
 Expenses list → edit page → save or confirm delete. No AI.
 
-### 3.5 Auth
+### 3.7 Auth
 
 Login, signup, forgot password, sign out from Settings.
 
@@ -111,7 +123,8 @@ Login, signup, forgot password, sign out from Settings.
 ### Dashboard `/dashboard`
 
 - Greeting, today + month cards.
-- Insight card (if user has expenses).
+- Money Coach card (if user has expenses and Gemini key).
+- Goals and upcoming money reminders.
 - Category breakdown, recent list → edit.
 - Empty state: CTA to `/add`.
 
@@ -128,7 +141,7 @@ Login, signup, forgot password, sign out from Settings.
 
 ### Settings `/settings`
 
-- Hub: grouped menu (Profile, Categories, Budgets, Announcements) + Gemini API key (BYOK) + legal links on `/settings`.
+- Hub: grouped menu (Profile, Categories, Budgets, Goals, Recurring money, Monthly report, Announcements) + Gemini API key (BYOK) + legal links on `/settings`.
 - **Profile** (`/settings/profile`): display name, email, **Preferences** (theme: Light / Dark / System). CSV export hidden (API still exists).
 
 ---
@@ -139,7 +152,10 @@ Login, signup, forgot password, sign out from Settings.
 |-----------|---------|
 | `QuickAdd` | `/add` Quick tab |
 | `ExpenseForm` | Manual tab, parse preview, edit |
-| `InsightCard` | Dashboard |
+| `InsightCard` | Dashboard Money Coach |
+| `GoalsManager` | Settings → Goals |
+| `RecurringManager` | Settings → Recurring money |
+| `MonthlyReportCard` | Settings → Monthly report |
 | `CategoryPicker` | Expense form |
 | `app-shell` | Bottom navigation (mobile); sidebar (desktop) |
 | `ThemeToggle` | Settings → Profile → Preferences (Light / Dark / System) |
@@ -175,7 +191,7 @@ Login, signup, forgot password, sign out from Settings.
 1. Preview before persist (Quick tab only).
 2. Manual tab is fully offline from AI.
 3. EN / BN / Banglish supported on **parse** input only.
-4. Insight uses aggregates, not full expense dump in prompt.
+4. Money Coach and monthly report use aggregates, not full expense dump in prompt.
 
 ---
 

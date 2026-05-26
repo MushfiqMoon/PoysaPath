@@ -1,7 +1,7 @@
 # PoysaPath — Project Plan
 
-> **Status:** Phases 0–3 shipped. Migrations `001`–`005` in Supabase. Deploy: [DEPLOY.md](./DEPLOY.md).  
-> **Last updated:** May 18, 2026
+> **Status:** Phases 0–4 shipped. Migrations `001`–`007` in Supabase. Deploy: [DEPLOY.md](./DEPLOY.md).  
+> **Last updated:** May 26, 2026
 
 | Doc | Purpose |
 |-----|---------|
@@ -16,8 +16,8 @@
 
 - Multi-user expense tracker in **BDT**, timezone **Asia/Dhaka**, mobile-first web app.
 - Auth: email/password, protected `(app)/*`, RLS on all user tables.
-- **Gemini (2 features):** Quick parse on `/add`, weekly insight on `/dashboard`. **Manual add has no AI.**
-- Core: expenses CRUD, categories, budgets, CSV export API (hidden in Settings UI), notifications (`005`).
+- **Gemini:** Quick parse on `/add`, Money Coach on `/dashboard`, and monthly report in Settings. **Manual add has no AI.**
+- Core: expenses CRUD, categories, budgets, financial goals, recurring money reminders, CSV export API (hidden in Settings UI), notifications (`005`).
 - **Not v1:** shared households, OCR, chat assistant, Google OAuth (backlog).
 
 ---
@@ -80,13 +80,14 @@ Full RLS detail: [planning-db.md](./planning-db.md).
 | Feature | UI | API |
 |---------|-----|-----|
 | Quick parse | `/add` → Quick tab → Parse → preview → Save | `POST /api/gemini/parse-expense` |
-| Weekly insight | `/dashboard` insight card (cached) | `POST /api/gemini/weekly-insight` |
+| Money Coach | `/dashboard` coaching card (cached) | `POST /api/gemini/weekly-insight` |
+| Monthly report | `/settings/reports` → Generate report | `POST /api/gemini/monthly-report` |
 
 - Structured JSON responses (Zod). Preview before save on Quick tab.
 - On 429 / failure: user message + manual entry still works.
-- Rate limit: ~40 calls/user/hour (in-memory). Insight cached per user/week in `insight_cache`.
+- Rate limit: ~40 calls/user/hour (in-memory). Money Coach text is cached per user/day in `insight_cache`.
 
-**Phase 2+ (not shipped):** chat over aggregates, budget nudges via AI, OCR, recurring detection.
+**Future AI ideas:** chat over aggregates, OCR, and smarter categorization from reviewed edits.
 
 ---
 
@@ -104,13 +105,13 @@ Full RLS detail: [planning-db.md](./planning-db.md).
 |-------|---------|
 | `/` | Landing (public) |
 | `/login`, `/signup`, `/forgot-password` | Auth |
-| `/dashboard` | Today/month totals, insight, recent |
+| `/dashboard` | Today/month totals, Money Coach, goals, recurring reminders, recent |
 | `/add` | Quick (AI) \| Manual (no AI) tabs |
 | `/expenses`, `/expenses/[id]/edit` | List, edit, delete |
-| `/settings`, `/settings/categories`, `/settings/budget`, `/settings/notification-history` | Manage |
+| `/settings`, `/settings/categories`, `/settings/budget`, `/settings/goals`, `/settings/recurring`, `/settings/reports`, `/settings/notification-history` | Manage |
 | `/privacy`, `/terms` | Legal |
 
-**API:** `POST /api/gemini/parse-expense`, `POST /api/gemini/weekly-insight`, `GET /api/export/csv` (optional `?from=` / `?to=` dates).
+**API:** `POST /api/gemini/parse-expense`, `POST /api/gemini/weekly-insight`, `POST /api/gemini/monthly-report`, `GET /api/export/csv` (optional `?from=` / `?to=` dates).
 
 ---
 
@@ -134,7 +135,8 @@ Setup: Supabase project → run migrations → [Google AI Studio](https://aistud
 ### Shipped (Phases 0–3)
 
 - Auth, middleware, landing, CRUD, dashboard, categories, budgets
-- Gemini: parse-expense + weekly-insight + `insight_cache`
+- Financial goals and recurring money reminders
+- Gemini: parse-expense + Money Coach + monthly report
 - Per-user rate limit, insight refresh cooldown
 - CSV export API, privacy/terms, notifications migration
 

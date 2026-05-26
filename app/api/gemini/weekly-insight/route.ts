@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 
 import {
+  addDaysYmd,
   getInsightCachePeriodKeyInDhaka,
   getRolling7DayRangeInDhaka,
 } from "@/lib/dates";
+import { getBudgetsWithSpent } from "@/lib/data/budgets";
 import {
   getCachedInsight,
   getInsightCacheRecord,
@@ -12,7 +14,7 @@ import {
 } from "@/lib/data/insights";
 import { requireApiUser } from "@/lib/gemini/auth";
 import { generateJson } from "@/lib/gemini/client";
-import { buildWeeklyInsightPrompt } from "@/lib/gemini/prompts";
+import { buildMoneyCoachPrompt } from "@/lib/gemini/prompts";
 import {
   GeminiKeyRequiredError,
   geminiKeyRequiredResponse,
@@ -76,10 +78,13 @@ export async function POST(request: Request) {
       );
     }
 
+    const previousStart = addDaysYmd(rangeStart, -7);
+    const previousEnd = addDaysYmd(rangeStart, -1);
+
     const { data: expenses, error } = await supabase
       .from("expenses")
-      .select("amount, categories(name)")
-      .gte("expense_date", rangeStart)
+      .select("amount, expense_date, categories(name)")
+      .gte("expense_date", previousStart)
       .lte("expense_date", rangeEnd);
 
     if (error) {
@@ -92,26 +97,45 @@ export async function POST(request: Request) {
       throw new Error(error.message);
     }
 
-    const summary: Record<string, number> = {};
-    let total = 0;
+    const currentSummary: Record<string, number> = {};
+    const previousSummary: Record<string, number> = {};
+    let currentTotal = 0;
+    let previousTotal = 0;
 
     for (const row of expenses ?? []) {
       const amount = Number(row.amount);
       const cat = row.categories as { name: string } | { name: string }[] | null;
       const name = Array.isArray(cat) ? cat[0]?.name : cat?.name;
       const key = name ?? "Other";
-      summary[key] = (summary[key] ?? 0) + amount;
-      total += amount;
+      if (row.expense_date >= rangeStart && row.expense_date <= rangeEnd) {
+        currentSummary[key] = (currentSummary[key] ?? 0) + amount;
+        currentTotal += amount;
+      } else if (row.expense_date >= previousStart && row.expense_date <= previousEnd) {
+        previousSummary[key] = (previousSummary[key] ?? 0) + amount;
+        previousTotal += amount;
+      }
     }
 
-    if (total === 0) {
+    if (currentTotal === 0 && previousTotal === 0) {
       return NextResponse.json({
         insight: null,
-        message: "No spending in the last 7 days.",
+        message: "No spending yet for Money Coach.",
       });
     }
 
-    const prompt = buildWeeklyInsightPrompt(summary, total);
+    const budgets = await getBudgetsWithSpent();
+    const budgetLines = budgets.slice(0, 5).map((budget) => {
+      const remaining = Math.max(0, budget.amount - budget.spent);
+      return `${budget.category.name}: spent ৳${budget.spent} of ৳${budget.amount}, remaining ৳${remaining}`;
+    });
+
+    const prompt = buildMoneyCoachPrompt({
+      currentSummary,
+      currentTotal,
+      previousSummary,
+      previousTotal,
+      budgetLines,
+    });
     const raw = await generateJson<unknown>(prompt, apiKey);
     const { insight } = weeklyInsightResponseSchema.parse(raw);
 

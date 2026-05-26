@@ -12,6 +12,7 @@ import {
   FiX,
 } from "react-icons/fi";
 
+import { CompactActionButton } from "@/components/ui/compact-action";
 import { PAYMENT_METHODS } from "@/lib/constants";
 import type { Category } from "@/lib/types";
 
@@ -73,9 +74,6 @@ function FilterField({
 const selectClass =
   "min-h-11 w-full appearance-none rounded-xl border border-border bg-surface py-2 pl-3 pr-9 text-sm text-text transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 
-const clearButtonClass =
-  "inline-flex min-h-8 items-center gap-1 rounded-lg px-2 text-xs font-medium text-accent transition-colors hover:bg-accent/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
-
 export function ExpenseFilters({ categories, months }: ExpenseFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -119,14 +117,13 @@ export function ExpenseFilters({ categories, months }: ExpenseFiltersProps) {
           className="min-w-0 flex-1"
           action={
             category ? (
-              <button
-                type="button"
+              <CompactActionButton
+                size="xs"
                 onClick={() => updateParam("category", "")}
-                className={clearButtonClass}
               >
                 <FiX className="h-3.5 w-3.5" aria-hidden />
                 Clear
-              </button>
+              </CompactActionButton>
             ) : null
           }
         >
@@ -188,14 +185,10 @@ export function ExpenseFilters({ categories, months }: ExpenseFiltersProps) {
               More filters
             </p>
             {hasMoreFilters ? (
-              <button
-                type="button"
-                onClick={clearMoreFilters}
-                className={clearButtonClass}
-              >
+              <CompactActionButton size="xs" onClick={clearMoreFilters}>
                 <FiX className="h-3.5 w-3.5" aria-hidden />
                 Clear
-              </button>
+              </CompactActionButton>
             ) : null}
           </div>
 

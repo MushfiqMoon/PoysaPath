@@ -45,7 +45,7 @@ const parsedRing =
 export function ExpenseForm({
   categories,
   expense,
-  redirectTo = "/dashboard",
+  redirectTo = "/expenses",
   defaults,
   highlightParsed = false,
   autoFocusAmount = false,

@@ -3,14 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { AiDisabledNotice } from "@/components/shared/ai-disabled-notice";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CompactActionButton } from "@/components/ui/compact-action";
 import { Skeleton } from "@/components/ui/skeleton";
 import { INSIGHT_REFRESH_COOLDOWN_MS } from "@/lib/constants";
 import { isGeminiKeyRequiredResponse } from "@/lib/gemini/disabled-message";
 import { AI_LABELS } from "@/lib/gemini/labels";
 
-const REFRESH_KEY = "poysapath-insight-refresh-at-v2";
+const REFRESH_KEY = "poysapath-money-coach-refresh-at-v1";
 
 type InsightCardProps = {
   hasGeminiKey: boolean;
@@ -108,10 +108,6 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
   const initialFetchDone = useRef(false);
 
   useEffect(() => {
-    setCooldownMs(msUntilRefreshAllowed());
-  }, []);
-
-  useEffect(() => {
     if (!hasGeminiKey || initialInsight || initialFetchDone.current) return;
     initialFetchDone.current = true;
     const id = window.setTimeout(() => {
@@ -161,19 +157,17 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
       elevated
       padding="md"
       className="min-h-28 border-accent/15"
-      aria-labelledby="weekly-insight-heading"
+      aria-labelledby="money-coach-heading"
     >
       <div className="flex items-start justify-between gap-3">
         <h2
-          id="weekly-insight-heading"
+          id="money-coach-heading"
           className="text-sm font-semibold text-text-muted"
         >
           {AI_LABELS.weeklyInsight}
         </h2>
-        <Button
-          type="button"
-          variant="ghost"
-          className="min-h-8 px-2 py-1 text-xs"
+        <CompactActionButton
+          size="xs"
           disabled={refreshDisabled}
           onClick={() => void fetchInsight(true)}
           aria-label={
@@ -186,7 +180,7 @@ export function InsightCard({ hasGeminiKey, initialInsight }: InsightCardProps) 
             {refreshDisabled ? `Refresh in ~${cooldownHours}h` : "Refresh"}
           </span>
           <span className="sr-only">{AI_LABELS.refreshInsight}</span>
-        </Button>
+        </CompactActionButton>
       </div>
       <p className="mt-2 text-sm leading-relaxed text-text">{insight}</p>
     </Card>

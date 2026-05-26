@@ -75,8 +75,9 @@ export function SettingsPanel({ hasGeminiKey, keyHint }: SettingsPanelProps) {
           {AI_LABELS.settingsSection}
         </h3>
         <p className="mt-1 text-sm text-text-muted">
-          Your Gemini API key powers Quick entry and Weekly insights. It is
-          encrypted in our database and never shown again after you save.
+          Your Gemini API key powers Quick entry, Money Coach, and monthly
+          reports. It is encrypted in our database and never shown again after
+          you save.
         </p>
 
         {configured ? (

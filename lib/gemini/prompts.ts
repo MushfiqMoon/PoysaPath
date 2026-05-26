@@ -1,4 +1,5 @@
 import type { Category } from "@/lib/types";
+import type { MonthlyReportLanguage } from "@/lib/data/monthly-reports";
 
 export function buildParseExpensePrompt(
   text: string,
@@ -39,4 +40,91 @@ ${lines}
 Total: ৳${total}
 
 Return JSON only: { "insight": "your summary text" }`;
+}
+
+export function buildMoneyCoachPrompt(input: {
+  currentSummary: Record<string, number>;
+  currentTotal: number;
+  previousSummary: Record<string, number>;
+  previousTotal: number;
+  budgetLines: string[];
+}) {
+  const currentLines =
+    Object.entries(input.currentSummary)
+      .map(([name, amount]) => `- ${name}: ৳${amount}`)
+      .join("\n") || "- No spending";
+  const previousLines =
+    Object.entries(input.previousSummary)
+      .map(([name, amount]) => `- ${name}: ৳${amount}`)
+      .join("\n") || "- No spending";
+  const budgets = input.budgetLines.length
+    ? input.budgetLines.map((line) => `- ${line}`).join("\n")
+    : "- No active budgets";
+
+  return `You are Money Coach inside a Bangladesh BDT expense tracker.
+Write one practical coaching card, not a generic report.
+Use a friendly professional tone, specific ৳ amounts, and one clear next action.
+If there is enough data, compare the last 7 days with the previous 7 days.
+Do not shame the user. Do not invent categories.
+
+Last 7 days:
+${currentLines}
+Total: ৳${input.currentTotal}
+
+Previous 7 days:
+${previousLines}
+Total: ৳${input.previousTotal}
+
+Current budget context:
+${budgets}
+
+Return JSON only:
+{ "insight": "2-3 sentences with one concrete action" }`;
+}
+
+export function buildMonthlyReportPrompt(input: {
+  monthLabel: string;
+  language: MonthlyReportLanguage;
+  currentSummary: Record<string, number>;
+  currentTotal: number;
+  previousSummary: Record<string, number>;
+  previousTotal: number;
+}) {
+  const currentLines =
+    Object.entries(input.currentSummary)
+      .map(([name, amount]) => `- ${name}: ৳${amount}`)
+      .join("\n") || "- No spending";
+  const previousLines =
+    Object.entries(input.previousSummary)
+      .map(([name, amount]) => `- ${name}: ৳${amount}`)
+      .join("\n") || "- No spending";
+  const languageInstruction =
+    input.language === "bn"
+      ? "Write all user-facing text in Bangla for a Bangladesh user. Keep currency as ৳ and use natural Bangla, not word-for-word translation."
+      : "Write all user-facing text in English for a Bangladesh user. Keep currency as ৳ and use clear, simple wording.";
+
+  return `Write a friendly monthly expense report for ${input.monthLabel}.
+Audience: Bangladesh personal expense tracker user. Currency: BDT.
+${languageInstruction}
+Include wins, problem areas, biggest category changes, and a simple next-month plan.
+Keep it concise and practical. Each array item should be one short sentence.
+Do not invent categories or data.
+
+This month:
+${currentLines}
+Total: ৳${input.currentTotal}
+
+Previous month:
+${previousLines}
+Total: ৳${input.previousTotal}
+
+Return JSON only:
+{
+  "title": "short report title",
+  "overview": "1-2 sentence summary",
+  "wins": ["1-3 specific wins"],
+  "watchouts": ["1-3 practical problem areas"],
+  "categoryChanges": ["1-3 biggest category changes"],
+  "nextMonthPlan": ["2-4 concrete next-month actions"]
+}`;
 }

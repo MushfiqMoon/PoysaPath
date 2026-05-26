@@ -13,7 +13,7 @@ export const GEMINI_CONTACT = {
 export const GEMINI_DISABLED_HEADLINE = "Turn on AI for your account";
 
 export const GEMINI_DISABLED_SUMMARY =
-  "Add your free Google Gemini API key in Settings to unlock Quick entry and weekly insights.";
+  "Add your free Google Gemini API key in Settings to unlock Quick entry, Money Coach, and monthly reports.";
 
 export const GEMINI_DISABLED_FREE_NOTE =
   "It takes about a minute to create a key in Google AI Studio. Google usage limits apply.";

@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 
 import { AI_LABELS } from "@/lib/gemini/labels";
 
-const MODEL = "gemini-2.5-flash";
+export const GEMINI_MODEL = "gemini-2.5-flash";
 
 export async function generateJson<T>(
   prompt: string,
@@ -12,7 +12,7 @@ export async function generateJson<T>(
 
   try {
     const response = await ai.models.generateContent({
-      model: MODEL,
+      model: GEMINI_MODEL,
       contents: prompt,
       config: {
         responseMimeType: "application/json",
