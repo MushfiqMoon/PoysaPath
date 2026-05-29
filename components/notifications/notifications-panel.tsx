@@ -1,23 +1,125 @@
 "use client";
 
+import Link from "next/link";
 import { createPortal } from "react-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ForwardLink } from "@/components/shared/forward-link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatNotificationDate } from "@/lib/notifications/format";
-import type { Notification } from "@/lib/types";
+import type { BellNotification } from "@/lib/types";
 
 type NotificationsPanelProps = {
   open: boolean;
   onClose: () => void;
-  items: Notification[];
+  items: BellNotification[];
   loading: boolean;
   markingId: string | null;
   error: string | null;
   onMarkRead: (id: string) => void;
 };
+
+function reminderCardClass(kind: string) {
+  if (kind === "recurring_missed") {
+    return "border-danger/35 bg-danger/8 ring-1 ring-danger/15";
+  }
+  if (kind === "recurring_due_soon") {
+    return "border-accent/35 bg-accent/8 ring-1 ring-accent/15";
+  }
+  return "bg-bg/50";
+}
+
+function NotificationCard({
+  item,
+  markingId,
+  onMarkRead,
+  onClose,
+}: {
+  item: BellNotification;
+  markingId: string | null;
+  onMarkRead: (id: string) => void;
+  onClose: () => void;
+}) {
+  const isRecurring = item.source === "recurring";
+
+  return (
+    <Card padding="sm" className={reminderCardClass(item.kind)}>
+      {isRecurring && item.href ? (
+        <Link
+          href={item.href}
+          onClick={onClose}
+          className="block rounded-lg transition-opacity hover:opacity-90"
+        >
+          <p className="break-words font-medium text-text">{item.title}</p>
+          <p className="mt-1 break-words text-sm leading-relaxed text-text-muted">
+            {item.body}
+          </p>
+        </Link>
+      ) : (
+        <>
+          <p className="break-words font-medium text-text">{item.title}</p>
+          <p className="mt-1 break-words text-sm leading-relaxed text-text-muted">
+            {item.body}
+          </p>
+        </>
+      )}
+      <p className="mt-2 text-xs text-text-muted">
+        {isRecurring ? "Payment reminder" : formatNotificationDate(item.created_at)}
+      </p>
+      {isRecurring && item.href ? (
+        <ForwardLink href={item.href} onClick={onClose} className="mt-2 text-xs">
+          View recurring payments
+        </ForwardLink>
+      ) : null}
+      <Button
+        type="button"
+        variant="secondary"
+        className="mt-3 min-h-11 w-full text-sm"
+        disabled={markingId === item.id}
+        onClick={() => void onMarkRead(item.id)}
+      >
+        {markingId === item.id ? "Saving…" : "Mark as read"}
+      </Button>
+    </Card>
+  );
+}
+
+function NotificationSection({
+  title,
+  items,
+  markingId,
+  onMarkRead,
+  onClose,
+}: {
+  title: string;
+  items: BellNotification[];
+  markingId: string | null;
+  onMarkRead: (id: string) => void;
+  onClose: () => void;
+}) {
+  if (items.length === 0) return null;
+
+  return (
+    <section className="space-y-2">
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+        {title}
+      </h3>
+      <ul className="space-y-3">
+        {items.map((n) => (
+          <li key={n.id}>
+            <NotificationCard
+              item={n}
+              markingId={markingId}
+              onMarkRead={onMarkRead}
+              onClose={onClose}
+            />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 export function NotificationsPanel({
   open,
@@ -29,6 +131,16 @@ export function NotificationsPanel({
   onMarkRead,
 }: NotificationsPanelProps) {
   const [mounted, setMounted] = useState(false);
+
+  const { reminders, announcements } = useMemo(() => {
+    const reminders: BellNotification[] = [];
+    const announcements: BellNotification[] = [];
+    for (const item of items) {
+      if (item.source === "recurring") reminders.push(item);
+      else announcements.push(item);
+    }
+    return { reminders, announcements };
+  }, [items]);
 
   useEffect(() => {
     setMounted(true);
@@ -53,7 +165,6 @@ export function NotificationsPanel({
       aria-labelledby="notifications-title"
       onClick={onClose}
     >
-      {/* Desktop: offset sidebar so panel centers in main content */}
       <div className="hidden w-56 shrink-0 md:block" aria-hidden />
       <div
         className="flex min-h-0 flex-1 items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))]"
@@ -82,9 +193,7 @@ export function NotificationsPanel({
 
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
             {loading && items.length === 0 && (
-              <p className="py-8 text-center text-sm text-text-muted">
-                Loading…
-              </p>
+              <p className="py-8 text-center text-sm text-text-muted">Loading…</p>
             )}
 
             {!loading && items.length === 0 && (
@@ -95,7 +204,7 @@ export function NotificationsPanel({
                   onClick={onClose}
                   className="mt-3 hover:underline"
                 >
-                  See previous notifications
+                  See past announcements
                 </ForwardLink>
               </div>
             )}
@@ -106,30 +215,32 @@ export function NotificationsPanel({
               </p>
             )}
 
-            <ul className="space-y-3">
-              {items.map((n) => (
-                <li key={n.id}>
-                  <Card padding="sm" className="bg-bg/50">
-                    <p className="break-words font-medium text-text">{n.title}</p>
-                    <p className="mt-1 break-words text-sm leading-relaxed text-text-muted">
-                      {n.body}
-                    </p>
-                    <p className="mt-2 text-xs text-text-muted">
-                      {formatNotificationDate(n.created_at)}
-                    </p>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      className="mt-3 min-h-11 w-full text-sm"
-                      disabled={markingId === n.id}
-                      onClick={() => void onMarkRead(n.id)}
-                    >
-                      {markingId === n.id ? "Saving…" : "Mark as read"}
-                    </Button>
-                  </Card>
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-5">
+              <NotificationSection
+                title="Payment reminders"
+                items={reminders}
+                markingId={markingId}
+                onMarkRead={onMarkRead}
+                onClose={onClose}
+              />
+              <NotificationSection
+                title="Announcements"
+                items={announcements}
+                markingId={markingId}
+                onMarkRead={onMarkRead}
+                onClose={onClose}
+              />
+            </div>
+
+            {!loading && items.length > 0 && announcements.length === 0 ? (
+              <ForwardLink
+                href="/settings/announcements"
+                onClick={onClose}
+                className="mt-5 block text-center text-xs text-text-muted hover:underline"
+              >
+                See past announcements
+              </ForwardLink>
+            ) : null}
           </div>
         </Card>
       </div>
