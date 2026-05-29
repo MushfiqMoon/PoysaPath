@@ -56,12 +56,27 @@ Pre-migration rows stay unlinked.
 
 ---
 
+## Bell payment reminders (shipped)
+
+**Database:** `014_recurring_alert_dismissals.sql` — per-cycle dismissals for Due soon / Missed
+
+**Behavior:**
+
+- Bell shows **Payment reminders** (computed from `recurring_items`, not stored in `notifications`)
+- Types: **Due soon** (within `reminder_days`) and **Missed** (past due)
+- **Mark as read** dismisses for that due cycle only; alert can return on the next period
+- **Announcements** section unchanged; past announcements page excludes payment reminders
+
+**Deploy:** Run migration `014` in Supabase.
+
+---
+
 ## Phase 3 — Discovery & dashboard
 
 - Projected goal completion from recurring amount + frequency
 - Dashboard “next savings installment”
 - Shortcut from Goals: add linked recurring
-- Due notifications
+- Push / email due notifications (not in-app bell)
 
 ---
 
@@ -81,4 +96,4 @@ Pre-migration rows stay unlinked.
 | Spend-less challenge | No | Progress from category expenses |
 | Completed / paused goal | No | Blocked at validate time |
 
-**Deploy:** Run migrations `012` and `013` in Supabase.
+**Deploy:** Run migrations `012`, `013`, and `014` in Supabase.

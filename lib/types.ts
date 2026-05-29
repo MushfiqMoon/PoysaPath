@@ -33,6 +33,13 @@ export type Notification = {
   created_at: string;
 };
 
+export type BellNotification = Notification & {
+  source: "announcement" | "recurring";
+  href?: string;
+};
+
+export type RecurringAlertKind = "due_soon" | "missed";
+
 export type ReadNotification = Notification & {
   read_at: string;
 };

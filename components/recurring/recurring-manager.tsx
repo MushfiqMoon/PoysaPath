@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FiMaximize2, FiMinimize2 } from "react-icons/fi";
+import { FiMaximize2, FiMinimize2, FiTarget } from "react-icons/fi";
 
 import {
   createRecurringItem,
@@ -13,6 +13,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { DeleteButton } from "@/components/ui/action-buttons";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { CompactActionLink } from "@/components/ui/compact-action";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -46,6 +47,50 @@ function statusLabel(item: RecurringItem) {
   if (item.status === "missed") return "Missed";
   if (item.status === "due_soon") return "Due soon";
   return "Upcoming";
+}
+
+function LinkedGoalBanner({
+  goalTitle,
+  amount,
+}: {
+  goalTitle: string;
+  amount: number;
+}) {
+  return (
+    <div className="flex items-start gap-3 rounded-xl border border-accent/30 bg-accent/10 px-3 py-3 ring-1 ring-accent/15">
+      <span
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/15 text-accent"
+        aria-hidden
+      >
+        <FiTarget className="h-4 w-4" />
+      </span>
+      <div className="min-w-0 flex-1">
+        <p className="text-[0.65rem] font-semibold uppercase tracking-wider text-accent">
+          Linked goal
+        </p>
+        <p className="mt-0.5 truncate text-sm font-semibold text-text" title={goalTitle}>
+          {goalTitle}
+        </p>
+        <p className="mt-1 text-xs text-text-muted">
+          Each recorded payment adds{" "}
+          <span className="font-semibold tabular-nums text-text">
+            {formatCurrency(amount)}
+          </span>{" "}
+          toward this goal
+        </p>
+      </div>
+      <CompactActionLink href="/settings/goals" variant="soft" size="xs" className="shrink-0">
+        View
+      </CompactActionLink>
+    </div>
+  );
+}
+
+function recordPaymentHintText(linkedGoalTitle: string | null, amount: number) {
+  if (linkedGoalTitle) {
+    return `Recording creates an expense for the due date and adds ${formatCurrency(amount)} to ${linkedGoalTitle}.`;
+  }
+  return "Recording creates an expense for the due date.";
 }
 
 function RecurringCard({ item }: { item: RecurringItem }) {
@@ -115,11 +160,6 @@ function RecurringCard({ item }: { item: RecurringItem }) {
                   {item.category.name}
                 </span>
               ) : null}
-              {item.linked_goal ? (
-                <span className="rounded-full bg-accent/10 px-2.5 py-1 text-accent">
-                  Goal: {item.linked_goal.title}
-                </span>
-              ) : null}
             </div>
           </div>
 
@@ -159,6 +199,13 @@ function RecurringCard({ item }: { item: RecurringItem }) {
           </div>
         </dl>
 
+        {item.linked_goal ? (
+          <LinkedGoalBanner
+            goalTitle={item.linked_goal.title}
+            amount={item.amount}
+          />
+        ) : null}
+
         {item.notes ? (
           <p className="rounded-xl border border-border bg-bg/50 px-3 py-2.5 text-sm text-text-muted">
             {item.notes}
@@ -171,22 +218,20 @@ function RecurringCard({ item }: { item: RecurringItem }) {
           </p>
         ) : null}
 
-        <div className="flex flex-col gap-2 border-t border-border/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 border-t border-border/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
           {canRecordPayment ? (
-            <p className="text-xs text-text-muted">
-              Recording creates an expense for the due date
-              {item.linked_goal
-                ? ` and adds ${formatCurrency(item.amount)} to ${item.linked_goal.title}.`
-                : "."}
+            <p className="min-w-0 flex-1 text-xs leading-relaxed text-text-muted">
+              {recordPaymentHintText(item.linked_goal?.title ?? null, item.amount)}
             </p>
           ) : null}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:shrink-0 sm:items-end">
             {canRecordPayment ? (
               <Button
                 type="button"
-                size="sm"
-                variant={item.status === "missed" ? "primary" : "secondary"}
+                size="default"
+                variant="primary"
                 loading={loading}
+                className="w-full font-semibold shadow-sm ring-2 ring-accent/30 sm:min-w-44 sm:w-auto"
                 onClick={() => void runAction(() => recordRecurringExpense(item.id))}
               >
                 Record payment
@@ -195,6 +240,7 @@ function RecurringCard({ item }: { item: RecurringItem }) {
             <DeleteButton
               type="button"
               disabled={loading}
+              className="self-center sm:self-end"
               onClick={() => void runAction(() => deleteRecurringItem(item.id))}
             >
               Delete
