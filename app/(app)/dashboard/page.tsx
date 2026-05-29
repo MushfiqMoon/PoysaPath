@@ -99,7 +99,7 @@ export default async function DashboardPage() {
           </Card>
         </div>
 
-        {hasExpenses || goals.length > 0 ? <GoalsDashboardCard goals={goals} /> : null}
+        <GoalsDashboardCard goals={goals} />
 
         {hasExpenses ? (
           <>

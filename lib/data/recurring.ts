@@ -4,12 +4,16 @@ import type { RecurringItem, RecurringStatus } from "@/lib/types";
 
 type RecurringRow = Omit<
   RecurringItem,
-  "amount" | "category" | "status" | "days_until_due"
+  "amount" | "category" | "linked_goal" | "status" | "days_until_due"
 > & {
   amount: number;
   categories:
     | { name: string; icon: string | null }
     | { name: string; icon: string | null }[]
+    | null;
+  financial_goals:
+    | { id: string; title: string }
+    | { id: string; title: string }[]
     | null;
 };
 
@@ -32,7 +36,7 @@ export async function getRecurringItems(): Promise<RecurringItem[]> {
   const { data, error } = await supabase
     .from("recurring_items")
     .select(
-      "id, title, recurring_type, amount, category_id, payment_method, frequency, next_due_date, reminder_days, notes, is_active, last_recorded_at, created_at, categories(name, icon)",
+      "id, title, recurring_type, amount, category_id, linked_goal_id, payment_method, frequency, next_due_date, reminder_days, notes, is_active, last_recorded_at, created_at, categories(name, icon), financial_goals(id, title)",
     )
     .order("is_active", { ascending: false })
     .order("next_due_date", { ascending: true });
@@ -47,6 +51,9 @@ export async function getRecurringItems(): Promise<RecurringItem[]> {
     const category = Array.isArray(row.categories)
       ? (row.categories[0] ?? null)
       : row.categories;
+    const goalRow = Array.isArray(row.financial_goals)
+      ? (row.financial_goals[0] ?? null)
+      : row.financial_goals;
     const daysUntilDue = diffDays(today, row.next_due_date);
 
     return {
@@ -55,6 +62,8 @@ export async function getRecurringItems(): Promise<RecurringItem[]> {
       recurring_type: row.recurring_type,
       amount: Number(row.amount),
       category_id: row.category_id,
+      linked_goal_id: row.linked_goal_id ?? null,
+      linked_goal: goalRow ? { id: goalRow.id, title: goalRow.title } : null,
       payment_method: row.payment_method,
       frequency: row.frequency,
       next_due_date: row.next_due_date,

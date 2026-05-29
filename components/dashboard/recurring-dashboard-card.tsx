@@ -36,6 +36,7 @@ export function RecurringDashboardCard({ items }: RecurringDashboardCardProps) {
               >
                 {item.status === "missed" ? "Missed: " : "Due: "}
                 {formatRelativeDay(item.next_due_date)}
+                {item.linked_goal ? ` · Goal: ${item.linked_goal.title}` : ""}
               </p>
             </div>
             <p className="shrink-0 text-sm font-semibold tabular-nums text-text">

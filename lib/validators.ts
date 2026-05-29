@@ -93,6 +93,11 @@ export const recurringItemInputSchema = z
       .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid due date"),
     reminder_days: z.coerce.number().int().min(0).max(30).default(3),
     notes: z.string().max(500).optional().nullable(),
+    linked_goal_id: z
+      .union([z.string().uuid(), z.literal("")])
+      .optional()
+      .nullable()
+      .transform((v) => (v === "" || v == null ? null : v)),
   })
   .superRefine((value, ctx) => {
     if (!value.category_id) {

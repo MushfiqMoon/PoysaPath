@@ -12,6 +12,8 @@ export type Expense = {
   expense_date: string;
   note: string | null;
   payment_method: string | null;
+  recurring_item_id: string | null;
+  recurring_paid_due_date: string | null;
   created_at: string;
   categories: Pick<Category, "name" | "icon"> | null;
 };
@@ -62,6 +64,7 @@ export type FinancialGoalContribution = {
   id: string;
   goal_id: string;
   amount: number;
+  expense_id: string | null;
   created_at: string;
 };
 
@@ -89,12 +92,18 @@ export type RecurringType = "expense" | "income";
 export type RecurringFrequency = "weekly" | "monthly" | "yearly";
 export type RecurringStatus = "missed" | "due_soon" | "upcoming";
 
+export type LinkableFinancialGoal = {
+  id: string;
+  title: string;
+};
+
 export type RecurringItem = {
   id: string;
   title: string;
   recurring_type: RecurringType;
   amount: number;
   category_id: string | null;
+  linked_goal_id: string | null;
   payment_method: string | null;
   frequency: RecurringFrequency;
   next_due_date: string;
@@ -104,6 +113,7 @@ export type RecurringItem = {
   last_recorded_at: string | null;
   created_at: string;
   category: Pick<Category, "name" | "icon"> | null;
+  linked_goal: LinkableFinancialGoal | null;
   status: RecurringStatus;
   days_until_due: number;
 };

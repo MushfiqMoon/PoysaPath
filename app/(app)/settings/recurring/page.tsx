@@ -1,12 +1,14 @@
 import { PageHeader } from "@/components/layout/page-header";
 import { RecurringManager } from "@/components/recurring/recurring-manager";
 import { getUserCategories } from "@/lib/data/categories";
+import { getLinkableFinancialGoals } from "@/lib/data/goals";
 import { getRecurringItems } from "@/lib/data/recurring";
 
 export default async function SettingsRecurringPage() {
-  const [items, categories] = await Promise.all([
+  const [items, categories, linkableGoals] = await Promise.all([
     getRecurringItems(),
     getUserCategories(),
+    getLinkableFinancialGoals(),
   ]);
 
   return (
@@ -16,7 +18,11 @@ export default async function SettingsRecurringPage() {
         backHref="/settings"
         backLabel="Settings"
       />
-      <RecurringManager items={items} categories={categories} />
+      <RecurringManager
+        items={items}
+        categories={categories}
+        linkableGoals={linkableGoals}
+      />
     </div>
   );
 }

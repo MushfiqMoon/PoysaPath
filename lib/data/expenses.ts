@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { CategoryTotal, Expense } from "@/lib/types";
 
 const expenseSelect =
-  "id, amount, category_id, expense_date, note, payment_method, created_at, categories(name, icon)";
+  "id, amount, category_id, expense_date, note, payment_method, recurring_item_id, recurring_paid_due_date, created_at, categories(name, icon)";
 
 function normalizeExpense(row: {
   id: string;
@@ -12,6 +12,8 @@ function normalizeExpense(row: {
   expense_date: string;
   note: string | null;
   payment_method: string | null;
+  recurring_item_id?: string | null;
+  recurring_paid_due_date?: string | null;
   created_at: string;
   categories:
     | { name: string; icon: string | null }
@@ -22,7 +24,18 @@ function normalizeExpense(row: {
     ? (row.categories[0] ?? null)
     : row.categories;
 
-  return { ...row, categories };
+  return {
+    id: row.id,
+    amount: row.amount,
+    category_id: row.category_id,
+    expense_date: row.expense_date,
+    note: row.note,
+    payment_method: row.payment_method,
+    recurring_item_id: row.recurring_item_id ?? null,
+    recurring_paid_due_date: row.recurring_paid_due_date ?? null,
+    created_at: row.created_at,
+    categories,
+  };
 }
 
 export async function getEarliestExpenseMonthStart(): Promise<string | null> {

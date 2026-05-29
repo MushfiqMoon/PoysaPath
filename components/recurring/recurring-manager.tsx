@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiMaximize2, FiMinimize2 } from "react-icons/fi";
 
 import {
@@ -24,6 +24,7 @@ import { getTodayInDhaka } from "@/lib/dates";
 import { formatCurrency, formatRelativeDay } from "@/lib/format";
 import type {
   Category,
+  LinkableFinancialGoal,
   RecurringFrequency,
   RecurringItem,
 } from "@/lib/types";
@@ -31,6 +32,7 @@ import type {
 type RecurringManagerProps = {
   items: RecurringItem[];
   categories: Pick<Category, "id" | "name" | "icon">[];
+  linkableGoals: LinkableFinancialGoal[];
 };
 
 const frequencyLabels: Record<RecurringFrequency, string> = {
@@ -113,6 +115,11 @@ function RecurringCard({ item }: { item: RecurringItem }) {
                   {item.category.name}
                 </span>
               ) : null}
+              {item.linked_goal ? (
+                <span className="rounded-full bg-accent/10 px-2.5 py-1 text-accent">
+                  Goal: {item.linked_goal.title}
+                </span>
+              ) : null}
             </div>
           </div>
 
@@ -167,7 +174,10 @@ function RecurringCard({ item }: { item: RecurringItem }) {
         <div className="flex flex-col gap-2 border-t border-border/60 pt-4 sm:flex-row sm:items-center sm:justify-between">
           {canRecordPayment ? (
             <p className="text-xs text-text-muted">
-              Recording creates an expense for the due date.
+              Recording creates an expense for the due date
+              {item.linked_goal
+                ? ` and adds ${formatCurrency(item.amount)} to ${item.linked_goal.title}.`
+                : "."}
             </p>
           ) : null}
           <div className="flex flex-wrap items-center gap-3">
@@ -196,11 +206,16 @@ function RecurringCard({ item }: { item: RecurringItem }) {
   );
 }
 
-export function RecurringManager({ items, categories }: RecurringManagerProps) {
+export function RecurringManager({
+  items,
+  categories,
+  linkableGoals,
+}: RecurringManagerProps) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [categoryId, setCategoryId] = useState(categories[0]?.id ?? "");
+  const [linkedGoalId, setLinkedGoalId] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<StoredPaymentMethod | "">("");
   const [frequency, setFrequency] = useState<RecurringFrequency>("monthly");
   const [nextDueDate, setNextDueDate] = useState(getTodayInDhaka());
@@ -208,7 +223,11 @@ export function RecurringManager({ items, categories }: RecurringManagerProps) {
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(items.length === 0);
+
+  useEffect(() => {
+    if (items.length === 0) setIsFormOpen(true);
+  }, [items.length]);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -225,10 +244,12 @@ export function RecurringManager({ items, categories }: RecurringManagerProps) {
         next_due_date: nextDueDate,
         reminder_days: Number(reminderDays),
         notes: notes || null,
+        linked_goal_id: linkedGoalId || null,
       });
       setTitle("");
       setAmount("");
       setNotes("");
+      setLinkedGoalId("");
       setIsFormOpen(false);
       router.refresh();
     } catch (err) {
@@ -362,6 +383,29 @@ export function RecurringManager({ items, categories }: RecurringManagerProps) {
                 />
               </div>
             </div>
+
+            {linkableGoals.length > 0 ? (
+              <div>
+                <Label htmlFor="recurring-goal">Link to goal (optional)</Label>
+                <select
+                  id="recurring-goal"
+                  value={linkedGoalId}
+                  onChange={(e) => setLinkedGoalId(e.target.value)}
+                  className="min-h-11 w-full rounded-xl border border-border bg-surface px-3 py-2 text-text"
+                >
+                  <option value="">None</option>
+                  {linkableGoals.map((goal) => (
+                    <option key={goal.id} value={goal.id}>
+                      {goal.title}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-text-muted">
+                  When you record this payment, progress is added to the goal as
+                  well as logged as an expense.
+                </p>
+              </div>
+            ) : null}
 
             <div>
               <Label htmlFor="recurring-payment">Payment (optional)</Label>

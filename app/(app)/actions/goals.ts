@@ -114,6 +114,26 @@ export async function addFinancialGoalContribution(id: string, amount: number) {
 export async function deleteFinancialGoalContribution(id: string) {
   const { supabase, user } = await requireUser();
 
+  const { data: contribution, error: fetchError } = await supabase
+    .from("financial_goal_contributions")
+    .select("expense_id")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (fetchError) {
+    if (fetchError.code === "42703") {
+      throw new Error("Run migration 013_recurring_expense_goal_links.sql in Supabase.");
+    }
+    throw new Error(fetchError.message);
+  }
+  if (!contribution) throw new Error("Contribution not found.");
+  if (contribution.expense_id) {
+    throw new Error(
+      "This contribution came from a recorded payment. Delete the expense to undo it.",
+    );
+  }
+
   const { error } = await supabase
     .from("financial_goal_contributions")
     .delete()

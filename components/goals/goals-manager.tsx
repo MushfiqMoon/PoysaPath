@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiMaximize2, FiMinimize2 } from "react-icons/fi";
 
 import {
@@ -399,7 +399,11 @@ export function GoalsManager({ goals, categories, currentMonth }: GoalsManagerPr
   const [showOnDashboard, setShowOnDashboard] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(goals.length === 0);
+
+  useEffect(() => {
+    if (goals.length === 0) setIsFormOpen(true);
+  }, [goals.length]);
 
   const isChallenge = goalType === "category_challenge";
 
