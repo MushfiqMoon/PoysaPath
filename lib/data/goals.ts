@@ -24,6 +24,7 @@ type GoalContributionRow = {
   id: string;
   goal_id: string;
   amount: number;
+  expense_id: string | null;
   created_at: string;
 };
 
@@ -56,7 +57,7 @@ export async function getFinancialGoals(): Promise<FinancialGoal[]> {
   if (manualGoalIds.length > 0) {
     const { data: contributionData, error: contributionError } = await supabase
       .from("financial_goal_contributions")
-      .select("id, goal_id, amount, created_at")
+      .select("id, goal_id, amount, expense_id, created_at")
       .in("goal_id", manualGoalIds)
       .order("created_at", { ascending: false });
 
@@ -71,6 +72,7 @@ export async function getFinancialGoals(): Promise<FinancialGoal[]> {
           id: contribution.id,
           goal_id: contribution.goal_id,
           amount: Number(contribution.amount),
+          expense_id: contribution.expense_id ?? null,
           created_at: contribution.created_at,
         });
         contributionsByGoal.set(contribution.goal_id, rows);
@@ -145,4 +147,16 @@ export async function getDashboardGoals(limit?: number): Promise<FinancialGoal[]
     });
 
   return typeof limit === "number" ? dashboardGoals.slice(0, limit) : dashboardGoals;
+}
+
+export async function getLinkableFinancialGoals(): Promise<
+  { id: string; title: string }[]
+> {
+  const goals = await getFinancialGoals();
+  return goals
+    .filter(
+      (goal) =>
+        goal.status === "active" && goal.goal_type !== "category_challenge",
+    )
+    .map((goal) => ({ id: goal.id, title: goal.title }));
 }

@@ -8,6 +8,7 @@ import { ExpenseList } from "@/components/expenses/expense-list";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatPaymentMethod } from "@/lib/constants";
+import { formatCurrency } from "@/lib/format";
 import { getUserCategories } from "@/lib/data/categories";
 import {
   formatMonthLabel,
@@ -61,10 +62,19 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
       ? `No expenses matching ${filterLabels} in ${monthLabel.toLowerCase()}.`
       : `No expenses in ${monthLabel.toLowerCase()}.`;
 
+  const periodTotal = expenses.reduce(
+    (sum, expense) => sum + Number(expense.amount),
+    0,
+  );
+  const hasFilters =
+    Boolean(categoryId) ||
+    Boolean(paymentMethod) ||
+    monthStart !== currentMonthStart;
+
   return (
     <div className="space-y-4">
-      <section className="flex items-center justify-between gap-3">
-        <div>
+      <section className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
           <h2
             className="text-2xl font-bold tracking-tight text-text"
             style={{ letterSpacing: "-0.02em" }}
@@ -73,14 +83,26 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
           </h2>
           <p className="mt-1 text-sm text-text-muted">
             {monthLabel}
-            {filterLabels ? ` · ${filterLabels}` : ""} · Asia/Dhaka
+            {filterLabels ? ` · ${filterLabels}` : ""}
           </p>
         </div>
-        <Link href="/add">
-          <Button variant="secondary" aria-label="Add expense" className="px-3">
-            <FiEdit className="h-5 w-5" aria-hidden />
-          </Button>
-        </Link>
+        <div className="flex shrink-0 items-start gap-3">
+          {expenses.length > 0 ? (
+            <div className="text-right">
+              <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+                {hasFilters ? "Filtered total" : "Total"}
+              </p>
+              <p className="mt-0.5 text-xl font-bold tabular-nums text-text">
+                {formatCurrency(periodTotal)}
+              </p>
+            </div>
+          ) : null}
+          <Link href="/add">
+            <Button variant="secondary" aria-label="Add expense" className="px-3">
+              <FiEdit className="h-5 w-5" aria-hidden />
+            </Button>
+          </Link>
+        </div>
       </section>
 
       <Suspense
