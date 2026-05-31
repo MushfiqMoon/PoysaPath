@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { getTodayInDhaka } from "@/lib/dates";
 import { advanceDueDate } from "@/lib/recurring-dates";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -136,6 +137,7 @@ export async function recordRecurringExpense(id: string) {
   const amount = Number(item.amount);
   const linkedGoalId = item.linked_goal_id as string | null;
   const paidDueDate = item.next_due_date;
+  const expenseDate = getTodayInDhaka();
 
   if (linkedGoalId) {
     await assertLinkableGoal(supabase, user.id, linkedGoalId);
@@ -147,7 +149,7 @@ export async function recordRecurringExpense(id: string) {
       user_id: user.id,
       amount,
       category_id: item.category_id,
-      expense_date: paidDueDate,
+      expense_date: expenseDate,
       note: item.title,
       payment_method: item.payment_method,
       recurring_item_id: item.id,
