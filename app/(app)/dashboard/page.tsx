@@ -73,9 +73,16 @@ export default async function DashboardPage() {
     <DashboardPullRefresh>
       <div className="space-y-6">
         <section>
-          <div className="flex items-center gap-3">
-            <UserAvatar name={displayName} avatarUrl={avatarUrl} size={44} />
-            <div>
+          <div className={avatarUrl ? "flex items-center gap-4" : undefined}>
+            {avatarUrl ? (
+              <UserAvatar
+                name={displayName}
+                avatarUrl={avatarUrl}
+                size={52}
+                featured
+              />
+            ) : null}
+            <div className="min-w-0">
               <p className="font-serif text-xl font-medium italic text-accent">
                 Hi, {displayName}
               </p>

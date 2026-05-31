@@ -47,8 +47,15 @@ export function ProfileSettings({
     <div className="space-y-6">
       <Card padding="md">
         <h3 className="font-semibold tracking-tight text-text">Profile</h3>
-        <div className="mt-4 flex items-center gap-4">
-          <UserAvatar name={avatarName} avatarUrl={avatarUrl} size={64} />
+        <div className={avatarUrl ? "mt-4 flex items-center gap-4" : "mt-4"}>
+          {avatarUrl ? (
+            <UserAvatar
+              name={avatarName}
+              avatarUrl={avatarUrl}
+              size={72}
+              featured
+            />
+          ) : null}
           <div className="min-w-0">
             <p className="truncate font-medium text-text">{avatarName}</p>
             <p className="truncate text-sm text-text-muted">{email}</p>
