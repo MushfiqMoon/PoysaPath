@@ -6,7 +6,7 @@ Link recurring payment reminders to financial goals so recording a payment updat
 
 Example: save ৳100,000 with a goal, and set a recurring ৳10,000/month payment linked to that goal. Each time **Record payment** is tapped:
 
-1. An **expense** is created (unchanged behavior).
+1. An **expense** is created with `expense_date` set to **today** (daily log day).
 2. A **goal contribution** is added when `linked_goal_id` is set (Option B).
 
 Creating a recurring row alone does not touch expenses or goals until payment is recorded.
@@ -29,6 +29,7 @@ Creating a recurring row alone does not touch expenses or goals until payment is
 
 | Column | Table | Purpose |
 |--------|-------|---------|
+| `expense_date` | `expenses` | Log day shown in lists and budgets (today when recorded) |
 | `recurring_item_id` | `expenses` | Which recurring created this expense |
 | `recurring_paid_due_date` | `expenses` | Due cycle paid; used to revert schedule |
 | `expense_id` | `financial_goal_contributions` | Links contribution to expense; `ON DELETE CASCADE` |

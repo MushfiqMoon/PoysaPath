@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
 import { FiLinkedin, FiMessageCircle } from "react-icons/fi";
 
 import { BackLink } from "@/components/shared/back-link";
 import { Logo } from "@/components/shared/logo";
+import { buildOAuthRedirectUrl, getSafeNextPath } from "@/lib/auth/oauth";
 import { GEMINI_CONTACT } from "@/lib/gemini/disabled-message";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -18,6 +20,8 @@ type AuthMode = "login" | "signup" | "forgot";
 
 type AuthFormProps = {
   mode: AuthMode;
+  next?: string;
+  oauthError?: string;
 };
 
 function formatAuthError(error: { message?: string; code?: string }): string {
@@ -31,15 +35,37 @@ function formatAuthError(error: { message?: string; code?: string }): string {
   return message;
 }
 
-export function AuthForm({ mode }: AuthFormProps) {
+export function AuthForm({ mode, next, oauthError }: AuthFormProps) {
   const router = useRouter();
   const supabase = createClient();
+  const redirectPath = getSafeNextPath(next);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(oauthError ?? null);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  async function handleGoogleSignIn() {
+    setError(null);
+    setMessage(null);
+    setGoogleLoading(true);
+
+    try {
+      const redirectTo = buildOAuthRedirectUrl(window.location.origin, next);
+      const { error: oauthSignInError } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo },
+      });
+
+      if (oauthSignInError) {
+        setError(formatAuthError(oauthSignInError));
+      }
+    } finally {
+      setGoogleLoading(false);
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -68,7 +94,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           return;
         }
 
-        router.push("/dashboard");
+        router.push(redirectPath);
         router.refresh();
         return;
       }
@@ -100,7 +126,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         return;
       }
 
-      router.push("/dashboard");
+      router.push(redirectPath);
       router.refresh();
     } finally {
       setLoading(false);
@@ -172,6 +198,29 @@ export function AuthForm({ mode }: AuthFormProps) {
             </Link>
           </div>
         ) : (
+        <>
+          <Button
+            type="button"
+            variant="secondary"
+            fullWidth
+            loading={googleLoading}
+            disabled={loading}
+            onClick={handleGoogleSignIn}
+            className="mb-4"
+          >
+            <FcGoogle className="h-5 w-5 shrink-0" aria-hidden />
+            Continue with Google
+          </Button>
+
+          <div className="relative mb-4">
+            <div className="absolute inset-0 flex items-center" aria-hidden>
+              <div className="w-full border-t border-border" />
+            </div>
+            <p className="relative flex justify-center text-xs uppercase tracking-wide text-text-muted">
+              <span className="bg-surface px-3">or</span>
+            </p>
+          </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="email">Email</Label>
@@ -238,15 +287,12 @@ export function AuthForm({ mode }: AuthFormProps) {
           )}
 
           <div className="mt-2 pt-2">
-            <Button type="submit" fullWidth disabled={loading}>
-              {loading
-                ? "Please wait…"
-                : mode === "login"
-                  ? "Log in"
-                  : "Sign up"}
+            <Button type="submit" fullWidth disabled={loading || googleLoading} loading={loading}>
+              {mode === "login" ? "Log in" : "Sign up"}
             </Button>
           </div>
         </form>
+        </>
         )}
 
         {mode === "login" && (

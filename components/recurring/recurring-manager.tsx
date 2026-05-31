@@ -88,9 +88,9 @@ function LinkedGoalBanner({
 
 function recordPaymentHintText(linkedGoalTitle: string | null, amount: number) {
   if (linkedGoalTitle) {
-    return `Recording creates an expense for the due date and adds ${formatCurrency(amount)} to ${linkedGoalTitle}.`;
+    return `Logs today's expense, marks this due date as paid, and adds ${formatCurrency(amount)} to ${linkedGoalTitle}.`;
   }
-  return "Recording creates an expense for the due date.";
+  return "Logs an expense for today and marks this due date as paid.";
 }
 
 function RecurringCard({ item }: { item: RecurringItem }) {

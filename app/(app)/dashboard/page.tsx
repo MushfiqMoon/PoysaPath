@@ -10,7 +10,8 @@ import { GoalsDashboardCard } from "@/components/dashboard/goals-dashboard-card"
 import { RecurringDashboardCard } from "@/components/dashboard/recurring-dashboard-card";
 import { Card } from "@/components/ui/card";
 import { InsightCardSkeleton } from "@/components/dashboard/insight-card";
-import { getAuthUser, getDisplayName } from "@/lib/auth/session";
+import { getAuthUser, getUserProfile } from "@/lib/auth/session";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import { getBudgetsWithSpent } from "@/lib/data/budgets";
 import { getGeminiKeyStatus } from "@/lib/data/gemini-credentials";
 import { getDashboardGoals } from "@/lib/data/goals";
@@ -36,7 +37,7 @@ const InsightCard = dynamic(
 
 export default async function DashboardPage() {
   const [
-    displayName,
+    userProfile,
     user,
     todayTotal,
     monthTotal,
@@ -46,7 +47,7 @@ export default async function DashboardPage() {
     goals,
     recurringAlerts,
   ] = await Promise.all([
-      getDisplayName(),
+      getUserProfile(),
       getAuthUser(),
       getTodayTotal(),
       getMonthTotal(),
@@ -56,6 +57,9 @@ export default async function DashboardPage() {
       getDashboardGoals(),
       getRecurringAlerts(),
     ]);
+
+  const displayName = userProfile?.displayName ?? "there";
+  const avatarUrl = userProfile?.avatarUrl ?? null;
 
   const geminiStatus = user
     ? await getGeminiKeyStatus(user.id)
@@ -69,15 +73,20 @@ export default async function DashboardPage() {
     <DashboardPullRefresh>
       <div className="space-y-6">
         <section>
-          <p className="font-serif text-xl font-medium italic text-accent">
-            Hi, {displayName}
-          </p>
-          <h2
-            className="mt-1 text-2xl font-bold tracking-tight text-text"
-            style={{ letterSpacing: "-0.02em" }}
-          >
-            Dashboard
-          </h2>
+          <div className="flex items-center gap-3">
+            <UserAvatar name={displayName} avatarUrl={avatarUrl} size={44} />
+            <div>
+              <p className="font-serif text-xl font-medium italic text-accent">
+                Hi, {displayName}
+              </p>
+              <h2
+                className="mt-0.5 text-2xl font-bold tracking-tight text-text"
+                style={{ letterSpacing: "-0.02em" }}
+              >
+                Dashboard
+              </h2>
+            </div>
+          </div>
         </section>
 
         <div className="grid grid-cols-2 gap-3">
