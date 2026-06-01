@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import {
   formatPaymentMethod,
   PAYMENT_METHODS,
-  type StoredPaymentMethod,
+  type PaymentMethod,
 } from "@/lib/constants";
 import { getTodayInDhaka } from "@/lib/dates";
 import { formatCurrency, formatRelativeDay } from "@/lib/format";
@@ -262,7 +262,7 @@ export function RecurringManager({
   const [amount, setAmount] = useState("");
   const [categoryId, setCategoryId] = useState(categories[0]?.id ?? "");
   const [linkedGoalId, setLinkedGoalId] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<StoredPaymentMethod | "">("");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | "">("");
   const [frequency, setFrequency] = useState<RecurringFrequency>("monthly");
   const [nextDueDate, setNextDueDate] = useState(getTodayInDhaka());
   const [reminderDays, setReminderDays] = useState("3");
@@ -459,7 +459,7 @@ export function RecurringManager({
                 id="recurring-payment"
                 value={paymentMethod}
                 onChange={(e) =>
-                  setPaymentMethod(e.target.value as StoredPaymentMethod | "")
+                  setPaymentMethod(e.target.value as PaymentMethod | "")
                 }
                 className="min-h-11 w-full rounded-xl border border-border bg-surface px-3 py-2 text-text"
               >

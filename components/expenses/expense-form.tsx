@@ -15,9 +15,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  formatPaymentMethod,
+  coercePaymentMethod,
   PAYMENT_METHODS,
-  type StoredPaymentMethod,
+  type PaymentMethod,
 } from "@/lib/constants";
 import { getTodayInDhaka } from "@/lib/dates";
 import type { Category, Expense } from "@/lib/types";
@@ -67,9 +67,11 @@ export function ExpenseForm({
     expense?.expense_date ?? defaults?.expenseDate ?? getTodayInDhaka(),
   );
   const [note, setNote] = useState(expense?.note ?? defaults?.note ?? "");
-  const [paymentMethod, setPaymentMethod] = useState(
-    expense?.payment_method ?? defaults?.paymentMethod ?? "",
-  );
+  const [paymentMethod, setPaymentMethod] = useState(() => {
+    const raw =
+      expense?.payment_method ?? defaults?.paymentMethod ?? "";
+    return coercePaymentMethod(raw) ?? "";
+  });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -98,7 +100,7 @@ export function ExpenseForm({
       category_id: categoryId,
       expense_date: expenseDate,
       note: note || null,
-      payment_method: (paymentMethod || null) as StoredPaymentMethod | null,
+      payment_method: (paymentMethod || null) as PaymentMethod | null,
     };
 
     try {
@@ -221,12 +223,6 @@ export function ExpenseForm({
             className="mt-1.5 min-h-11 w-full appearance-none rounded-xl border border-border bg-surface px-3 py-2 text-base text-text transition-[background-image] duration-[var(--dur-short)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             <option value="">—</option>
-            {paymentMethod &&
-              !PAYMENT_METHODS.some((p) => p.value === paymentMethod) && (
-                <option value={paymentMethod}>
-                  {formatPaymentMethod(paymentMethod) ?? paymentMethod}
-                </option>
-              )}
             {PAYMENT_METHODS.map((p) => (
               <option key={p.value} value={p.value}>
                 {p.label}

@@ -98,21 +98,7 @@ function GoalProgressItem({ goal }: { goal: FinancialGoal }) {
 
 export function GoalsDashboardCard({ goals }: GoalsDashboardCardProps) {
   if (goals.length === 0) {
-    return (
-      <Card padding="md" className="border-dashed bg-surface/80">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h2 className="text-sm font-semibold text-text-muted">Pinned goals</h2>
-            <p className="mt-1 text-sm text-text">
-              Choose goals in Settings to show them on your dashboard.
-            </p>
-          </div>
-          <CompactActionLink href="/settings/goals" variant="soft">
-            Choose
-          </CompactActionLink>
-        </div>
-      </Card>
-    );
+    return null;
   }
 
   return (

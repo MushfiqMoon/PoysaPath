@@ -16,12 +16,6 @@ import { CompactActionButton } from "@/components/ui/compact-action";
 import { PAYMENT_METHODS } from "@/lib/constants";
 import type { Category } from "@/lib/types";
 
-const LEGACY_PAYMENT_FILTERS = [
-  { value: "bkash", label: "bKash" },
-  { value: "nagad", label: "Nagad" },
-  { value: "card", label: "Card" },
-] as const;
-
 export type MonthOption = {
   value: string;
   label: string;
@@ -241,11 +235,6 @@ export function ExpenseFilters({ categories, months }: ExpenseFiltersProps) {
               >
                 <option value="">All payment types</option>
                 {PAYMENT_METHODS.map((p) => (
-                  <option key={p.value} value={p.value}>
-                    {p.label}
-                  </option>
-                ))}
-                {LEGACY_PAYMENT_FILTERS.map((p) => (
                   <option key={p.value} value={p.value}>
                     {p.label}
                   </option>

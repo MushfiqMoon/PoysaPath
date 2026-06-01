@@ -140,7 +140,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
         id: "profile",
         title: "Profile & theme",
         description:
-          "Edit your display name. Switch light, dark, or system theme — saved on this device.",
+          "Edit your display name and show your Google profile photo when you sign in with Google. Switch light, dark, or system theme — saved on this device.",
         icon: "profile",
       },
       {
@@ -168,7 +168,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
         id: "gemini-key",
         title: AI_LABELS.settingsSection,
         description:
-          "Bring your own Google Gemini API key (encrypted). Powers quick entry and weekly insight — optional.",
+          `Bring your own Google Gemini API key (encrypted). Powers quick entry, ${AI_LABELS.weeklyInsight}, and monthly AI reports — optional.`,
         icon: "gemini-key",
       },
       {
@@ -191,7 +191,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
         id: "auth",
         title: "Secure sign-in",
         description:
-          "Email and password accounts via Supabase. Protected routes keep expenses behind login.",
+          "Email and password or Google sign-in via Supabase Auth. Protected routes keep expenses behind login.",
         icon: "auth",
       },
       {

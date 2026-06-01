@@ -1,3 +1,4 @@
+import { TIMEZONE } from "@/lib/constants";
 import { addDaysYmd, getTodayInDhaka } from "@/lib/dates";
 
 export function formatCurrency(amount: number): string {
@@ -21,4 +22,13 @@ export function formatRelativeDay(ymd: string): string {
 
 export function formatExpenseTitle(note: string | null, categoryName: string) {
   return note?.trim() || categoryName;
+}
+
+export function formatDateTimeDhaka(iso: string | null | undefined): string {
+  if (!iso) return "—";
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: TIMEZONE,
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(iso));
 }

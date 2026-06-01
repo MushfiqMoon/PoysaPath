@@ -4,10 +4,10 @@ import { FEATURE_SECTIONS } from "@/lib/features-catalog";
 import { getSiteUrl } from "@/lib/seo/site-url";
 
 export const FEATURES_PAGE_TITLE =
-  "PoysaPath Features | BDT Expense Tracker, Budgets & AI Quick Entry";
+  "PoysaPath Features | BDT Expense Tracker, Goals, Budgets & AI";
 
 export const FEATURES_PAGE_DESCRIPTION =
-  "Explore PoysaPath features for Bangladesh: track daily spending in BDT (taka), monthly category budgets, expense history with filters, optional Gemini quick entry and weekly insights, custom categories, and private accounts. Free to start.";
+  "Explore PoysaPath for Bangladesh: track daily spending in BDT, set budgets and goals, manage recurring reminders, and optionally use Gemini for quick entry, Money Coach, and monthly AI reports. Sign in with email or Google. Free to start.";
 
 export const FEATURES_KEYWORDS = [
   "PoysaPath features",
@@ -16,8 +16,13 @@ export const FEATURES_KEYWORDS = [
   "taka budget app",
   "daily expense tracker Bangladesh",
   "expense tracker with budgets",
+  "expense tracker goals Bangladesh",
+  "recurring bill reminder app",
   "AI expense entry Bangla",
   "Gemini expense parser",
+  "Money Coach expense tracker",
+  "monthly expense report AI",
+  "Google sign in expense app",
   "personal finance app Bangladesh",
   "monthly budget tracker BDT",
   "category expense tracker",
@@ -28,12 +33,17 @@ const FEATURES_FAQ = [
   {
     question: "What is PoysaPath?",
     answer:
-      "PoysaPath is a personal expense tracker built for daily spending in Bangladesh. You log amounts in BDT, review today and month totals on a dashboard, and optionally use your own Google Gemini API key for quick text entry and weekly insights.",
+      "PoysaPath is a personal expense tracker built for daily spending in Bangladesh. You log amounts in BDT, review today and month totals on a dashboard, set budgets and financial goals, track recurring reminders, and optionally use your own Google Gemini API key for quick text entry, Money Coach, and monthly AI reports.",
   },
   {
     question: "Is PoysaPath free to use?",
     answer:
       "You can sign up and start tracking for free. Optional AI features require your own Gemini API key from Google AI Studio.",
+  },
+  {
+    question: "Can I sign in with Google?",
+    answer:
+      "Yes. You can create an account with email and password or continue with Google. Google sign-in can also import your name and profile photo into your PoysaPath profile.",
   },
   {
     question: "Does PoysaPath support Bangladeshi Taka (BDT)?",
@@ -43,12 +53,12 @@ const FEATURES_FAQ = [
   {
     question: "Do I need AI to use PoysaPath?",
     answer:
-      "No. Manual expense entry, dashboards, categories, and budgets work without AI. Quick entry and weekly insight are optional and powered by your own Gemini key if you choose to add one.",
+      "No. Manual expense entry, dashboards, categories, budgets, goals, and recurring reminders work without AI. Quick entry, Money Coach, and monthly AI reports are optional and powered by your own Gemini key if you choose to add one.",
   },
   {
     question: "Is my expense data private?",
     answer:
-      "Each account only sees its own expenses, categories, and budgets. Your data is not shared with other users on the platform.",
+      "Each account only sees its own expenses, categories, budgets, goals, and reminders. Your data is not shared with other users on the platform.",
   },
 ] as const;
 
