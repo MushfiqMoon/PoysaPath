@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { CoinLoader } from "@/components/shared/coin-loader";
+import { touchLastSeen } from "@/lib/auth/admin";
 import { getAuthUser } from "@/lib/auth/session";
 
 export default async function AppLayout({
@@ -15,6 +16,8 @@ export default async function AppLayout({
   if (!user) {
     redirect("/login");
   }
+
+  await touchLastSeen();
 
   return (
     <AppShell>

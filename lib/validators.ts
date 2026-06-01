@@ -1,18 +1,10 @@
 import { z } from "zod";
 
-import type { StoredPaymentMethod } from "@/lib/constants";
+import { PAYMENT_METHODS, type PaymentMethod } from "@/lib/constants";
 
-type PaymentMethodValue = StoredPaymentMethod;
-
-const paymentValues: [PaymentMethodValue, ...PaymentMethodValue[]] = [
-  "credit_card",
-  "debit_card",
-  "mobile_wallet",
-  "cash",
-  "other",
-  "bkash",
-  "nagad",
-  "card",
+const paymentValues = PAYMENT_METHODS.map((p) => p.value) as [
+  PaymentMethod,
+  ...PaymentMethod[],
 ];
 
 export const expenseInputSchema = z.object({

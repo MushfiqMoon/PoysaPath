@@ -8,22 +8,26 @@ export const PAYMENT_METHODS = [
 
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number]["value"];
 
-export type LegacyPaymentMethod = "bkash" | "nagad" | "card";
+const PAYMENT_METHOD_VALUES = PAYMENT_METHODS.map((p) => p.value);
 
-export type StoredPaymentMethod = PaymentMethod | LegacyPaymentMethod;
+export function isPaymentMethod(value: string): value is PaymentMethod {
+  return PAYMENT_METHOD_VALUES.includes(value as PaymentMethod);
+}
 
-/** Labels for values saved before payment options were updated */
-const LEGACY_PAYMENT_LABELS: Record<string, string> = {
-  bkash: "bKash",
-  nagad: "Nagad",
-  card: "Card",
-};
+/** Normalize deprecated stored values (see migration 017). */
+export function coercePaymentMethod(
+  value: string | null | undefined,
+): PaymentMethod | null {
+  if (!value) return null;
+  if (value === "bkash" || value === "nagad") return "mobile_wallet";
+  if (value === "card") return "credit_card";
+  return isPaymentMethod(value) ? value : null;
+}
 
 export function formatPaymentMethod(value: string | null | undefined): string | null {
-  if (!value) return null;
-  const current = PAYMENT_METHODS.find((p) => p.value === value);
-  if (current) return current.label;
-  return LEGACY_PAYMENT_LABELS[value] ?? value;
+  const coerced = coercePaymentMethod(value);
+  if (!coerced) return null;
+  return PAYMENT_METHODS.find((p) => p.value === coerced)?.label ?? null;
 }
 
 export const TIMEZONE = "Asia/Dhaka";

@@ -6,6 +6,7 @@ import {
   FiFileText,
   FiPieChart,
   FiRefreshCw,
+  FiShield,
   FiTag,
   FiTarget,
   FiUser,
@@ -63,12 +64,25 @@ const menuLinks: {
   },
 ];
 
-export function SettingsMenu() {
+const adminLink = {
+  href: "/settings/admin",
+  label: "Admin",
+  desc: "User sign-in overview",
+  Icon: FiShield,
+} as const;
+
+type SettingsMenuProps = {
+  showAdminLink?: boolean;
+};
+
+export function SettingsMenu({ showAdminLink = false }: SettingsMenuProps) {
+  const links = showAdminLink ? [...menuLinks, adminLink] : menuLinks;
+
   return (
     <nav aria-label="Settings sections">
       <Card padding="none" className="overflow-hidden">
         <ul className="divide-y divide-glass-border">
-          {menuLinks.map((item) => (
+          {links.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}

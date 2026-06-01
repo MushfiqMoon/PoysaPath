@@ -34,6 +34,42 @@ After running `005_notifications.sql`, run files under `migrations/notifications
 
 Each user sees an announcement until they mark it read in the app (bell icon → **Mark as read**). Add new ones by copying `notifications/_template.sql`.
 
+## Super admin (read-only user stats)
+
+After running `018_super_admin.sql`:
+
+1. **Promote an existing user** in **SQL Editor** (service role). Replace the email:
+
+```sql
+UPDATE public.profiles
+SET is_super_admin = true
+WHERE id = (
+  SELECT id FROM auth.users WHERE email = 'your-email@example.com' LIMIT 1
+);
+```
+
+To remove admin access:
+
+```sql
+UPDATE public.profiles
+SET is_super_admin = false
+WHERE id = (
+  SELECT id FROM auth.users WHERE email = 'your-email@example.com' LIMIT 1
+);
+```
+
+2. That user signs in and opens **Settings → Admin** (`/settings/admin`).
+
+3. They can see:
+   - Total registered users
+   - Users who have signed in at least once (tracked when using the app)
+   - Last sign-in time across all users (Asia/Dhaka)
+   - A list of every user email and last visit (or “Never visited”)
+
+After `020_admin_user_list.sql`, the user list is available on the Admin page.
+
+Users cannot grant themselves `is_super_admin` from the app; only SQL (or service role) can change that flag.
+
 ## RLS test (two accounts)
 
 1. Create User A and User B.
