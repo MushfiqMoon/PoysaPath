@@ -16,6 +16,7 @@ import { Card } from "@/components/ui/card";
 import { CompactActionLink } from "@/components/ui/compact-action";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useServerAction } from "@/lib/hooks/use-server-action";
 import {
   formatPaymentMethod,
   PAYMENT_METHODS,
@@ -94,22 +95,7 @@ function recordPaymentHintText(linkedGoalTitle: string | null, amount: number) {
 }
 
 function RecurringCard({ item }: { item: RecurringItem }) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function runAction(action: () => Promise<void>) {
-    setLoading(true);
-    setError(null);
-    try {
-      await action();
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not update item");
-    } finally {
-      setLoading(false);
-    }
-  }
+  const { loading, error, runAction } = useServerAction("Could not update item");
 
   const statusClasses =
     item.status === "missed"

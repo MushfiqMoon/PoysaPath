@@ -11,6 +11,21 @@
    - `005_notifications.sql`
    - `006_user_gemini_credentials.sql`
    - `007_goals_recurring.sql`
+   - `008_recurring_payments_default_expense.sql`
+   - `009_goal_contributions.sql`
+   - `010_monthly_ai_reports.sql`
+   - `011_monthly_ai_reports_one_per_month.sql`
+   - `012_recurring_goal_link.sql`
+   - `013_recurring_expense_goal_links.sql`
+   - `014_recurring_alert_dismissals.sql`
+   - `015_recurring_expense_date_backfill.sql`
+   - `016_profile_avatar_url.sql`
+   - `017_remove_legacy_payment_methods.sql`
+   - `018_super_admin.sql`
+   - `019` (if present in your project)
+   - `020_admin_user_list.sql`
+   - `021_admin_stats_trim.sql`
+   - `022_incomes.sql`
 3. **Authentication → URL configuration** — add your production URL, e.g. `https://your-app.vercel.app`.
 4. **Authentication → Providers → Email** — turn on/off **Confirm email** as you prefer.
 5. Copy **Project URL** and **anon/publishable key** for Vercel env.
@@ -34,8 +49,10 @@
 ## 3. After deploy
 
 - Sign up / log in on production URL.
-- Add an expense; each user adds their own Gemini API key in **Settings → AI** (free key from [Google AI Studio](https://aistudio.google.com/api-keys)), then test Quick parse, Money Coach, and Monthly report.
-- Run `supabase/migrations/notifications/002_may_2026_updates.sql` for the release announcement (bell icon).
+- Add an expense and income; each user adds their own Gemini API key in **Settings → AI** (free key from [Google AI Studio](https://aistudio.google.com/api-keys)), then test Quick parse, Money Coach, and Monthly report.
+- Run notification SQL in Supabase **SQL Editor** (see `supabase/migrations/notifications/README.md`):
+  - `001_intro.sql` through `003_goals_recurring_updates.sql` (if not already applied)
+  - **`004_income_tracking.sql`** — income tracking and History announcement (bell icon)
 - Optional: configure [custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp) for auth emails.
 
 ## 4. Local vs production

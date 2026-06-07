@@ -12,6 +12,7 @@ import {
   deleteFinancialGoal,
   updateFinancialGoalDashboardVisibility,
 } from "@/app/(app)/actions/goals";
+import { GoalProgressBar } from "@/components/goals/goal-progress-bar";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { EmptyState } from "@/components/shared/empty-state";
 import { DeleteButton } from "@/components/ui/action-buttons";
@@ -19,15 +20,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useServerAction } from "@/lib/hooks/use-server-action";
 import { formatCurrency, formatRelativeDay } from "@/lib/format";
+import { GOAL_TYPE_LABELS_LONG } from "@/lib/goals/labels";
+import {
+  getGoalProgressPercent,
+  isGoalChallenge,
+} from "@/lib/goals/progress";
 import type { Category, FinancialGoal, FinancialGoalType } from "@/lib/types";
-
-const goalTypeLabels: Record<FinancialGoalType, string> = {
-  savings: "Save for a goal",
-  emergency: "Build an emergency fund",
-  debt_payoff: "Pay down debt",
-  category_challenge: "Spend less in a category",
-};
 
 type GoalsManagerProps = {
   goals: FinancialGoal[];
@@ -37,45 +37,26 @@ type GoalsManagerProps = {
 
 function GoalCard({ goal }: { goal: FinancialGoal }) {
   const router = useRouter();
+  const { loading, error, setError, runAction } = useServerAction(
+    "Could not update goal",
+  );
   const [contributionAmount, setContributionAmount] = useState("");
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [confirmComplete, setConfirmComplete] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const isChallenge = goal.goal_type === "category_challenge";
+  const [contributionLoading, setContributionLoading] = useState(false);
+  const [contributionError, setContributionError] = useState<string | null>(
+    null,
+  );
+  const isChallenge = isGoalChallenge(goal);
   const isActive = goal.status === "active";
-  const progressLabel = isChallenge ? "spent" : "saved / paid";
-  const isAtChallengeLimit =
-    isChallenge && !goal.is_over_target && goal.progress_percent >= 100;
   const isChallengeAchieved =
     isChallenge && !goal.is_over_target && goal.progress_percent < 100;
-  const progressClass = goal.is_over_target
-    ? "text-danger"
-    : isAtChallengeLimit
-      ? "text-text-muted"
-      : "text-accent";
-  const progressStatusLabel = isChallenge
-    ? goal.is_over_target
-      ? `${formatCurrency(goal.progress_amount - goal.target_amount)} over target`
-      : isAtChallengeLimit
-        ? "At the limit"
-        : `${formatCurrency(goal.remaining_amount)} left this month`
-    : `${formatCurrency(goal.remaining_amount)} remaining`;
-  const progressPercentLabel = isChallenge
-    ? `${Math.min(100, goal.progress_percent)}% of limit used`
-    : `${Math.min(100, goal.progress_percent)}% complete`;
   const completeConfirmMessage = isChallenge
     ? goal.is_over_target
       ? `${goal.title} is over its spend-less target. Mark it complete anyway?`
-      : `${goal.title} has used ${Math.min(
-          100,
-          goal.progress_percent,
-        )}% of its spend limit. Mark it complete anyway?`
-    : `${goal.title} is only ${Math.min(
-        100,
-        goal.progress_percent,
-      )}% complete. Mark it complete anyway?`;
+      : `${goal.title} has used ${getGoalProgressPercent(goal)}% of its spend limit. Mark it complete anyway?`
+    : `${goal.title} is only ${getGoalProgressPercent(goal)}% complete. Mark it complete anyway?`;
   const statusClass = goal.status === "completed"
     ? "bg-accent/12 text-accent ring-accent/25"
     : isActive
@@ -84,31 +65,18 @@ function GoalCard({ goal }: { goal: FinancialGoal }) {
 
   async function handleContributionAdd(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
+    setContributionLoading(true);
+    setContributionError(null);
     try {
       await addFinancialGoalContribution(goal.id, Number(contributionAmount));
       setContributionAmount("");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not update progress");
+      setContributionError(
+        err instanceof Error ? err.message : "Could not update progress",
+      );
     } finally {
-      setLoading(false);
-    }
-  }
-
-  async function runAction(action: () => Promise<void>) {
-    setLoading(true);
-    setError(null);
-    try {
-      await action();
-      router.refresh();
-      return true;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not update goal");
-      return false;
-    } finally {
-      setLoading(false);
+      setContributionLoading(false);
     }
   }
 
@@ -140,6 +108,8 @@ function GoalCard({ goal }: { goal: FinancialGoal }) {
     );
   }
 
+  const displayError = contributionError ?? error;
+
   return (
     <>
       <Card
@@ -159,7 +129,7 @@ function GoalCard({ goal }: { goal: FinancialGoal }) {
                 {goal.title}
               </p>
               <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-text-muted">
-                <span>{goalTypeLabels[goal.goal_type]}</span>
+                <span>{GOAL_TYPE_LABELS_LONG[goal.goal_type]}</span>
                 {goal.category ? (
                   <span className="rounded-full bg-bg/70 px-2 py-0.5">
                     {goal.category.icon ? `${goal.category.icon} ` : ""}
@@ -181,34 +151,7 @@ function GoalCard({ goal }: { goal: FinancialGoal }) {
             </span>
           </div>
 
-          <div className="rounded-2xl border border-border bg-bg/45 p-3">
-            <div className="mb-2 flex items-end justify-between gap-3 text-xs text-text-muted">
-              <span className="capitalize">{progressLabel}</span>
-              <span className={`text-right font-semibold tabular-nums ${progressClass}`}>
-                {formatCurrency(goal.progress_amount)} /{" "}
-                {formatCurrency(goal.target_amount)}
-              </span>
-            </div>
-            <div className="h-2.5 overflow-hidden rounded-full bg-surface">
-              <div
-                className={[
-                  "h-full rounded-full transition-[width] duration-300",
-                  goal.is_over_target ? "bg-danger" : "bg-accent",
-                ].join(" ")}
-                style={{ width: `${Math.min(100, goal.progress_percent)}%` }}
-              />
-            </div>
-            <div className="mt-2 flex items-center justify-between gap-3 text-xs">
-              <span className="text-text-muted">
-                {progressPercentLabel}
-              </span>
-              <span
-                className={goal.is_over_target ? "text-danger" : "text-text-muted"}
-              >
-                {progressStatusLabel}
-              </span>
-            </div>
-          </div>
+          <GoalProgressBar goal={goal} style="settings" />
 
           {!isChallenge && goal.status !== "completed" ? (
             <form
@@ -227,7 +170,7 @@ function GoalCard({ goal }: { goal: FinancialGoal }) {
                   onChange={(e) => setContributionAmount(e.target.value)}
                   aria-label={`Add amount for ${goal.title}`}
                 />
-                <Button type="submit" size="sm" loading={loading}>
+                <Button type="submit" size="sm" loading={contributionLoading}>
                   Add
                 </Button>
               </div>
@@ -305,9 +248,9 @@ function GoalCard({ goal }: { goal: FinancialGoal }) {
             </section>
           ) : null}
 
-          {error ? (
+          {displayError ? (
             <p className="text-sm text-danger" role="alert">
-              {error}
+              {displayError}
             </p>
           ) : null}
 
@@ -453,7 +396,7 @@ export function GoalsManager({ goals, categories, currentMonth }: GoalsManagerPr
           <span className="min-w-0">
             <span className="block font-semibold text-text">Add financial goal</span>
             <span className="mt-0.5 block text-sm text-text-muted">
-              Set targets for savings, debt payoff, emergency money, or monthly spending.
+              Set targets for saving, debt payoff, or monthly spending limits.
             </span>
           </span>
           <span
@@ -493,7 +436,7 @@ export function GoalsManager({ goals, categories, currentMonth }: GoalsManagerPr
                 onChange={(e) => setGoalType(e.target.value as FinancialGoalType)}
                 className="min-h-11 w-full rounded-xl border border-border bg-surface px-3 py-2 text-text"
               >
-                {Object.entries(goalTypeLabels).map(([value, label]) => (
+                {Object.entries(GOAL_TYPE_LABELS_LONG).map(([value, label]) => (
                   <option key={value} value={value}>
                     {label}
                   </option>

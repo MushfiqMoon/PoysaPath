@@ -21,12 +21,12 @@ export default async function EditExpensePage({ params }: EditExpensePageProps) 
 
   return (
     <div className="space-y-4">
-      <BackLink href="/expenses">Back to expenses</BackLink>
+      <BackLink href="/history">Back to history</BackLink>
       <h2 className="text-lg font-semibold text-text">Edit expense</h2>
       <ExpenseForm
         categories={categories}
         expense={expense}
-        redirectTo="/expenses"
+        redirectTo="/history"
       />
     </div>
   );

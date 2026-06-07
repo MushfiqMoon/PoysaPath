@@ -4,6 +4,16 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/expenses",
+        destination: "/history",
+        permanent: false,
+      },
+      {
+        source: "/incomes",
+        destination: "/history?tab=income",
+        permanent: false,
+      },
+      {
         source: "/budgets",
         destination: "/settings/budgets",
         permanent: true,

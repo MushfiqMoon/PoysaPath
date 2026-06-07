@@ -45,7 +45,7 @@ const parsedRing =
 export function ExpenseForm({
   categories,
   expense,
-  redirectTo = "/expenses",
+  redirectTo = "/history",
   defaults,
   highlightParsed = false,
   autoFocusAmount = false,
@@ -123,7 +123,7 @@ export function ExpenseForm({
     setLoading(true);
     try {
       await deleteExpense(expense.id);
-      router.push("/expenses");
+      router.push("/history");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not delete");

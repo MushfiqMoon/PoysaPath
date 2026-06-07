@@ -23,15 +23,26 @@ export const expenseInputSchema = z.object({
 
 export type ExpenseInput = z.infer<typeof expenseInputSchema>;
 
+export const incomeInputSchema = z.object({
+  amount: z.coerce.number().positive("Enter a valid amount"),
+  category_id: z.string().uuid("Pick a category"),
+  income_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date"),
+  note: z.string().max(500).optional().nullable(),
+  payment_method: z
+    .union([z.enum(paymentValues), z.literal("")])
+    .optional()
+    .nullable()
+    .transform((v) => (v === "" ? null : v)),
+});
+
+export type IncomeInput = z.infer<typeof incomeInputSchema>;
+
 export const financialGoalInputSchema = z
   .object({
     title: z.string().trim().min(2, "Name your goal").max(80),
-    goal_type: z.enum([
-      "savings",
-      "emergency",
-      "debt_payoff",
-      "category_challenge",
-    ]),
+    goal_type: z.enum(["savings", "debt_payoff", "category_challenge"]),
     category_id: z.string().uuid().optional().nullable(),
     target_amount: z.coerce.number().positive("Enter a target amount"),
     current_amount: z.coerce.number().min(0).optional().default(0),

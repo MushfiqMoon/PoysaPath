@@ -2,32 +2,23 @@
 
 import { revalidatePath } from "next/cache";
 
+import { requireActionUser } from "@/lib/auth/action-user";
 import {
   deleteGeminiKey,
   upsertGeminiKey,
 } from "@/lib/data/gemini-credentials";
-import { createClient } from "@/lib/supabase/server";
-
-async function requireUserId() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("You must be logged in.");
-  return user.id;
-}
 
 export async function saveGeminiApiKey(apiKey: string) {
-  const userId = await requireUserId();
-  await upsertGeminiKey(userId, apiKey);
+  const { user } = await requireActionUser();
+  await upsertGeminiKey(user.id, apiKey);
   revalidatePath("/settings");
   revalidatePath("/add");
   revalidatePath("/dashboard");
 }
 
 export async function removeGeminiApiKey() {
-  const userId = await requireUserId();
-  await deleteGeminiKey(userId);
+  const { user } = await requireActionUser();
+  await deleteGeminiKey(user.id);
   revalidatePath("/settings");
   revalidatePath("/add");
   revalidatePath("/dashboard");

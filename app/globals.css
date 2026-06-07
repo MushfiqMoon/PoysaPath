@@ -12,6 +12,8 @@
   --color-accent-hover: #0f766e;
   --color-focus: #0d9488;
   --color-danger: oklch(55% 0.22 25);
+  --color-expense: oklch(62% 0.17 48);
+  --color-income: oklch(52% 0.14 255);
 
   --bg: var(--color-paper);
   --surface: var(--color-paper-2);
@@ -20,6 +22,8 @@
   --accent: var(--color-accent);
   --accent-hover: var(--color-accent-hover);
   --danger: var(--color-danger);
+  --expense: var(--color-expense);
+  --income: var(--color-income);
   --border: var(--color-rule);
   --border-inner: var(--surface);
   --border-gradient: linear-gradient(
@@ -80,6 +84,8 @@
   --color-accent-hover: #0f766e;
   --color-focus: #0d9488;
   --color-danger: oklch(62% 0.2 25);
+  --color-expense: oklch(70% 0.15 50);
+  --color-income: oklch(52% 0.14 255);
 
   --bg: var(--color-paper);
   --surface: var(--color-paper-2);
@@ -88,6 +94,8 @@
   --accent: var(--color-accent);
   --accent-hover: var(--color-accent-hover);
   --danger: var(--color-danger);
+  --expense: var(--color-expense);
+  --income: var(--color-income);
   --border: var(--color-rule);
   --border-inner: var(--surface);
   --border-gradient: linear-gradient(
@@ -125,6 +133,8 @@
     --color-accent-hover: #0f766e;
     --color-focus: #0d9488;
     --color-danger: oklch(62% 0.2 25);
+    --color-expense: oklch(70% 0.15 50);
+    --color-income: oklch(70% 0.11 255);
 
     --bg: var(--color-paper);
     --surface: var(--color-paper-2);
@@ -133,6 +143,8 @@
     --accent: var(--color-accent);
     --accent-hover: var(--color-accent-hover);
     --danger: var(--color-danger);
+    --expense: var(--color-expense);
+    --income: var(--color-income);
     --border: var(--color-rule);
     --border-inner: var(--surface);
     --border-gradient: linear-gradient(
@@ -168,6 +180,8 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-danger: var(--danger);
+  --color-expense: var(--expense);
+  --color-income: var(--income);
   --color-border: var(--border);
   --color-glass-bg: var(--glass-bg);
   --color-glass-border: var(--glass-border);

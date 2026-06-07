@@ -1,5 +1,6 @@
 import { BudgetBorderProgressCard } from "@/components/budget/budget-progress-ring";
 import { CompactActionLink } from "@/components/ui/compact-action";
+import { getBudgetUsage } from "@/lib/budget/usage";
 import { formatCurrency } from "@/lib/format";
 import type { BudgetRow } from "@/lib/types";
 
@@ -22,11 +23,7 @@ export function BudgetSummaryRings({ budgets }: BudgetSummaryRingsProps) {
       </div>
       <ul className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-1">
         {top.map((row) => {
-          const pct =
-            row.amount > 0
-              ? Math.min(100, Math.round((row.spent / row.amount) * 100))
-              : 0;
-          const over = row.spent > row.amount;
+          const { pct, over } = getBudgetUsage(row.spent, row.amount);
           return (
             <li key={row.id}>
               <BudgetBorderProgressCard spent={row.spent} amount={row.amount}>

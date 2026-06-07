@@ -1,7 +1,7 @@
 # PoysaPath — Project Plan
 
-> **Status:** Phases 0–4 shipped. Migrations `001`–`007` in Supabase. Deploy: [DEPLOY.md](./DEPLOY.md).  
-> **Last updated:** May 26, 2026
+> **Status:** Phases 0–4 shipped. Migrations `001`–`022` in Supabase. Deploy: [DEPLOY.md](./DEPLOY.md).  
+> **Last updated:** June 7, 2026
 
 | Doc | Purpose |
 |-----|---------|
@@ -9,22 +9,24 @@
 | [planning-db.md](./planning-db.md) | Schema, RLS, migrations |
 | [planning-design.md](./planning-design.md) | UX flows and screens |
 | [post-deployment-changes/](./post-deployment-changes/) | Post-launch backlog |
+| [gptfeature-suggestion.md](./gptfeature-suggestion.md) | 30-feature wishlist vs shipped inventory |
 
 ---
 
 ## Current state
 
 - Multi-user expense tracker in **BDT**, timezone **Asia/Dhaka**, mobile-first web app.
-- Auth: email/password, protected `(app)/*`, RLS on all user tables.
-- **Gemini:** Quick parse on `/add`, Money Coach on `/dashboard`, and monthly report in Settings. **Manual add has no AI.**
-- Core: expenses CRUD, categories, budgets, financial goals, recurring money reminders, CSV export API (hidden in Settings UI), notifications (`005`).
-- **Not v1:** shared households, OCR, chat assistant, Google OAuth (backlog).
+- Auth: email/password + Google OAuth, protected `(app)/*`, RLS on all user tables.
+- **Gemini:** Quick parse on `/add` (expense tab), Money Coach on `/dashboard`, and monthly report in Settings.
+- Core: expenses CRUD, **income CRUD** (`/history` with Expense \| Income tabs, `/add` income tab), expense + income categories, budgets, financial goals, recurring money reminders, CSV export API (hidden in Settings UI), notifications (`005`).
+- Dashboard: **Income / Expenses / Saved** this month (`022_incomes.sql`).
+- **Not v1:** shared households, OCR, chat assistant, recurring salary, income AI parse.
 
 ---
 
 ## 1. Product
 
-**PoysaPath** — personal expense tracker. Each user has a private account; no cross-user data access.
+**PoysaPath** — personal cash-flow tracker (expenses + income). Each user has a private account; no cross-user data access.
 
 | Item | Value |
 |------|--------|
@@ -83,6 +85,8 @@ Full RLS detail: [planning-db.md](./planning-db.md).
 | Money Coach | `/dashboard` coaching card (cached) | `POST /api/gemini/weekly-insight` |
 | Monthly report | `/settings/reports` → Generate report | `POST /api/gemini/monthly-report` |
 
+Both AI features include **income + spending** context and **savings rate** when income is logged (`lib/gemini/cash-flow.ts`).
+
 - Structured JSON responses (Zod). Preview before save on Quick tab.
 - On 429 / failure: user message + manual entry still works.
 - Rate limit: ~40 calls/user/hour (in-memory). Money Coach text is cached per user/day in `insight_cache`.
@@ -106,9 +110,10 @@ Full RLS detail: [planning-db.md](./planning-db.md).
 | `/` | Landing (public) |
 | `/login`, `/signup`, `/forgot-password` | Auth |
 | `/dashboard` | Today/month totals, Money Coach, goals, recurring reminders, recent |
-| `/add` | Quick (AI) \| Manual (no AI) tabs |
-| `/expenses`, `/expenses/[id]/edit` | List, edit, delete |
-| `/settings`, `/settings/categories`, `/settings/budget`, `/settings/goals`, `/settings/recurring`, `/settings/reports`, `/settings/notification-history` | Manage |
+| `/add` | Expense \| Income; expense has Quick (AI) \| Manual tabs |
+| `/history` | Expense \| Income tabs; list, filter, drill-down |
+| `/expenses/[id]/edit`, `/incomes/[id]/edit` | Edit expense or income |
+| `/settings`, `/settings/categories`, `/settings/budget`, `/settings/goals`, `/settings/recurring`, `/settings/reports`, `/settings/announcements` | Manage (`/settings/notification-history` redirects here) |
 | `/privacy`, `/terms` | Legal |
 
 **API:** `POST /api/gemini/parse-expense`, `POST /api/gemini/weekly-insight`, `POST /api/gemini/monthly-report`, `GET /api/export/csv` (optional `?from=` / `?to=` dates).
@@ -132,11 +137,13 @@ Setup: Supabase project → run migrations → [Google AI Studio](https://aistud
 
 ## 8. Shipped vs backlog
 
-### Shipped (Phases 0–3)
+### Shipped (Phases 0–4)
 
-- Auth, middleware, landing, CRUD, dashboard, categories, budgets
+- Auth, middleware, landing, expense + income CRUD, dashboard, categories, budgets
+- `/history` (Expense | Income tabs); `/expenses` list removed
+- Dashboard **Income / Expenses / Saved** this month (`022_incomes.sql`)
 - Financial goals and recurring money reminders
-- Gemini: parse-expense + Money Coach + monthly report
+- Gemini: parse-expense + Money Coach + monthly report (income + savings rate context)
 - Per-user rate limit, insight refresh cooldown
 - CSV export API, privacy/terms, notifications migration
 

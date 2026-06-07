@@ -1,23 +1,43 @@
-import { AddExpenseTabs } from "@/components/expenses/add-expense-tabs";
+import { AddMoneyTabs } from "@/components/expenses/add-money-tabs";
+import { PageHeader } from "@/components/layout/page-header";
 import { getAuthUser } from "@/lib/auth/session";
-import { getUserCategories } from "@/lib/data/categories";
+import { getExpenseCategories, getIncomeCategories } from "@/lib/data/categories";
 import { getGeminiKeyStatus } from "@/lib/data/gemini-credentials";
 
-export default async function AddPage() {
-  const [categories, user] = await Promise.all([
-    getUserCategories(),
+type AddPageProps = {
+  searchParams: Promise<{ flow?: string }>;
+};
+
+export default async function AddPage({ searchParams }: AddPageProps) {
+  const { flow } = await searchParams;
+  const [expenseCategories, incomeCategories, user] = await Promise.all([
+    getExpenseCategories(),
+    getIncomeCategories(),
     getAuthUser(),
   ]);
   const geminiStatus = user
     ? await getGeminiKeyStatus(user.id)
     : { hasKey: false, keyHint: null };
 
+  const initialFlow = flow === "income" ? "income" : "expense";
+
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-text">Add expense</h2>
-      <AddExpenseTabs
-        categories={categories}
+      <PageHeader
+        title="Add"
+        description={
+          initialFlow === "income"
+            ? "Add a new income transaction"
+            : geminiStatus.hasKey
+              ? "Quick parse or manual entry"
+              : "Manual expense entry"
+        }
+      />
+      <AddMoneyTabs
+        expenseCategories={expenseCategories}
+        incomeCategories={incomeCategories}
         hasGeminiKey={geminiStatus.hasKey}
+        initialFlow={initialFlow}
       />
     </div>
   );

@@ -4,17 +4,19 @@ type PageHeaderProps = {
   title: string;
   backHref?: string;
   backLabel?: string;
+  description?: React.ReactNode;
   action?: React.ReactNode;
 };
 
 export function PageHeader({
   title,
-  backHref = "/settings",
+  backHref,
   backLabel = "Back",
+  description,
   action,
 }: PageHeaderProps) {
   return (
-    <div className="flex items-start justify-between gap-3">
+    <section className="flex items-start justify-between gap-3">
       <div className="min-w-0">
         {backHref ? (
           <BackLink href={backHref} className="mb-2">
@@ -27,8 +29,11 @@ export function PageHeader({
         >
           {title}
         </h2>
+        {description ? (
+          <p className="mt-1 text-sm text-text-muted">{description}</p>
+        ) : null}
       </div>
       {action}
-    </div>
+    </section>
   );
 }

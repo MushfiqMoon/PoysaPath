@@ -92,7 +92,7 @@ CSS cannot set `border-color` to a gradient. Default borders use the `border-bor
 - Fixed bar: `glass-panel-light`, `rounded-2xl`, safe-area padding
 - **Track:** neutral glass — not full-width accent
 - **Active tab:** accent pill slides horizontally (`translate3d`, 25% width per item); label + icon **white** on active, `text-text-muted` on inactive
-- Routes: Home, Expenses, Add, More (Settings section highlights **More**)
+- Routes: Home, History, Add, More (Settings section highlights **More**)
 
 ### Theme picker (`components/theme-toggle.tsx`)
 

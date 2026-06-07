@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import { getBudgetUsage } from "@/lib/budget/usage";
+
 type BudgetProgressRingProps = {
   spent: number;
   amount: number;
@@ -17,8 +19,7 @@ export function BudgetProgressRing({
 }: BudgetProgressRingProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const pct = amount > 0 ? Math.min(100, (spent / amount) * 100) : 0;
-  const over = spent > amount;
+  const { rawPct: pct, over } = getBudgetUsage(spent, amount);
   const offset = circumference - (pct / 100) * circumference;
   const stroke = over ? "var(--danger)" : "var(--accent)";
 
@@ -85,8 +86,7 @@ export function BudgetBorderProgressCard({
   children,
   className = "",
 }: BudgetBorderProgressCardProps) {
-  const pct = amount > 0 ? Math.min(100, (spent / amount) * 100) : 0;
-  const over = spent > amount;
+  const { rawPct: pct, over } = getBudgetUsage(spent, amount);
   const stroke = over ? "var(--danger)" : "var(--accent)";
   const angle = (pct / 100) * 360;
   const innerRadius = `calc(var(--radius-card) - ${BORDER_PROGRESS_WIDTH}px)`;

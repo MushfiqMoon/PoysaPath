@@ -2,7 +2,7 @@
 
 
 
-> **Last updated:** May 24, 2026  
+> **Last updated:** June 7, 2026  
 
 > Design baseline: [planning-design.md](../planning-design.md)
 
@@ -32,7 +32,7 @@ Status: `[ ]` open · `[x]` done
 
 
 
-- [x] **P1 — Bottom nav icons** — `react-icons` in `app-shell.tsx` (Home, Expenses, Add, More).
+- [x] **P1 — Bottom nav icons** — `react-icons` in `app-shell.tsx` (Home, History, Add, More).
 
 - [x] **P2 — Active tab animation** — Sliding accent pill on glass track (`app-shell.tsx`); active tab white icon/label, inactive muted.
 

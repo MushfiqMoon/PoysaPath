@@ -1,14 +1,13 @@
-import { getMonthStartInDhaka } from "@/lib/dates";
+import { addMonthsToMonthStart, getMonthStartInDhaka } from "@/lib/dates";
 import { createClient } from "@/lib/supabase/server";
+import { unwrapSupabaseJoin } from "@/lib/supabase/normalize";
 import type { BudgetRow } from "@/lib/types";
 
 export async function getBudgetsWithSpent(
   monthStart = getMonthStartInDhaka(),
 ): Promise<BudgetRow[]> {
   const supabase = await createClient();
-  const [y, m] = monthStart.split("-").map(Number);
-  const nextMonth =
-    m === 12 ? `${y + 1}-01-01` : `${y}-${String(m + 1).padStart(2, "0")}-01`;
+  const nextMonth = addMonthsToMonthStart(monthStart, 1);
 
   const { data: budgets, error: budgetError } = await supabase
     .from("budgets")
@@ -36,11 +35,7 @@ export async function getBudgetsWithSpent(
   }
 
   return (budgets ?? []).map((b) => {
-    const cat = b.categories as
-      | { name: string; icon: string | null }
-      | { name: string; icon: string | null }[]
-      | null;
-    const category = Array.isArray(cat) ? cat[0] : cat;
+    const category = unwrapSupabaseJoin(b.categories);
     return {
       id: b.id,
       category_id: b.category_id,

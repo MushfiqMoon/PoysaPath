@@ -6,6 +6,10 @@ import { MarketingHeadline } from "@/components/marketing/marketing-headline";
 import { Button } from "@/components/ui/button";
 
 const MARQUEE_ITEMS = [
+  "INCOME",
+  "EXPENSES",
+  "SAVED",
+  "HISTORY",
   "LOG",
   "GOALS",
   "MONEY COACH",
@@ -15,7 +19,6 @@ const MARQUEE_ITEMS = [
   "QUICK ENTRY",
   "BDT",
   "DHAKA",
-  "EXPENSES",
 ];
 
 export function FeaturesHero() {
@@ -48,8 +51,9 @@ export function FeaturesHero() {
               />
             </h1>
             <p className="features-hero__sub">
-              Track every taka, understand every habit, and use optional Gemini
-              AI to turn daily spending into clear next steps.
+              Log income and expenses in BDT, see what you saved this month, and
+              use optional Gemini AI for quick entry, Money Coach, and monthly
+              reports.
             </p>
             <div className="features-hero__ctas">
               <Link href="/signup" className="features-hero__cta">
@@ -62,8 +66,8 @@ export function FeaturesHero() {
               </Link>
             </div>
             <div className="features-hero__fineprint">
+              <span>income + expenses</span>
               <span>built for BDT</span>
-              <span>private account</span>
               <span>optional AI coach</span>
             </div>
           </div>

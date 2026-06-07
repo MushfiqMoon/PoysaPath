@@ -14,9 +14,19 @@ import { AiDisabledNotice } from "@/components/shared/ai-disabled-notice";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import type { MonthlyReportLanguage } from "@/lib/data/monthly-reports";
+import type { MonthlyReportLanguage } from "@/lib/monthly-report-language";
+import { MONTHLY_REPORT_LANGUAGES } from "@/lib/monthly-report-language";
+import {
+  addMonthsToMonthStart,
+  formatMonthStartDisplay,
+  monthStartToParam,
+} from "@/lib/dates";
 import { isGeminiKeyRequiredResponse } from "@/lib/gemini/disabled-message";
-import type { MonthlyReport } from "@/lib/gemini/schemas";
+import type {
+  MonthlyReport,
+  MonthlyReportCashFlowMetrics,
+} from "@/lib/gemini/schemas";
+import { formatCurrency } from "@/lib/format";
 
 type MonthlyReportCardProps = {
   hasGeminiKey: boolean;
@@ -35,7 +45,13 @@ type MonthlyReportApiResponse = {
   source?: "generated" | "missing";
   message?: string;
   error?: string;
+  cashFlow?: {
+    current: MonthlyReportCashFlowMetrics;
+    previous: MonthlyReportCashFlowMetrics;
+  };
 };
+
+type CashFlowPeriodMetrics = MonthlyReportCashFlowMetrics;
 
 type SavedMonthlyReport = {
   id: string;
@@ -56,11 +72,6 @@ type SavedMonthlyReportRecord = {
   created_at: string;
 };
 
-const reportLanguages: { value: MonthlyReportLanguage; label: string }[] = [
-  { value: "en", label: "English" },
-  { value: "bn", label: "Bangla" },
-];
-
 function getReportLabels(language: MonthlyReportLanguage) {
   return language === "bn"
     ? {
@@ -68,39 +79,34 @@ function getReportLabels(language: MonthlyReportLanguage) {
         watchouts: "খেয়াল রাখুন",
         categoryChanges: "ক্যাটাগরি পরিবর্তন",
         nextMonthPlan: "আগামী মাসের পরিকল্পনা",
+        cashFlow: "আয়–খরচ সারাংশ",
+        income: "আয়",
+        expenses: "খরচ",
+        saved: "সঞ্চয়",
+        savingsRate: "সঞ্চয় হার",
         generated: "তৈরি হয়েছে",
-        saved: "সংরক্ষিত",
+        savedLabel: "সংরক্ষিত",
       }
     : {
         wins: "Wins",
         watchouts: "Watchouts",
         categoryChanges: "Category changes",
         nextMonthPlan: "Next-month plan",
-        generated: "Generated",
+        cashFlow: "Cash flow",
+        income: "Income",
+        expenses: "Expenses",
         saved: "Saved",
+        savingsRate: "Savings rate",
+        generated: "Generated",
+        savedLabel: "Saved",
       };
 }
 
 function getLanguageLabel(language: MonthlyReportLanguage) {
-  return reportLanguages.find((option) => option.value === language)?.label ?? "English";
-}
-
-function addMonths(monthStart: string, offset: number) {
-  const [year, month] = monthStart.split("-").map(Number);
-  const date = new Date(Date.UTC(year, month - 1 + offset, 1));
-  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}-01`;
-}
-
-function monthParam(monthStart: string) {
-  return monthStart.slice(0, 7);
-}
-
-function formatMonthOption(monthStart: string) {
-  const [year, month] = monthStart.split("-").map(Number);
-  return new Intl.DateTimeFormat("en-GB", {
-    month: "long",
-    year: "numeric",
-  }).format(new Date(Date.UTC(year, month - 1, 1)));
+  return (
+    MONTHLY_REPORT_LANGUAGES.find((option) => option.value === language)
+      ?.label ?? "English"
+  );
 }
 
 function formatGeneratedAt(value: string, language: MonthlyReportLanguage) {
@@ -160,6 +166,61 @@ function ReportSection({
   );
 }
 
+function formatSavingsRateDisplay(rate: number | null) {
+  if (rate === null) return "—";
+  return `${rate}%`;
+}
+
+function CashFlowMetricsBanner({
+  metrics,
+  labels,
+}: {
+  metrics: CashFlowPeriodMetrics;
+  labels: ReturnType<typeof getReportLabels>;
+}) {
+  return (
+    <div className="grid gap-3 rounded-2xl border border-border/70 bg-surface/50 p-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+          {labels.income}
+        </p>
+        <p className="mt-1 text-lg font-semibold text-accent">
+          {formatCurrency(metrics.incomeTotal)}
+        </p>
+      </div>
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+          {labels.expenses}
+        </p>
+        <p className="mt-1 text-lg font-semibold text-text">
+          {formatCurrency(metrics.expenseTotal)}
+        </p>
+      </div>
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+          {labels.saved}
+        </p>
+        <p
+          className={[
+            "mt-1 text-lg font-semibold",
+            metrics.saved >= 0 ? "text-accent" : "text-danger",
+          ].join(" ")}
+        >
+          {formatCurrency(metrics.saved)}
+        </p>
+      </div>
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
+          {labels.savingsRate}
+        </p>
+        <p className="mt-1 text-lg font-semibold text-text">
+          {formatSavingsRateDisplay(metrics.savingsRatePercent)}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function MonthlyReportCard({
   hasGeminiKey,
   currentMonth,
@@ -173,6 +234,9 @@ export function MonthlyReportCard({
   const [report, setReport] = useState<MonthlyReport | null>(null);
   const [content, setContent] = useState<string | null>(null);
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
+  const [cashFlow, setCashFlow] = useState<
+    MonthlyReportApiResponse["cashFlow"] | null
+  >(null);
   const [savedReports, setSavedReports] =
     useState<SavedMonthlyReport[]>(initialSavedReports);
   const [message, setMessage] = useState<string | null>(null);
@@ -188,7 +252,7 @@ export function MonthlyReportCard({
   const [keyRequired, setKeyRequired] = useState(!hasGeminiKey);
 
   const monthOptions = useMemo(
-    () => Array.from({ length: 12 }, (_, index) => addMonths(currentMonth, -index)),
+    () => Array.from({ length: 12 }, (_, index) => addMonthsToMonthStart(currentMonth, -index)),
     [currentMonth],
   );
   const savedReportMonths = useMemo(
@@ -202,6 +266,7 @@ export function MonthlyReportCard({
     setReport(null);
     setContent(null);
     setGeneratedAt(null);
+    setCashFlow(null);
     setMessage(null);
     setError(null);
   }
@@ -210,6 +275,7 @@ export function MonthlyReportCard({
     setReport(data.report ?? null);
     setContent(data.content ?? null);
     setGeneratedAt(data.generatedAt ?? null);
+    setCashFlow(data.cashFlow ?? null);
     setMessage(
       data.message ??
         (data.source === "generated"
@@ -232,7 +298,7 @@ export function MonthlyReportCard({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          month: monthParam(month),
+          month: monthStartToParam(month),
           language,
           refresh,
         }),
@@ -275,7 +341,7 @@ export function MonthlyReportCard({
 
     if (selectedMonthSaved) {
       setError(
-        `${formatMonthOption(month)} already has a saved report. Delete it before saving another.`,
+        `${formatMonthStartDisplay(month)} already has a saved report. Delete it before saving another.`,
       );
       return;
     }
@@ -350,8 +416,9 @@ export function MonthlyReportCard({
       <div>
         <h2 className="font-semibold tracking-tight text-text">Monthly AI report</h2>
         <p className="mt-1 text-sm leading-relaxed text-text-muted">
-          Save month-wise AI reports with wins, problem areas, category changes,
-          and a next-month plan in English or Bangla.
+          Save month-wise AI reports with income, spending, savings rate, wins,
+          problem areas, category changes, and a next-month plan in English or
+          Bangla.
         </p>
       </div>
 
@@ -369,7 +436,7 @@ export function MonthlyReportCard({
           >
             {monthOptions.map((option) => (
               <option key={option} value={option}>
-                {formatMonthOption(option)}
+                {formatMonthStartDisplay(option)}
               </option>
             ))}
           </select>
@@ -386,7 +453,7 @@ export function MonthlyReportCard({
             }
             className="min-h-11 w-full rounded-xl border border-border bg-surface px-3 py-2 text-base text-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {reportLanguages.map((option) => (
+            {MONTHLY_REPORT_LANGUAGES.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -428,7 +495,7 @@ export function MonthlyReportCard({
 
       {selectedMonthSaved ? (
         <p className="text-sm text-text-muted">
-          {formatMonthOption(month)} already has a saved report. Delete it before
+          {formatMonthStartDisplay(month)} already has a saved report. Delete it before
           saving another.
         </p>
       ) : null}
@@ -456,7 +523,7 @@ export function MonthlyReportCard({
         >
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-accent">
-              {formatMonthOption(month)}
+              {formatMonthStartDisplay(month)}
             </p>
             <h3 className="text-xl font-semibold tracking-tight text-text">
               {report.title}
@@ -468,6 +535,22 @@ export function MonthlyReportCard({
               </p>
             ) : null}
           </div>
+
+          {cashFlow?.current ? (
+            <CashFlowMetricsBanner
+              metrics={cashFlow.current}
+              labels={reportLabels}
+            />
+          ) : null}
+
+          {report.cashFlowSummary ? (
+            <p className="rounded-2xl border border-border/60 bg-surface/40 px-4 py-3 text-sm leading-relaxed text-text">
+              <span className="font-semibold text-text">
+                {reportLabels.cashFlow}:{" "}
+              </span>
+              {report.cashFlowSummary}
+            </p>
+          ) : null}
 
           <ReportSection title={reportLabels.wins} items={report.wins} />
           <ReportSection title={reportLabels.watchouts} items={report.watchouts} />
@@ -518,7 +601,7 @@ export function MonthlyReportCard({
                   >
                     <span className="min-w-0">
                       <span className="block text-xs font-semibold uppercase tracking-wide text-accent">
-                        {formatMonthOption(savedReport.reportMonth)} -{" "}
+                        {formatMonthStartDisplay(savedReport.reportMonth)} -{" "}
                         {getLanguageLabel(savedReport.language)}
                       </span>
                       {savedReport.report ? (
@@ -536,7 +619,7 @@ export function MonthlyReportCard({
                         </span>
                       )}
                       <span className="mt-1 block text-xs text-text-muted">
-                        {savedLabels.saved}{" "}
+                        {savedLabels.savedLabel}{" "}
                         {formatGeneratedAt(
                           savedReport.generatedAt,
                           savedReport.language,
@@ -568,6 +651,14 @@ export function MonthlyReportCard({
                           savedReport.language === "bn" ? "leading-7" : "leading-6",
                         ].join(" ")}
                       >
+                        {savedReport.report.cashFlowSummary ? (
+                          <p className="rounded-xl border border-border/60 bg-bg/50 px-3 py-2 text-sm leading-relaxed text-text">
+                            <span className="font-semibold">
+                              {savedLabels.cashFlow}:{" "}
+                            </span>
+                            {savedReport.report.cashFlowSummary}
+                          </p>
+                        ) : null}
                         <ReportSection
                           title={savedLabels.wins}
                           items={savedReport.report.wins}
@@ -631,7 +722,7 @@ export function MonthlyReportCard({
         open={Boolean(deleteMonth)}
         title="Delete saved report?"
         message={`Delete the saved report for ${
-          deleteMonth ? formatMonthOption(deleteMonth) : "this month"
+          deleteMonth ? formatMonthStartDisplay(deleteMonth) : "this month"
         }? This cannot be undone.`}
         loading={deletingReport}
         onCancel={() => setDeleteMonth(null)}

@@ -2,22 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { requireActionUser } from "@/lib/auth/action-user";
 import {
   financialGoalInputSchema,
   type FinancialGoalInput,
 } from "@/lib/validators";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) throw new Error("You must be logged in.");
-  return { supabase, user };
-}
 
 function revalidateGoalPages() {
   revalidatePath("/dashboard");
@@ -26,7 +15,7 @@ function revalidateGoalPages() {
 
 export async function createFinancialGoal(input: FinancialGoalInput) {
   const parsed = financialGoalInputSchema.parse(input);
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
 
   const isChallenge = parsed.goal_type === "category_challenge";
   const initialAmount = isChallenge ? 0 : (parsed.current_amount ?? 0);
@@ -79,7 +68,7 @@ export async function addFinancialGoalContribution(id: string, amount: number) {
   if (!Number.isFinite(amount) || amount <= 0) {
     throw new Error("Enter an amount greater than 0.");
   }
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
 
   const { data: goal, error: goalError } = await supabase
     .from("financial_goals")
@@ -112,7 +101,7 @@ export async function addFinancialGoalContribution(id: string, amount: number) {
 }
 
 export async function deleteFinancialGoalContribution(id: string) {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
 
   const { data: contribution, error: fetchError } = await supabase
     .from("financial_goal_contributions")
@@ -150,7 +139,7 @@ export async function deleteFinancialGoalContribution(id: string) {
 }
 
 export async function completeFinancialGoal(id: string) {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
   const { error } = await supabase
     .from("financial_goals")
     .update({ status: "completed", show_on_dashboard: false })
@@ -165,7 +154,7 @@ export async function updateFinancialGoalDashboardVisibility(
   id: string,
   showOnDashboard: boolean,
 ) {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
   const { error } = await supabase
     .from("financial_goals")
     .update({ show_on_dashboard: showOnDashboard })
@@ -177,7 +166,7 @@ export async function updateFinancialGoalDashboardVisibility(
 }
 
 export async function deleteFinancialGoal(id: string) {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
   const { error } = await supabase
     .from("financial_goals")
     .delete()

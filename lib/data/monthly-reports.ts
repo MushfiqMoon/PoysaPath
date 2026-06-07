@@ -1,14 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
+import {
+  type MonthlyReportLanguage,
+  normalizeMonthlyReportLanguage,
+} from "@/lib/monthly-report-language";
 
-export type MonthlyReportLanguage = "en" | "bn";
-
-export const MONTHLY_REPORT_LANGUAGES: {
-  value: MonthlyReportLanguage;
-  label: string;
-}[] = [
-  { value: "en", label: "English" },
-  { value: "bn", label: "Bangla" },
-];
+export type { MonthlyReportLanguage } from "@/lib/monthly-report-language";
+export {
+  MONTHLY_REPORT_LANGUAGES,
+  normalizeMonthlyReportLanguage,
+} from "@/lib/monthly-report-language";
 
 export type MonthlyReportRecord = {
   id: string;
@@ -45,12 +45,6 @@ function mapMonthlyReportRecord(row: MonthlyReportRecord): MonthlyReportRecord {
     updated_at: row.updated_at,
     model: row.model,
   };
-}
-
-export function normalizeMonthlyReportLanguage(
-  value: unknown,
-): MonthlyReportLanguage {
-  return value === "bn" ? "bn" : "en";
 }
 
 export async function getProfileReportLanguage(

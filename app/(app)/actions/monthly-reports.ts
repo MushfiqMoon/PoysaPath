@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { requireActionUser } from "@/lib/auth/action-user";
 import { parseMonthStartParam } from "@/lib/dates";
 import {
   deleteMonthlyReportForMonth,
@@ -11,7 +12,6 @@ import {
 } from "@/lib/data/monthly-reports";
 import { GEMINI_MODEL } from "@/lib/gemini/client";
 import { monthlyReportResponseSchema } from "@/lib/gemini/schemas";
-import { createClient } from "@/lib/supabase/server";
 
 type SaveGeneratedMonthlyReportInput = {
   reportMonth: string;
@@ -19,17 +19,6 @@ type SaveGeneratedMonthlyReportInput = {
   content: string;
   generatedAt?: string | null;
 };
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) throw new Error("You must be logged in.");
-
-  return { supabase, user };
-}
 
 function parseReportMonth(value: string) {
   const reportMonth = parseMonthStartParam(value, "");
@@ -57,7 +46,7 @@ function normalizeReportContent(content: string) {
 }
 
 export async function saveMonthlyReportLanguage(language: string) {
-  const { user } = await requireUser();
+  const { user } = await requireActionUser();
 
   await updateProfileReportLanguage(
     user.id,
@@ -74,7 +63,7 @@ export async function saveGeneratedMonthlyReport({
   content,
   generatedAt,
 }: SaveGeneratedMonthlyReportInput) {
-  const { user } = await requireUser();
+  const { user } = await requireActionUser();
   const reportMonth = parseReportMonth(rawReportMonth);
   const language = normalizeMonthlyReportLanguage(rawLanguage);
   const normalizedContent = normalizeReportContent(content);
@@ -95,7 +84,7 @@ export async function saveGeneratedMonthlyReport({
 }
 
 export async function deleteMonthlyReport(reportMonth: string) {
-  const { user } = await requireUser();
+  const { user } = await requireActionUser();
 
   await deleteMonthlyReportForMonth(user.id, parseReportMonth(reportMonth));
 

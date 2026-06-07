@@ -1,9 +1,12 @@
 import { CategoriesManager } from "@/components/categories/categories-manager";
 import { PageHeader } from "@/components/layout/page-header";
-import { getUserCategories } from "@/lib/data/categories";
+import { getExpenseCategories, getIncomeCategories } from "@/lib/data/categories";
 
 export default async function SettingsCategoriesPage() {
-  const categories = await getUserCategories();
+  const [expenseCategories, incomeCategories] = await Promise.all([
+    getExpenseCategories(),
+    getIncomeCategories(),
+  ]);
 
   return (
     <div className="space-y-4">
@@ -12,7 +15,10 @@ export default async function SettingsCategoriesPage() {
         backHref="/settings"
         backLabel="Settings"
       />
-      <CategoriesManager categories={categories} />
+      <CategoriesManager
+        expenseCategories={expenseCategories}
+        incomeCategories={incomeCategories}
+      />
     </div>
   );
 }

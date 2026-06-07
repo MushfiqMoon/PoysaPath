@@ -23,6 +23,7 @@ import {
 import { AI_LABELS } from "@/lib/gemini/labels";
 import { checkGeminiRateLimit } from "@/lib/gemini/rate-limit";
 import { weeklyInsightResponseSchema } from "@/lib/gemini/schemas";
+import { unwrapSupabaseJoin } from "@/lib/supabase/normalize";
 
 export async function POST(request: Request) {
   const auth = await requireApiUser();
@@ -81,31 +82,45 @@ export async function POST(request: Request) {
     const previousStart = addDaysYmd(rangeStart, -7);
     const previousEnd = addDaysYmd(rangeStart, -1);
 
-    const { data: expenses, error } = await supabase
-      .from("expenses")
-      .select("amount, expense_date, categories(name)")
-      .gte("expense_date", previousStart)
-      .lte("expense_date", rangeEnd);
+    const [expensesResult, incomesResult] = await Promise.all([
+      supabase
+        .from("expenses")
+        .select("amount, expense_date, categories(name)")
+        .gte("expense_date", previousStart)
+        .lte("expense_date", rangeEnd),
+      supabase
+        .from("incomes")
+        .select("amount, income_date, categories(name)")
+        .gte("income_date", previousStart)
+        .lte("income_date", rangeEnd),
+    ]);
 
-    if (error) {
-      if (error.code === "42P01") {
+    if (expensesResult.error) {
+      if (expensesResult.error.code === "42P01") {
         return NextResponse.json(
           { error: "Run migration 003_insight_cache.sql in Supabase" },
           { status: 503 },
         );
       }
-      throw new Error(error.message);
+      throw new Error(expensesResult.error.message);
     }
+    if (incomesResult.error) throw new Error(incomesResult.error.message);
+
+    const expenses = expensesResult.data;
 
     const currentSummary: Record<string, number> = {};
     const previousSummary: Record<string, number> = {};
     let currentTotal = 0;
     let previousTotal = 0;
+    let currentIncomeTotal = 0;
+    let previousIncomeTotal = 0;
 
     for (const row of expenses ?? []) {
       const amount = Number(row.amount);
-      const cat = row.categories as { name: string } | { name: string }[] | null;
-      const name = Array.isArray(cat) ? cat[0]?.name : cat?.name;
+      const cat = unwrapSupabaseJoin(
+        row.categories as { name: string } | { name: string }[] | null,
+      );
+      const name = cat?.name;
       const key = name ?? "Other";
       if (row.expense_date >= rangeStart && row.expense_date <= rangeEnd) {
         currentSummary[key] = (currentSummary[key] ?? 0) + amount;
@@ -116,10 +131,25 @@ export async function POST(request: Request) {
       }
     }
 
-    if (currentTotal === 0 && previousTotal === 0) {
+    for (const row of incomesResult.data ?? []) {
+      const amount = Number(row.amount);
+      const date = row.income_date as string;
+      if (date >= rangeStart && date <= rangeEnd) {
+        currentIncomeTotal += amount;
+      } else if (date >= previousStart && date <= previousEnd) {
+        previousIncomeTotal += amount;
+      }
+    }
+
+    if (
+      currentTotal === 0 &&
+      previousTotal === 0 &&
+      currentIncomeTotal === 0 &&
+      previousIncomeTotal === 0
+    ) {
       return NextResponse.json({
         insight: null,
-        message: "No spending yet for Money Coach.",
+        message: "No income or spending yet for Money Coach.",
       });
     }
 
@@ -134,6 +164,8 @@ export async function POST(request: Request) {
       currentTotal,
       previousSummary,
       previousTotal,
+      currentIncomeTotal,
+      previousIncomeTotal,
       budgetLines,
     });
     const raw = await generateJson<unknown>(prompt, apiKey);

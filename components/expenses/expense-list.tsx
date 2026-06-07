@@ -42,7 +42,7 @@ export function ExpenseList({ expenses }: ExpenseListProps) {
               <h3 className="text-xs font-semibold uppercase tracking-wide text-text-muted">
                 {formatRelativeDay(date)}
               </h3>
-              <p className="shrink-0 text-base font-bold tabular-nums text-accent sm:text-lg">
+              <p className="shrink-0 text-base font-bold tabular-nums text-expense sm:text-lg">
                 {formatCurrency(dayTotal)}
               </p>
             </div>
