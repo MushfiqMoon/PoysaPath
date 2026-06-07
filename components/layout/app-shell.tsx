@@ -32,8 +32,8 @@ const mainNav: {
     IconActive: FiHome,
   },
   {
-    href: "/expenses",
-    label: "Expenses",
+    href: "/history",
+    label: "History",
     Icon: FiList,
     IconActive: FiList,
   },
@@ -106,6 +106,9 @@ export function AppShell({ children, title }: AppShellProps) {
     () => mainNav.findIndex((item) => isMobileNavActive(pathname, item.href)),
     [pathname],
   );
+
+  const isDashboard = pathname === "/dashboard";
+  const desktopContentWidth = isDashboard ? "md:max-w-6xl" : "";
 
   function renderNavLink(item: (typeof mainNav)[number], mobile = false) {
     const isSettings = item.href === "/settings";
@@ -201,7 +204,12 @@ export function AppShell({ children, title }: AppShellProps) {
 
       <div className="flex min-h-dvh flex-1 flex-col md:pl-60">
         <header className="glass-panel-light sticky top-0 z-10 hidden border-b px-5 py-3 md:block">
-          <div className="mx-auto flex max-w-3xl items-center justify-end gap-1">
+          <div
+            className={[
+              "mx-auto flex max-w-3xl items-center justify-end gap-1",
+              desktopContentWidth,
+            ].join(" ")}
+          >
             <NotificationsBellButton
               buttonClassName={headerIconClass}
               unreadCount={notifications.unreadCount}
@@ -243,7 +251,12 @@ export function AppShell({ children, title }: AppShellProps) {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-5 pb-28 md:px-5 md:pb-8">
+        <main
+          className={[
+            "mx-auto w-full max-w-3xl flex-1 px-4 py-5 pb-28 md:px-5 md:pb-8",
+            desktopContentWidth,
+          ].join(" ")}
+        >
           {children}
         </main>
 

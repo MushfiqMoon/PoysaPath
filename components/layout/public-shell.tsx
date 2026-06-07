@@ -29,8 +29,8 @@ export function PublicShell({ variant = "landing", children }: PublicShellProps)
             </h1>
             <p className="mt-4 max-w-sm text-base leading-relaxed text-text-muted">
               {variant === "auth"
-                ? "Your private expense tracker — simple, fast, and made for daily use in Bangladesh."
-                : "PoysaPath helps you understand daily spending without spreadsheets or hassle."}
+                ? "Your private cash-flow tracker — log income and expenses, simple and fast for daily use in Bangladesh."
+                : "PoysaPath helps you track income and spending without spreadsheets or hassle."}
             </p>
           </div>
 

@@ -28,7 +28,7 @@ export function CategoryBreakdown({
           return (
             <li key={row.category_id}>
               <Link
-                href={`/expenses?category=${row.category_id}`}
+                href={`/history?tab=expense&category=${row.category_id}`}
                 className="block rounded-lg py-0.5 transition-colors hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 <div className="mb-1.5 flex justify-between gap-2 text-sm">

@@ -1,5 +1,7 @@
-import { getMonthStartInDhaka } from "@/lib/dates";
+import { addMonthsToMonthStart, getMonthStartInDhaka } from "@/lib/dates";
+import { normalizeGoalType } from "@/lib/goals/labels";
 import { createClient } from "@/lib/supabase/server";
+import { unwrapSupabaseJoin } from "@/lib/supabase/normalize";
 import type { FinancialGoal, FinancialGoalContribution } from "@/lib/types";
 
 type GoalRow = {
@@ -29,8 +31,7 @@ type GoalContributionRow = {
 };
 
 function getNextMonth(monthStart: string) {
-  const [y, m] = monthStart.split("-").map(Number);
-  return m === 12 ? `${y + 1}-01-01` : `${y}-${String(m + 1).padStart(2, "0")}-01`;
+  return addMonthsToMonthStart(monthStart, 1);
 }
 
 export async function getFinancialGoals(): Promise<FinancialGoal[]> {
@@ -104,9 +105,7 @@ export async function getFinancialGoals(): Promise<FinancialGoal[]> {
   );
 
   return goals.map((goal) => {
-    const category = Array.isArray(goal.categories)
-      ? (goal.categories[0] ?? null)
-      : goal.categories;
+    const category = unwrapSupabaseJoin(goal.categories);
     const target = Number(goal.target_amount);
     const progress =
       goal.goal_type === "category_challenge"
@@ -118,7 +117,7 @@ export async function getFinancialGoals(): Promise<FinancialGoal[]> {
     return {
       id: goal.id,
       title: goal.title,
-      goal_type: goal.goal_type,
+      goal_type: normalizeGoalType(goal.goal_type),
       category_id: goal.category_id,
       target_amount: target,
       current_amount: Number(goal.current_amount),

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { requireActionUser } from "@/lib/auth/action-user";
 import { getTodayInDhaka } from "@/lib/dates";
 import { advanceDueDate } from "@/lib/recurring-dates";
 import { createClient } from "@/lib/supabase/server";
@@ -10,20 +11,9 @@ import {
   type RecurringItemInput,
 } from "@/lib/validators";
 
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) throw new Error("You must be logged in.");
-  return { supabase, user };
-}
-
 function revalidateRecurringPages() {
   revalidatePath("/dashboard");
-  revalidatePath("/expenses");
+  revalidatePath("/history");
   revalidatePath("/settings/recurring");
   revalidatePath("/settings/goals");
 }
@@ -79,7 +69,7 @@ async function addGoalContributionFromRecurring(
 
 export async function createRecurringItem(input: RecurringItemInput) {
   const parsed = recurringItemInputSchema.parse(input);
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
 
   if (parsed.linked_goal_id) {
     await assertLinkableGoal(supabase, user.id, parsed.linked_goal_id);
@@ -113,7 +103,7 @@ export async function createRecurringItem(input: RecurringItemInput) {
 }
 
 export async function recordRecurringExpense(id: string) {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
   const { data: item, error: itemError } = await supabase
     .from("recurring_items")
     .select(
@@ -190,7 +180,7 @@ export async function recordRecurringExpense(id: string) {
 }
 
 export async function deleteRecurringItem(id: string) {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
   const { error } = await supabase
     .from("recurring_items")
     .delete()

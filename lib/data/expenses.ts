@@ -1,5 +1,6 @@
 import { getMonthStartInDhaka, getTodayInDhaka } from "@/lib/dates";
 import { createClient } from "@/lib/supabase/server";
+import { unwrapSupabaseJoin } from "@/lib/supabase/normalize";
 import type { CategoryTotal, Expense } from "@/lib/types";
 
 const expenseSelect =
@@ -20,9 +21,7 @@ function normalizeExpense(row: {
     | { name: string; icon: string | null }[]
     | null;
 }): Expense {
-  const categories = Array.isArray(row.categories)
-    ? (row.categories[0] ?? null)
-    : row.categories;
+  const categories = unwrapSupabaseJoin(row.categories);
 
   return {
     id: row.id,

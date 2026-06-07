@@ -2,22 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 
+import { requireActionUser } from "@/lib/auth/action-user";
 import { getMonthStartInDhaka } from "@/lib/dates";
-import { createClient } from "@/lib/supabase/server";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("You must be logged in.");
-  return { supabase, user };
-}
 
 export async function upsertBudget(categoryId: string, amount: number) {
   if (amount <= 0) throw new Error("Budget must be greater than zero.");
 
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
   const month = getMonthStartInDhaka();
 
   const { error } = await supabase.from("budgets").upsert(
@@ -42,7 +33,7 @@ export async function upsertBudget(categoryId: string, amount: number) {
 }
 
 export async function deleteBudget(id: string) {
-  const { supabase } = await requireUser();
+  const { supabase } = await requireActionUser();
 
   const { error } = await supabase.from("budgets").delete().eq("id", id);
 

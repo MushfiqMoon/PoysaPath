@@ -23,20 +23,20 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
     title: "Track every taka at a",
     titleEm: "glance",
     description:
-      "Your dashboard and expense list are built for daily BDT checks — today, this month, active goals, and upcoming reminders.",
+      "Your dashboard shows income, expenses, saved this month, goals, and upcoming reminders.",
     items: [
       {
         id: "dashboard",
         title: "Home dashboard",
         description:
-          "Today’s spend, month-to-date total, recent expenses, and category breakdown on one screen.",
+          "Income, expenses, and saved this month — plus recent expenses, budgets, and category breakdown.",
         icon: "dashboard",
       },
       {
-        id: "expenses",
-        title: "Expense history",
+        id: "history",
+        title: "History",
         description:
-          "Browse expenses grouped by day. Filter by month, category, or payment method.",
+          "Browse expenses and income in one place. Switch tabs, filter by month, category, or payment method.",
         icon: "expenses",
       },
       {
@@ -50,14 +50,21 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
   },
   {
     eyebrow: "◇ add",
-    title: "Log expenses in",
+    title: "Log money in",
     titleEm: "seconds",
     description:
-      "Manual form when you want control, or plain-language quick entry when you’re in a hurry.",
+      "Add expenses with manual or AI quick entry, or log income on the Income tab.",
     items: [
       {
+        id: "income-manual",
+        title: "Income entry",
+        description:
+          "Record salary, freelance pay, or other inflows with category, date, and optional payment method.",
+        icon: "manual",
+      },
+      {
         id: "manual",
-        title: "Manual entry",
+        title: "Manual expense entry",
         description:
           "Amount in ৳, category, date, note, and optional payment method — defaults to today in Dhaka time.",
         icon: "manual",
@@ -117,14 +124,14 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
         id: "category-breakdown",
         title: "Spending by category",
         description:
-          "Bar breakdown for the current month. Tap a category to open filtered expenses.",
+          "Bar breakdown for the current month. Tap a category to open filtered history.",
         icon: "category-breakdown",
       },
       {
         id: "monthly-report",
         title: "Monthly AI report",
         description:
-          "Generate a friendly monthly summary with wins, problem areas, category changes, and a next-month plan.",
+          "Generate a friendly monthly summary with income totals, savings rate, wins, problem areas, category changes, and a next-month plan.",
         icon: "monthly-report",
       },
     ],
@@ -147,7 +154,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
         id: "categories-crud",
         title: "Categories",
         description:
-          "Add, rename, or remove categories. Deleting one with expenses lets you reassign them first.",
+          "Add, rename, or remove expense and income categories. Deleting one with entries lets you reassign them first.",
         icon: "categories-crud",
       },
       {
@@ -198,7 +205,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
         id: "isolation",
         title: "Account isolation",
         description:
-          "Each user only sees their own expenses, categories, and budgets. No shared household view.",
+          "Each user only sees their own income, expenses, categories, budgets, goals, and reminders. No shared household view.",
         icon: "isolation",
       },
       {

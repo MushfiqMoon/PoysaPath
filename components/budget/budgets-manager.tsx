@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { deleteBudget, upsertBudget } from "@/app/(app)/actions/budgets";
 import { BudgetProgressRing } from "@/components/budget/budget-progress-ring";
+import { getBudgetUsage } from "@/lib/budget/usage";
 import { formatCurrency } from "@/lib/format";
 import type { BudgetRow, Category } from "@/lib/types";
 import { DeleteButton } from "@/components/ui/action-buttons";
@@ -57,11 +58,7 @@ export function BudgetsManager({
       ) : (
         <ul className="space-y-3">
           {budgets.map((row) => {
-            const pct =
-              row.amount > 0
-                ? Math.min(100, Math.round((row.spent / row.amount) * 100))
-                : 0;
-            const over = row.spent > row.amount;
+            const { pct, over } = getBudgetUsage(row.spent, row.amount);
             return (
               <li key={row.id}>
                 <Card padding="md" className="flex gap-4">

@@ -4,7 +4,9 @@ import Link from "next/link";
 import { ForwardLink } from "@/components/shared/forward-link";
 import { BudgetSummaryRings } from "@/components/budget/budget-summary-rings";
 import { CategoryBreakdown } from "@/components/budget/category-breakdown";
+import { DashboardMasonry, DashboardMasonryItem } from "@/components/dashboard/dashboard-masonry";
 import { DashboardPullRefresh } from "@/components/dashboard/dashboard-pull-refresh";
+import { DashboardSummaryStats } from "@/components/dashboard/dashboard-summary-stats";
 import { EmptyState } from "@/components/shared/empty-state";
 import { GoalsDashboardCard } from "@/components/dashboard/goals-dashboard-card";
 import { RecurringDashboardCard } from "@/components/dashboard/recurring-dashboard-card";
@@ -23,6 +25,7 @@ import {
   getRecentExpenses,
   getTodayTotal,
 } from "@/lib/data/expenses";
+import { getMonthIncomeTotal } from "@/lib/data/incomes";
 import { formatCurrency, formatExpenseTitle, formatRelativeDay } from "@/lib/format";
 
 const InsightCard = dynamic(
@@ -40,6 +43,7 @@ export default async function DashboardPage() {
     userProfile,
     user,
     todayTotal,
+    monthIncomeTotal,
     monthTotal,
     categoryTotals,
     recent,
@@ -50,6 +54,7 @@ export default async function DashboardPage() {
       getUserProfile(),
       getAuthUser(),
       getTodayTotal(),
+      getMonthIncomeTotal(),
       getMonthTotal(),
       getMonthCategoryTotals(),
       getRecentExpenses(5),
@@ -67,6 +72,7 @@ export default async function DashboardPage() {
   const cachedInsight =
     user && geminiStatus.hasKey ? await getCachedInsight(user.id) : null;
 
+  const savedThisMonth = monthIncomeTotal - monthTotal;
   const hasExpenses = monthTotal > 0 || recent.length > 0;
 
   return (
@@ -96,78 +102,89 @@ export default async function DashboardPage() {
           </div>
         </section>
 
-        <div className="grid grid-cols-2 gap-3">
-          <Card elevated padding="md">
-            <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
-            ◇ Today
-            </p>
-            <p className="mt-2 text-2xl font-bold tabular-nums text-text">
-              {formatCurrency(todayTotal)}
-            </p>
-          </Card>
-          <Card elevated padding="md">
-            <p className="text-xs font-semibold uppercase tracking-wide text-text-muted">
-            ◇ This month
-            </p>
-            <p className="mt-2 text-2xl font-bold tabular-nums text-text">
-              {formatCurrency(monthTotal)}
-            </p>
-          </Card>
-        </div>
+        <DashboardSummaryStats
+          monthIncomeTotal={monthIncomeTotal}
+          monthTotal={monthTotal}
+          todayTotal={todayTotal}
+          savedThisMonth={savedThisMonth}
+        />
 
-        <GoalsDashboardCard goals={goals} />
+        <ForwardLink href="/history">View history</ForwardLink>
 
         {hasExpenses ? (
-          <>
-            <InsightCard
-              hasGeminiKey={geminiStatus.hasKey}
-              initialInsight={cachedInsight}
-            />
-            <RecurringDashboardCard items={recurringAlerts} />
-            <BudgetSummaryRings budgets={budgets} />
-            <CategoryBreakdown totals={categoryTotals} monthTotal={monthTotal} />
-
-            <section className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-text-muted">Recent</h2>
-                <ForwardLink href="/expenses">See all</ForwardLink>
-              </div>
-              <ul className="space-y-2">
-                {recent.map((expense) => {
-                  const categoryName = expense.categories?.name ?? "Expense";
-                  return (
-                    <li key={expense.id}>
-                      <Link href={`/expenses/${expense.id}/edit`}>
-                        <Card
-                          padding="sm"
-                          className="flex items-center justify-between transition-[border-color,box-shadow] duration-(--dur-short) hover:border-accent/35 hover:shadow-sm"
-                        >
-                          <div className="min-w-0 flex-1 pr-3">
-                            <p className="text-xs text-text-muted">
-                              {formatRelativeDay(expense.expense_date)}
+          <DashboardMasonry>
+            {goals.length > 0 ? (
+              <DashboardMasonryItem>
+                <GoalsDashboardCard goals={goals} />
+              </DashboardMasonryItem>
+            ) : null}
+            <DashboardMasonryItem>
+              <InsightCard
+                hasGeminiKey={geminiStatus.hasKey}
+                initialInsight={cachedInsight}
+              />
+            </DashboardMasonryItem>
+            {recurringAlerts.length > 0 ? (
+              <DashboardMasonryItem>
+                <RecurringDashboardCard items={recurringAlerts} />
+              </DashboardMasonryItem>
+            ) : null}
+            {budgets.length > 0 ? (
+              <DashboardMasonryItem>
+                <BudgetSummaryRings budgets={budgets} />
+              </DashboardMasonryItem>
+            ) : null}
+            {categoryTotals.length > 0 ? (
+              <DashboardMasonryItem>
+                <CategoryBreakdown totals={categoryTotals} monthTotal={monthTotal} />
+              </DashboardMasonryItem>
+            ) : null}
+            <DashboardMasonryItem>
+              <section className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-sm font-semibold text-text-muted">Recent</h2>
+                  <ForwardLink href="/history">See all</ForwardLink>
+                </div>
+                <ul className="space-y-2">
+                  {recent.map((expense) => {
+                    const categoryName = expense.categories?.name ?? "Expense";
+                    return (
+                      <li key={expense.id}>
+                        <Link href={`/expenses/${expense.id}/edit`}>
+                          <Card
+                            padding="sm"
+                            className="flex h-full items-center justify-between transition-[border-color,box-shadow] duration-(--dur-short) hover:border-accent/35 hover:shadow-sm"
+                          >
+                            <div className="min-w-0 flex-1 pr-3">
+                              <p className="text-xs text-text-muted">
+                                {formatRelativeDay(expense.expense_date)}
+                              </p>
+                              <p className="font-medium text-text">
+                                {formatExpenseTitle(expense.note, categoryName)}
+                              </p>
+                            </div>
+                            <p className="shrink-0 font-semibold tabular-nums text-text">
+                              {formatCurrency(Number(expense.amount))}
                             </p>
-                            <p className="font-medium text-text">
-                              {formatExpenseTitle(expense.note, categoryName)}
-                            </p>
-                          </div>
-                          <p className="shrink-0 font-semibold tabular-nums text-text">
-                            {formatCurrency(Number(expense.amount))}
-                          </p>
-                        </Card>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          </>
+                          </Card>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            </DashboardMasonryItem>
+          </DashboardMasonry>
         ) : (
-          <EmptyState
-            title="No expenses yet"
-            description="Tap Add to log your first one."
-            actionLabel="Add expense"
-            actionHref="/add"
-          />
+          <>
+            <GoalsDashboardCard goals={goals} />
+            <EmptyState
+              title="No expenses yet"
+              description="Tap Add to log your first one."
+              actionLabel="Add expense"
+              actionHref="/add"
+            />
+          </>
         )}
       </div>
     </DashboardPullRefresh>

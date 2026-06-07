@@ -20,6 +20,8 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 - **BYOK:** Per-user encrypted Gemini API key in Settings → AI (no shared `GEMINI_API_KEY`)
 - Per-user Gemini rate limit (~40/hr, in-memory), insight cache + refresh cooldown
 - Goals with contribution history, spend-less challenges, recurring money reminders, CSV export API (Settings UI hidden), privacy/terms, notifications (`005`)
+- **Income tracking (Phase A):** manual income CRUD, `/history` (Expense | Income tabs), dashboard Income/Expenses/Saved (`022_incomes.sql`)
+- **Income AI context (Phase A+):** Money Coach and monthly report fetch incomes, compute savings rate, and include `cashFlowSummary` in reports
 
 ---
 
@@ -48,7 +50,9 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 - [ ] **P1 — Full JSON export** — GDPR-style self-service.
 - [x] **P1 — Recurring expenses** — Templates, reminders, and record-as-expense flow via `007_goals_recurring.sql`; default expense handling via `008_recurring_payments_default_expense.sql`.
 - [x] **P1 — Financial goals** — Savings, emergency fund, debt payoff, spend-less category challenges, additive contribution history, and safe complete/delete confirmations.
-- [ ] **P2 — Income tracking, receipt OCR, multi-wallet**
+- [x] **P2 — Income tracking (Phase A)** — Manual income, `/history`, dashboard net flow, income categories. Deferred: recurring salary, AI parse.
+- [x] **P2 — Income AI context (Phase A+)** — Monthly report + Money Coach include income totals and savings rate (`lib/gemini/cash-flow.ts`).
+- [ ] **P2 — Receipt OCR, multi-wallet**
 
 ---
 
@@ -64,8 +68,8 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 - [x] **P1 — Per-user encrypted API keys (BYOK)** — Settings → AI; `006_user_gemini_credentials.sql`
 - [x] **P1 — Per-user rate limits** — `lib/gemini/rate-limit.ts`
 - [x] **P1 — Insight refresh control** — 1h cooldown + `insight_cache`
-- [x] **P1 — Money Coach** — Dashboard coaching card with recent-vs-previous spending and budget context.
-- [x] **P1 — Monthly AI report** — Wins, problem areas, biggest category changes, and next-month plan.
+- [x] **P1 — Money Coach** — Dashboard coaching card with recent-vs-previous income, spending, and budget context.
+- [x] **P1 — Monthly AI report** — Income, spending, savings rate, wins, problem areas, category changes, and next-month plan.
 - [ ] **P2 — Chat assistant** — Q&A on aggregates only
 - [ ] **P2 — Smarter categorization** — Learn from user overrides (future; not manual blur)
 
@@ -99,7 +103,7 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done
 | Date | Note |
 |------|------|
 | 2026-05-26 | Added goal contribution history, collapsed goal panels, safer confirmations, recurring reminder polish, and announcement `003_goals_recurring_updates.sql`. |
-| | |
+| 2026-06-07 | Income tracking (Phase A + A+), `/history`, dashboard net flow, docs/landing refresh, and announcement `004_income_tracking.sql`. |
 
 ---
 

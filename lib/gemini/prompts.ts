@@ -47,6 +47,8 @@ export function buildMoneyCoachPrompt(input: {
   currentTotal: number;
   previousSummary: Record<string, number>;
   previousTotal: number;
+  currentIncomeTotal: number;
+  previousIncomeTotal: number;
   budgetLines: string[];
 }) {
   const currentLines =
@@ -60,20 +62,27 @@ export function buildMoneyCoachPrompt(input: {
   const budgets = input.budgetLines.length
     ? input.budgetLines.map((line) => `- ${line}`).join("\n")
     : "- No active budgets";
+  const currentSaved = input.currentIncomeTotal - input.currentTotal;
+  const previousSaved = input.previousIncomeTotal - input.previousTotal;
 
-  return `You are Money Coach inside a Bangladesh BDT expense tracker.
+  return `You are Money Coach inside a Bangladesh BDT personal finance tracker.
 Write one practical coaching card, not a generic report.
 Use a friendly professional tone, specific ৳ amounts, and one clear next action.
 If there is enough data, compare the last 7 days with the previous 7 days.
-Do not shame the user. Do not invent categories.
+When income is logged, mention cash flow (income vs spending) — not spending alone.
+Do not shame the user. Do not invent categories or amounts.
 
-Last 7 days:
+Last 7 days — spending by category:
 ${currentLines}
-Total: ৳${input.currentTotal}
+Spent total: ৳${input.currentTotal}
+Income total: ৳${input.currentIncomeTotal}
+Saved (income − spending): ৳${currentSaved}
 
-Previous 7 days:
+Previous 7 days — spending by category:
 ${previousLines}
-Total: ৳${input.previousTotal}
+Spent total: ৳${input.previousTotal}
+Income total: ৳${input.previousIncomeTotal}
+Saved (income − spending): ৳${previousSaved}
 
 Current budget context:
 ${budgets}
@@ -85,43 +94,80 @@ Return JSON only:
 export function buildMonthlyReportPrompt(input: {
   monthLabel: string;
   language: MonthlyReportLanguage;
-  currentSummary: Record<string, number>;
-  currentTotal: number;
-  previousSummary: Record<string, number>;
-  previousTotal: number;
+  current: {
+    expenseSummary: Record<string, number>;
+    expenseTotal: number;
+    incomeSummary: Record<string, number>;
+    incomeTotal: number;
+    saved: number;
+    savingsRatePercent: number | null;
+  };
+  previous: {
+    expenseSummary: Record<string, number>;
+    expenseTotal: number;
+    incomeSummary: Record<string, number>;
+    incomeTotal: number;
+    saved: number;
+    savingsRatePercent: number | null;
+  };
 }) {
-  const currentLines =
-    Object.entries(input.currentSummary)
+  const currentExpenseLines =
+    Object.entries(input.current.expenseSummary)
       .map(([name, amount]) => `- ${name}: ৳${amount}`)
       .join("\n") || "- No spending";
-  const previousLines =
-    Object.entries(input.previousSummary)
+  const previousExpenseLines =
+    Object.entries(input.previous.expenseSummary)
       .map(([name, amount]) => `- ${name}: ৳${amount}`)
       .join("\n") || "- No spending";
+  const currentIncomeLines =
+    Object.entries(input.current.incomeSummary)
+      .map(([name, amount]) => `- ${name}: ৳${amount}`)
+      .join("\n") || "- No income logged";
+  const previousIncomeLines =
+    Object.entries(input.previous.incomeSummary)
+      .map(([name, amount]) => `- ${name}: ৳${amount}`)
+      .join("\n") || "- No income logged";
   const languageInstruction =
     input.language === "bn"
       ? "Write all user-facing text in Bangla for a Bangladesh user. Keep currency as ৳ and use natural Bangla, not word-for-word translation."
       : "Write all user-facing text in English for a Bangladesh user. Keep currency as ৳ and use clear, simple wording.";
+  const formatRate = (rate: number | null) =>
+    rate === null ? "N/A (no income logged)" : `${rate}%`;
 
-  return `Write a friendly monthly expense report for ${input.monthLabel}.
-Audience: Bangladesh personal expense tracker user. Currency: BDT.
+  return `Write a friendly monthly money report for ${input.monthLabel}.
+Audience: Bangladesh personal finance tracker user. Currency: BDT.
 ${languageInstruction}
+Cover income, spending, and what was saved when income exists.
 Include wins, problem areas, biggest category changes, and a simple next-month plan.
 Keep it concise and practical. Each array item should be one short sentence.
-Do not invent categories or data.
+Use the exact income, expense, saved, and savings-rate figures below — do not invent amounts.
+If income is ৳0, focus on spending but note that savings rate is unavailable until income is logged.
 
-This month:
-${currentLines}
-Total: ৳${input.currentTotal}
+This month — income by category:
+${currentIncomeLines}
+Income total: ৳${input.current.incomeTotal}
+Saved (income − expenses): ৳${input.current.saved}
+Savings rate: ${formatRate(input.current.savingsRatePercent)}
 
-Previous month:
-${previousLines}
-Total: ৳${input.previousTotal}
+This month — spending by category:
+${currentExpenseLines}
+Expense total: ৳${input.current.expenseTotal}
+
+Previous month — income by category:
+${previousIncomeLines}
+Income total: ৳${input.previous.incomeTotal}
+Saved: ৳${input.previous.saved}
+Savings rate: ${formatRate(input.previous.savingsRatePercent)}
+
+Previous month — spending by category:
+${previousExpenseLines}
+Expense total: ৳${input.previous.expenseTotal}
 
 Return JSON only:
 {
   "title": "short report title",
-  "overview": "1-2 sentence summary",
+  "overview": "1-2 sentence summary of the month (income, spending, saved when relevant)",
+  "cashFlowSummary": "one sentence on income vs spending and savings rate, using the figures above",
   "wins": ["1-3 specific wins"],
   "watchouts": ["1-3 practical problem areas"],
   "categoryChanges": ["1-3 biggest category changes"],

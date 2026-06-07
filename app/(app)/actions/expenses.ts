@@ -2,28 +2,14 @@
 
 import { revalidatePath } from "next/cache";
 
+import { requireActionUser } from "@/lib/auth/action-user";
 import { advanceDueDate } from "@/lib/recurring-dates";
 import type { RecurringFrequency } from "@/lib/recurring-dates";
-import { createClient } from "@/lib/supabase/server";
 import { expenseInputSchema, type ExpenseInput } from "@/lib/validators";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) {
-    throw new Error("You must be logged in.");
-  }
-
-  return { supabase, user };
-}
 
 function revalidateExpensePages() {
   revalidatePath("/dashboard");
-  revalidatePath("/expenses");
+  revalidatePath("/history");
   revalidatePath("/add");
   revalidatePath("/settings/goals");
   revalidatePath("/settings/recurring");
@@ -31,7 +17,7 @@ function revalidateExpensePages() {
 
 export async function createExpense(input: ExpenseInput) {
   const parsed = expenseInputSchema.parse(input);
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
 
   const { error } = await supabase.from("expenses").insert({
     user_id: user.id,
@@ -48,7 +34,7 @@ export async function createExpense(input: ExpenseInput) {
 
 export async function updateExpense(id: string, input: ExpenseInput) {
   const parsed = expenseInputSchema.parse(input);
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
 
   const { error } = await supabase
     .from("expenses")
@@ -67,7 +53,7 @@ export async function updateExpense(id: string, input: ExpenseInput) {
 }
 
 export async function deleteExpense(id: string) {
-  const { supabase, user } = await requireUser();
+  const { supabase, user } = await requireActionUser();
 
   const { data: expense, error: fetchError } = await supabase
     .from("expenses")

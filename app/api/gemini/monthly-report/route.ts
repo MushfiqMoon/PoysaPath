@@ -8,6 +8,10 @@ import {
 } from "@/lib/dates";
 import { getProfileReportLanguage } from "@/lib/data/monthly-reports";
 import { requireApiUser } from "@/lib/gemini/auth";
+import {
+  buildPeriodCashFlow,
+  summarizeByCategory,
+} from "@/lib/gemini/cash-flow";
 import { generateJson } from "@/lib/gemini/client";
 import { AI_LABELS } from "@/lib/gemini/labels";
 import { buildMonthlyReportPrompt } from "@/lib/gemini/prompts";
@@ -21,6 +25,7 @@ import {
   monthlyReportRequestSchema,
   monthlyReportResponseSchema,
 } from "@/lib/gemini/schemas";
+import { unwrapSupabaseJoin } from "@/lib/supabase/normalize";
 
 async function parseRequestBody(request: Request) {
   try {
@@ -31,10 +36,24 @@ async function parseRequestBody(request: Request) {
   }
 }
 
+function categoryName(
+  categories: { name: string } | { name: string }[] | null,
+): string | undefined {
+  const cat = unwrapSupabaseJoin(categories);
+  return cat?.name;
+}
+
 function noDataMessage(language: "en" | "bn") {
   return language === "bn"
-    ? "মাসিক রিপোর্ট তৈরির জন্য এখনও খরচের ডেটা নেই।"
-    : "No spending data yet for a monthly report.";
+    ? "মাসিক রিপোর্ট তৈরির জন্য এখনও আয় বা খরচের ডেটা নেই।"
+    : "No income or spending data yet for a monthly report.";
+}
+
+function hasPeriodActivity(totals: {
+  incomeTotal: number;
+  expenseTotal: number;
+}) {
+  return totals.incomeTotal > 0 || totals.expenseTotal > 0;
 }
 
 export async function POST(request: Request) {
@@ -70,39 +89,74 @@ export async function POST(request: Request) {
     const nextMonth = addMonthsToMonthStart(reportMonth, 1);
     const previousMonth = addMonthsToMonthStart(reportMonth, -1);
 
-    const { data: expenses, error } = await supabase
-      .from("expenses")
-      .select("amount, expense_date, categories(name)")
-      .eq("user_id", user.id)
-      .gte("expense_date", previousMonth)
-      .lt("expense_date", nextMonth);
+    const [expensesResult, incomesResult] = await Promise.all([
+      supabase
+        .from("expenses")
+        .select("amount, expense_date, categories(name)")
+        .eq("user_id", user.id)
+        .gte("expense_date", previousMonth)
+        .lt("expense_date", nextMonth),
+      supabase
+        .from("incomes")
+        .select("amount, income_date, categories(name)")
+        .eq("user_id", user.id)
+        .gte("income_date", previousMonth)
+        .lt("income_date", nextMonth),
+    ]);
 
-    if (error) throw new Error(error.message);
+    if (expensesResult.error) throw new Error(expensesResult.error.message);
+    if (incomesResult.error) throw new Error(incomesResult.error.message);
 
-    const currentSummary: Record<string, number> = {};
-    const previousSummary: Record<string, number> = {};
-    let currentTotal = 0;
-    let previousTotal = 0;
+    const expenseRows = (expensesResult.data ?? []).map((row) => ({
+      amount: Number(row.amount),
+      date: row.expense_date as string,
+      categoryName: categoryName(
+        row.categories as { name: string } | { name: string }[] | null,
+      ),
+    }));
+    const incomeRows = (incomesResult.data ?? []).map((row) => ({
+      amount: Number(row.amount),
+      date: row.income_date as string,
+      categoryName: categoryName(
+        row.categories as { name: string } | { name: string }[] | null,
+      ),
+    }));
 
-    for (const row of expenses ?? []) {
-      const amount = Number(row.amount);
-      const cat = row.categories as { name: string } | { name: string }[] | null;
-      const name = Array.isArray(cat) ? cat[0]?.name : cat?.name;
-      const key = name ?? "Other";
+    const currentExpenses = summarizeByCategory(
+      expenseRows,
+      reportMonth,
+      nextMonth,
+    );
+    const previousExpenses = summarizeByCategory(
+      expenseRows,
+      previousMonth,
+      reportMonth,
+    );
+    const currentIncomes = summarizeByCategory(
+      incomeRows,
+      reportMonth,
+      nextMonth,
+    );
+    const previousIncomes = summarizeByCategory(
+      incomeRows,
+      previousMonth,
+      reportMonth,
+    );
 
-      if (row.expense_date >= reportMonth && row.expense_date < nextMonth) {
-        currentSummary[key] = (currentSummary[key] ?? 0) + amount;
-        currentTotal += amount;
-      } else if (
-        row.expense_date >= previousMonth &&
-        row.expense_date < reportMonth
-      ) {
-        previousSummary[key] = (previousSummary[key] ?? 0) + amount;
-        previousTotal += amount;
-      }
-    }
+    const current = buildPeriodCashFlow(
+      currentIncomes.summary,
+      currentIncomes.total,
+      currentExpenses.summary,
+      currentExpenses.total,
+    );
+    const previous = buildPeriodCashFlow(
+      previousIncomes.summary,
+      previousIncomes.total,
+      previousExpenses.summary,
+      previousExpenses.total,
+    );
 
-    if (currentTotal === 0 && previousTotal === 0) {
+    if (!hasPeriodActivity(current) && !hasPeriodActivity(previous)) {
       return NextResponse.json({
         report: null,
         content: null,
@@ -116,10 +170,22 @@ export async function POST(request: Request) {
       buildMonthlyReportPrompt({
         monthLabel: formatMonthLabel(reportMonth, ""),
         language,
-        currentSummary,
-        currentTotal,
-        previousSummary,
-        previousTotal,
+        current: {
+          expenseSummary: current.expenseSummary,
+          expenseTotal: current.expenseTotal,
+          incomeSummary: current.incomeSummary,
+          incomeTotal: current.incomeTotal,
+          saved: current.saved,
+          savingsRatePercent: current.savingsRatePercent,
+        },
+        previous: {
+          expenseSummary: previous.expenseSummary,
+          expenseTotal: previous.expenseTotal,
+          incomeSummary: previous.incomeSummary,
+          incomeTotal: previous.incomeTotal,
+          saved: previous.saved,
+          savingsRatePercent: previous.savingsRatePercent,
+        },
       }),
       apiKey,
     );
@@ -133,6 +199,20 @@ export async function POST(request: Request) {
       month: reportMonth,
       language,
       generatedAt,
+      cashFlow: {
+        current: {
+          incomeTotal: current.incomeTotal,
+          expenseTotal: current.expenseTotal,
+          saved: current.saved,
+          savingsRatePercent: current.savingsRatePercent,
+        },
+        previous: {
+          incomeTotal: previous.incomeTotal,
+          expenseTotal: previous.expenseTotal,
+          saved: previous.saved,
+          savingsRatePercent: previous.savingsRatePercent,
+        },
+      },
       message: "Report generated. Save it to keep it.",
       source: "generated",
     });

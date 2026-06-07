@@ -81,6 +81,7 @@ export function ExpenseFilters({ categories, months }: ExpenseFiltersProps) {
 
   function updateParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", "expense");
     const isCurrentMonth = key === "month" && value === defaultMonth;
 
     if (isCurrentMonth || !value) {
@@ -88,14 +89,15 @@ export function ExpenseFilters({ categories, months }: ExpenseFiltersProps) {
     } else {
       params.set(key, value);
     }
-    router.push(`/expenses?${params.toString()}`);
+    router.push(`/history?${params.toString()}`);
   }
 
   function clearMoreFilters() {
     const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", "expense");
     params.delete("payment");
     params.delete("month");
-    router.push(`/expenses?${params.toString()}`);
+    router.push(`/history?${params.toString()}`);
   }
 
   return (

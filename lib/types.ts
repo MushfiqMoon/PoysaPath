@@ -1,8 +1,22 @@
+export type CategoryKind = "expense" | "income";
+
 export type Category = {
   id: string;
   name: string;
   icon: string | null;
   sort_order: number;
+  kind: CategoryKind;
+};
+
+export type Income = {
+  id: string;
+  amount: number;
+  category_id: string;
+  income_date: string;
+  note: string | null;
+  payment_method: string | null;
+  created_at: string;
+  categories: Pick<Category, "name" | "icon"> | null;
 };
 
 export type Expense = {
@@ -61,7 +75,6 @@ export type BudgetRow = {
 
 export type FinancialGoalType =
   | "savings"
-  | "emergency"
   | "debt_payoff"
   | "category_challenge";
 

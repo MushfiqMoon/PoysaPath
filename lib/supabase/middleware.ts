@@ -40,7 +40,9 @@ export async function updateSession(request: NextRequest) {
     pathname === "/forgot-password";
   const isAppRoute =
     pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/history") ||
     pathname.startsWith("/expenses") ||
+    pathname.startsWith("/incomes") ||
     pathname.startsWith("/add") ||
     pathname.startsWith("/settings") ||
     pathname.startsWith("/categories") ||

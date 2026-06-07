@@ -3,32 +3,28 @@ export function FeaturesPreviewCard() {
     <aside className="features-preview" aria-label="Dashboard layout preview">
       <div className="features-preview__head">
         <div>
-          <div className="features-preview__title">Money Coach</div>
-          <div className="features-preview__meta">Sample guidance · BDT</div>
+          <div className="features-preview__title">This month</div>
+          <div className="features-preview__meta">Sample dashboard · BDT</div>
         </div>
-        <span className="features-preview__tag">AI optional</span>
+        <span className="features-preview__tag">June</span>
       </div>
       <div className="features-preview__rows">
         <div className="features-preview__row">
-          <span>Goal history</span>
-          <strong>3 adds</strong>
+          <span>Income</span>
+          <strong>৳52,000</strong>
         </div>
         <div className="features-preview__row">
-          <span>Spend-less challenge</span>
-          <strong>Food</strong>
+          <span>Expenses</span>
+          <strong>৳38,400</strong>
         </div>
         <div className="features-preview__row">
-          <span>Next reminder</span>
-          <strong>Rent</strong>
-        </div>
-        <div className="features-preview__row">
-          <span>Monthly report</span>
-          <strong>Ready</strong>
+          <span>Saved</span>
+          <strong>৳13,600</strong>
         </div>
       </div>
       <div className="features-preview__total">
-        <span className="features-preview__total-label">Next action</span>
-        <span className="features-preview__total-value">Stay under target</span>
+        <span className="features-preview__total-label">Savings rate</span>
+        <span className="features-preview__total-value">26%</span>
       </div>
       <div className="features-preview__bar" aria-hidden>
         <i />

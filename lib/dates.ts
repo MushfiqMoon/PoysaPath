@@ -68,18 +68,22 @@ export function parseMonthStartParam(
   return normalized;
 }
 
-export function formatMonthLabel(
-  monthStart: string,
-  currentMonthStart = getMonthStartInDhaka(),
-): string {
-  if (monthStart === currentMonthStart) return "This month";
-
+export function formatMonthStartDisplay(monthStart: string): string {
   const [y, m] = monthStart.split("-").map(Number);
   return new Intl.DateTimeFormat("en-GB", {
     month: "long",
     year: "numeric",
     timeZone: TIMEZONE,
   }).format(new Date(Date.UTC(y, m - 1, 1)));
+}
+
+export function formatMonthLabel(
+  monthStart: string,
+  currentMonthStart = getMonthStartInDhaka(),
+): string {
+  if (monthStart === currentMonthStart) return "This month";
+
+  return formatMonthStartDisplay(monthStart);
 }
 
 export function addDaysYmd(ymd: string, days: number): string {

@@ -1,5 +1,6 @@
 import { addDaysYmd, getTodayInDhaka } from "@/lib/dates";
 import { createClient } from "@/lib/supabase/server";
+import { unwrapSupabaseJoin } from "@/lib/supabase/normalize";
 import type { RecurringItem, RecurringStatus } from "@/lib/types";
 
 type RecurringRow = Omit<
@@ -48,12 +49,8 @@ export async function getRecurringItems(): Promise<RecurringItem[]> {
 
   const today = getTodayInDhaka();
   return ((data ?? []) as RecurringRow[]).map((row) => {
-    const category = Array.isArray(row.categories)
-      ? (row.categories[0] ?? null)
-      : row.categories;
-    const goalRow = Array.isArray(row.financial_goals)
-      ? (row.financial_goals[0] ?? null)
-      : row.financial_goals;
+    const category = unwrapSupabaseJoin(row.categories);
+    const goalRow = unwrapSupabaseJoin(row.financial_goals);
     const daysUntilDue = diffDays(today, row.next_due_date);
 
     return {

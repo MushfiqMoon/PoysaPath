@@ -4,15 +4,16 @@ import { FEATURE_SECTIONS } from "@/lib/features-catalog";
 import { getSiteUrl } from "@/lib/seo/site-url";
 
 export const FEATURES_PAGE_TITLE =
-  "PoysaPath Features | BDT Expense Tracker, Goals, Budgets & AI";
+  "PoysaPath Features | BDT Cash-Flow Tracker, Income, Budgets & AI";
 
 export const FEATURES_PAGE_DESCRIPTION =
-  "Explore PoysaPath for Bangladesh: track daily spending in BDT, set budgets and goals, manage recurring reminders, and optionally use Gemini for quick entry, Money Coach, and monthly AI reports. Sign in with email or Google. Free to start.";
+  "Explore PoysaPath for Bangladesh: log income and expenses in BDT, see Income · Expenses · Saved on your dashboard, browse History, set budgets and goals, manage recurring reminders, and optionally use Gemini for quick entry, Money Coach, and monthly AI reports. Sign in with email or Google. Free to start.";
 
 export const FEATURES_KEYWORDS = [
   "PoysaPath features",
-  "BDT expense tracker features",
+  "BDT cash flow tracker",
   "Bangladesh expense app",
+  "income expense tracker Bangladesh",
   "taka budget app",
   "daily expense tracker Bangladesh",
   "expense tracker with budgets",
@@ -22,6 +23,7 @@ export const FEATURES_KEYWORDS = [
   "Gemini expense parser",
   "Money Coach expense tracker",
   "monthly expense report AI",
+  "savings rate tracker Bangladesh",
   "Google sign in expense app",
   "personal finance app Bangladesh",
   "monthly budget tracker BDT",
@@ -33,7 +35,7 @@ const FEATURES_FAQ = [
   {
     question: "What is PoysaPath?",
     answer:
-      "PoysaPath is a personal expense tracker built for daily spending in Bangladesh. You log amounts in BDT, review today and month totals on a dashboard, set budgets and financial goals, track recurring reminders, and optionally use your own Google Gemini API key for quick text entry, Money Coach, and monthly AI reports.",
+      "PoysaPath is a personal cash-flow tracker built for daily use in Bangladesh. You log income and expenses in BDT, review Income · Expenses · Saved on your dashboard, browse History with filters, set budgets and financial goals, track recurring reminders, and optionally use your own Google Gemini API key for quick expense entry, Money Coach, and monthly AI reports with savings rate.",
   },
   {
     question: "Is PoysaPath free to use?",
@@ -51,14 +53,19 @@ const FEATURES_FAQ = [
       "Yes. Amounts are tracked in BDT (৳), and dates follow Asia/Dhaka so “today” and monthly totals match local daily use.",
   },
   {
-    question: "Do I need AI to use PoysaPath?",
+    question: "Can I track income as well as expenses?",
     answer:
-      "No. Manual expense entry, dashboards, categories, budgets, goals, and recurring reminders work without AI. Quick entry, Money Coach, and monthly AI reports are optional and powered by your own Gemini key if you choose to add one.",
+      "Yes. Log income on Add → Income and review it alongside expenses on History. Your dashboard shows Income, Expenses, and Saved this month. Money Coach and monthly reports include your savings rate when you log income.",
   },
   {
-    question: "Is my expense data private?",
+    question: "Do I need AI to use PoysaPath?",
     answer:
-      "Each account only sees its own expenses, categories, budgets, goals, and reminders. Your data is not shared with other users on the platform.",
+      "No. Manual income and expense entry, dashboards, History, categories, budgets, goals, and recurring reminders work without AI. Quick expense entry, Money Coach, and monthly AI reports are optional and powered by your own Gemini key if you choose to add one.",
+  },
+  {
+    question: "Is my data private?",
+    answer:
+      "Each account only sees its own income, expenses, categories, budgets, goals, and reminders. Your data is not shared with other users on the platform.",
   },
 ] as const;
 
@@ -96,7 +103,7 @@ export function buildFeaturesPageMetadata(): Metadata {
           url: "/logo.png",
           width: 512,
           height: 512,
-          alt: "PoysaPath — BDT expense tracker for Bangladesh",
+          alt: "PoysaPath — BDT cash-flow tracker for Bangladesh",
         },
       ],
     },
@@ -130,7 +137,7 @@ export function buildFeaturesPageJsonLd(): Record<string, unknown>[] {
         name: "PoysaPath",
         url: siteUrl,
         description:
-          "Track every taka, every day — a BDT expense tracker for Bangladesh.",
+          "Track every taka, every day — a BDT cash-flow tracker for Bangladesh.",
       },
       about: {
         "@type": "SoftwareApplication",
@@ -152,7 +159,7 @@ export function buildFeaturesPageJsonLd(): Record<string, unknown>[] {
         "@type": "Offer",
         price: "0",
         priceCurrency: "BDT",
-        description: "Free to start — create an account to track expenses.",
+        description: "Free to start — create an account to track income and expenses.",
       },
       description: FEATURES_PAGE_DESCRIPTION,
       url: siteUrl,
@@ -178,7 +185,7 @@ export function buildFeaturesPageJsonLd(): Record<string, unknown>[] {
       "@context": "https://schema.org",
       "@type": "ItemList",
       name: "PoysaPath product features",
-      description: "Capabilities available in the PoysaPath expense tracker.",
+      description: "Capabilities available in the PoysaPath cash-flow tracker.",
       numberOfItems: items.length,
       itemListElement: items.map((item, index) => ({
         "@type": "ListItem",
