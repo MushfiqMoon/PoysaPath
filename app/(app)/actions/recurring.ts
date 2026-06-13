@@ -14,7 +14,7 @@ import {
 function revalidateRecurringPages() {
   revalidatePath("/dashboard");
   revalidatePath("/history");
-  revalidatePath("/settings/recurring");
+  revalidatePath("/settings/recurring", "layout");
   revalidatePath("/settings/goals");
 }
 

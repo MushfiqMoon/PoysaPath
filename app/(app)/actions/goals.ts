@@ -10,7 +10,7 @@ import {
 
 function revalidateGoalPages() {
   revalidatePath("/dashboard");
-  revalidatePath("/settings/goals");
+  revalidatePath("/settings/goals", "layout");
 }
 
 export async function createFinancialGoal(input: FinancialGoalInput) {

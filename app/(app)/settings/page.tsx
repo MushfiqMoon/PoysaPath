@@ -1,5 +1,4 @@
-import { PageHeader } from "@/components/layout/page-header";
-import { SettingsMenu } from "@/components/settings/settings-menu";
+import { SettingsMenuSection } from "@/components/settings/settings-menu-section";
 import { SettingsPanel } from "@/components/settings/settings-panel";
 import { getIsSuperAdmin } from "@/lib/auth/admin";
 import { getAuthUser } from "@/lib/auth/session";
@@ -17,12 +16,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="space-y-4">
-      <PageHeader
-        title="Settings"
-        description="Profile, categories, budgets, and more"
-      />
-
-      <SettingsMenu showAdminLink={isSuperAdmin} />
+      <SettingsMenuSection showAdminLink={isSuperAdmin} />
 
       <SettingsPanel
         hasGeminiKey={geminiStatus.hasKey}

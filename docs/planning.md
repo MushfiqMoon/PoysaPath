@@ -1,7 +1,7 @@
 # PoysaPath — Project Plan
 
-> **Status:** Phases 0–4 shipped. Migrations `001`–`022` in Supabase. Deploy: [DEPLOY.md](./DEPLOY.md).  
-> **Last updated:** June 7, 2026
+> **Status:** Phases 0–4 shipped. Migrations `001`–`023` in Supabase. Deploy: [DEPLOY.md](./DEPLOY.md).  
+> **Last updated:** June 13, 2026
 
 | Doc | Purpose |
 |-----|---------|
@@ -18,7 +18,7 @@
 - Multi-user expense tracker in **BDT**, timezone **Asia/Dhaka**, mobile-first web app.
 - Auth: email/password + Google OAuth, protected `(app)/*`, RLS on all user tables.
 - **Gemini:** Quick parse on `/add` (expense tab), Money Coach on `/dashboard`, and monthly report in Settings.
-- Core: expenses CRUD, **income CRUD** (`/history` with Expense \| Income tabs, `/add` income tab), expense + income categories, budgets, financial goals, recurring money reminders, CSV export API (hidden in Settings UI), notifications (`005`).
+- Core: expenses CRUD, **income CRUD** (`/history` with Expense \| Income tabs, `/add` income tab), expense + income categories, budgets, financial goals, **investments** (one-time + multi-payment, `023_investments.sql`), recurring money reminders, CSV export API (hidden in Settings UI), notifications (`005`).
 - Dashboard: **Income / Expenses / Saved** this month (`022_incomes.sql`).
 - **Not v1:** shared households, OCR, chat assistant, recurring salary, income AI parse.
 
@@ -113,7 +113,7 @@ Both AI features include **income + spending** context and **savings rate** when
 | `/add` | Expense \| Income; expense has Quick (AI) \| Manual tabs |
 | `/history` | Expense \| Income tabs; list, filter, drill-down |
 | `/expenses/[id]/edit`, `/incomes/[id]/edit` | Edit expense or income |
-| `/settings`, `/settings/categories`, `/settings/budget`, `/settings/goals`, `/settings/recurring`, `/settings/reports`, `/settings/announcements` | Manage (`/settings/notification-history` redirects here) |
+| `/settings`, `/settings/categories`, `/settings/budget`, `/settings/goals`, `/settings/investments`, `/settings/recurring`, `/settings/reports`, `/settings/announcements` | Manage (`/settings/notification-history` redirects here) |
 | `/privacy`, `/terms` | Legal |
 
 **API:** `POST /api/gemini/parse-expense`, `POST /api/gemini/weekly-insight`, `POST /api/gemini/monthly-report`, `GET /api/export/csv` (optional `?from=` / `?to=` dates).
@@ -143,6 +143,7 @@ Setup: Supabase project → run migrations → [Google AI Studio](https://aistud
 - `/history` (Expense | Income tabs); `/expenses` list removed
 - Dashboard **Income / Expenses / Saved** this month (`022_incomes.sql`)
 - Financial goals and recurring money reminders
+- **Investments:** `/settings/investments` — one-time contributions and multi-payment projects with per-payment history; tracking-only, no expense/income impact.
 - Gemini: parse-expense + Money Coach + monthly report (income + savings rate context)
 - Per-user rate limit, insight refresh cooldown
 - CSV export API, privacy/terms, notifications migration

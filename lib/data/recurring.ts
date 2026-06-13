@@ -32,13 +32,43 @@ function getStatus(daysUntilDue: number, reminderDays: number): RecurringStatus 
   return "upcoming";
 }
 
+function mapRecurringRow(row: RecurringRow, today: string): RecurringItem {
+  const category = unwrapSupabaseJoin(row.categories);
+  const goalRow = unwrapSupabaseJoin(row.financial_goals);
+  const daysUntilDue = diffDays(today, row.next_due_date);
+
+  return {
+    id: row.id,
+    title: row.title,
+    recurring_type: row.recurring_type,
+    amount: Number(row.amount),
+    category_id: row.category_id,
+    linked_goal_id: row.linked_goal_id ?? null,
+    linked_goal: goalRow ? { id: goalRow.id, title: goalRow.title } : null,
+    payment_method: row.payment_method,
+    frequency: row.frequency,
+    next_due_date: row.next_due_date,
+    reminder_days: row.reminder_days,
+    notes: row.notes,
+    is_active: row.is_active,
+    last_recorded_at: row.last_recorded_at,
+    created_at: row.created_at,
+    category,
+    days_until_due: daysUntilDue,
+    status: row.is_active
+      ? getStatus(daysUntilDue, row.reminder_days)
+      : "upcoming",
+  };
+}
+
+const RECURRING_SELECT =
+  "id, title, recurring_type, amount, category_id, linked_goal_id, payment_method, frequency, next_due_date, reminder_days, notes, is_active, last_recorded_at, created_at, categories(name, icon), financial_goals(id, title)";
+
 export async function getRecurringItems(): Promise<RecurringItem[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("recurring_items")
-    .select(
-      "id, title, recurring_type, amount, category_id, linked_goal_id, payment_method, frequency, next_due_date, reminder_days, notes, is_active, last_recorded_at, created_at, categories(name, icon), financial_goals(id, title)",
-    )
+    .select(RECURRING_SELECT)
     .order("is_active", { ascending: false })
     .order("next_due_date", { ascending: true });
 
@@ -48,34 +78,27 @@ export async function getRecurringItems(): Promise<RecurringItem[]> {
   }
 
   const today = getTodayInDhaka();
-  return ((data ?? []) as RecurringRow[]).map((row) => {
-    const category = unwrapSupabaseJoin(row.categories);
-    const goalRow = unwrapSupabaseJoin(row.financial_goals);
-    const daysUntilDue = diffDays(today, row.next_due_date);
+  return ((data ?? []) as RecurringRow[]).map((row) => mapRecurringRow(row, today));
+}
 
-    return {
-      id: row.id,
-      title: row.title,
-      recurring_type: row.recurring_type,
-      amount: Number(row.amount),
-      category_id: row.category_id,
-      linked_goal_id: row.linked_goal_id ?? null,
-      linked_goal: goalRow ? { id: goalRow.id, title: goalRow.title } : null,
-      payment_method: row.payment_method,
-      frequency: row.frequency,
-      next_due_date: row.next_due_date,
-      reminder_days: row.reminder_days,
-      notes: row.notes,
-      is_active: row.is_active,
-      last_recorded_at: row.last_recorded_at,
-      created_at: row.created_at,
-      category,
-      days_until_due: daysUntilDue,
-      status: row.is_active
-        ? getStatus(daysUntilDue, row.reminder_days)
-        : "upcoming",
-    };
-  });
+export async function getRecurringItemById(
+  id: string,
+): Promise<RecurringItem | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("recurring_items")
+    .select(RECURRING_SELECT)
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    if (error.code === "42P01") return null;
+    throw new Error(error.message);
+  }
+
+  if (!data) return null;
+
+  return mapRecurringRow(data as RecurringRow, getTodayInDhaka());
 }
 
 export async function getRecurringAlerts(limit = 3): Promise<RecurringItem[]> {

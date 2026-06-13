@@ -56,6 +56,7 @@ const settingsSubNav = [
   { href: "/settings/categories", label: "Categories" },
   { href: "/settings/budgets", label: "Budgets" },
   { href: "/settings/goals", label: "Goals" },
+  { href: "/settings/investments", label: "Investments" },
   { href: "/settings/recurring", label: "Recurring" },
   { href: "/settings/reports", label: "Reports" },
   { href: "/settings/announcements", label: "Announcements" },

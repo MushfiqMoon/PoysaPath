@@ -2,14 +2,14 @@
 
 > **Companion:** [planning.md](./planning.md) · [planning-design.md](./planning-design.md)  
 > **Security rules:** [planning.md §3](./planning.md#3-security-canonical)  
-> **Last updated:** June 7, 2026
+> **Last updated:** June 13, 2026
 
 ## Current state
 
 - PostgreSQL on Supabase; RLS enabled on user-owned tables.
 - Sign-up copies **9 expense + 4 income** system categories into per-user rows.
 - `categories.kind`: `expense` | `income` (`022_incomes.sql`).
-- Migrations `001`–`022` in `supabase/migrations/`.
+- Migrations `001`–`023` in `supabase/migrations/`.
 - **Before production:** run two-user RLS test (`supabase/README.md`).
 
 ---
@@ -24,6 +24,9 @@ erDiagram
     PROFILES ||--o{ INCOMES : owns
     PROFILES ||--o{ BUDGETS : owns
     PROFILES ||--o{ FINANCIAL_GOALS : owns
+    PROFILES ||--o{ INVESTMENT_PROJECTS : owns
+    INVESTMENT_PROJECTS ||--o{ INVESTMENT_PAYMENTS : has
+    PROFILES ||--o{ INVESTMENT_PAYMENTS : owns
     PROFILES ||--o{ RECURRING_ITEMS : owns
     PROFILES ||--o{ INSIGHT_CACHE : owns
     CATEGORIES ||--o{ EXPENSES : classifies
@@ -43,6 +46,8 @@ erDiagram
 | `incomes` | Income amount, category, date, note, payment_method (`022`) |
 | `budgets` | Per category per month |
 | `financial_goals` | Savings, emergency, debt payoff, and category spend-less goals |
+| `investment_projects` | One-time or multi-payment investment containers (`023`) |
+| `investment_payments` | Individual payments toward a project; per-payment notes |
 | `recurring_items` | Recurring expenses and income reminders |
 | `insight_cache` | Cached weekly Gemini text |
 | `notifications` | App-wide announcements (read via `user_notification_reads`) |
@@ -76,6 +81,8 @@ All policies assume `auth.uid()` from the user JWT (anon key + session).
 | `incomes` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
 | `budgets` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
 | `financial_goals` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
+| `investment_projects` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
+| `investment_payments` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
 | `recurring_items` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
 | `insight_cache` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` | `user_id = auth.uid()` |
 | `notifications` | authenticated read (broadcast) | service/admin only | — | — |
@@ -91,6 +98,8 @@ All policies assume `auth.uid()` from the user JWT (anon key + session).
 **incomes:** `user_id`, `category_id`, `amount` (>0), `income_date`, `note?`, `payment_method?`  
 **budgets:** unique `(user_id, category_id, month)` — `month` = first day of month  
 **financial_goals:** `goal_type`, `target_amount`, `current_amount`, optional `category_id`, `target_month`, `due_date`  
+**investment_projects:** `title`, `description?`, `kind` (`one_time` \| `multi_payment`), `target_amount?`, `status`  
+**investment_payments:** `project_id`, `amount` (>0), `payment_date`, `note?`  
 **recurring_items:** `recurring_type`, `amount`, optional `category_id`, `frequency`, `next_due_date`, `reminder_days`  
 **insight_cache:** unique `(user_id, week_start)`
 
@@ -109,8 +118,11 @@ All policies assume `auth.uid()` from the user JWT (anon key + session).
 | `005_notifications.sql` | Broadcast notifications + read state |
 | `006_user_gemini_credentials.sql` | Encrypted per-user Gemini API keys |
 | `007_goals_recurring.sql` | Financial goals, recurring money reminders, RLS |
+| `023_investments.sql` | `investment_projects` + `investment_payments` (one-time and multi-payment) |
 
 Apply in order via Supabase SQL Editor or CLI.
+
+**Near-future (not in repo yet):** `stock_trades` table — sibling for stock buy/sell (`symbol`, `quantity`, `unit_price`, `trade_date`, `side`).
 
 ---
 

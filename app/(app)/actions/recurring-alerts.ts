@@ -28,5 +28,5 @@ export async function dismissRecurringPaymentAlertAction(alertId: string) {
   );
 
   revalidatePath("/dashboard");
-  revalidatePath("/settings/recurring");
+  revalidatePath("/settings/recurring", "layout");
 }

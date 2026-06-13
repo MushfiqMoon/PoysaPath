@@ -12,6 +12,7 @@ Broadcast messages shown in the app bell until each user taps **Mark as read**.
 | `002_may_2026_updates.sql` | What's new today | Recent tap-to-edit, BYOK Gemini key in Settings |
 | `003_goals_recurring_updates.sql` | New planning and AI tools | Goals/challenges, recurring reminders, dashboard Money Coach, Monthly AI report |
 | `004_income_tracking.sql` | Income tracking and History | Income on Add, History tabs, dashboard Income·Expenses·Saved, AI savings rate |
+| `005_investments.sql` | Investment tracking | One-time and multi-payment projects in Settings → Investments, payment history, progress |
 
 ## Add a new notification
 

@@ -137,3 +137,30 @@ export type RecurringItem = {
   status: RecurringStatus;
   days_until_due: number;
 };
+
+/** Investment projects at /settings/investments. Future: StockTrade for stock_trades table. */
+export type InvestmentKind = "one_time" | "multi_payment";
+export type InvestmentProjectStatus = "active" | "completed";
+
+export type InvestmentPayment = {
+  id: string;
+  project_id: string;
+  amount: number;
+  payment_date: string;
+  note: string | null;
+  created_at: string;
+};
+
+export type InvestmentProject = {
+  id: string;
+  title: string;
+  description: string | null;
+  kind: InvestmentKind;
+  target_amount: number | null;
+  status: InvestmentProjectStatus;
+  created_at: string;
+  updated_at: string;
+  payments: InvestmentPayment[];
+  paid_total: number;
+  progress_percent: number;
+};
