@@ -113,3 +113,46 @@ export const recurringItemInputSchema = z
   });
 
 export type RecurringItemInput = z.infer<typeof recurringItemInputSchema>;
+
+export const oneTimeInvestmentInputSchema = z.object({
+  title: z.string().trim().min(1, "Enter a title").max(120, "Title is too long"),
+  description: z.string().max(500).optional().nullable(),
+  amount: z.coerce.number().positive("Enter a valid amount"),
+  payment_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date"),
+  payment_note: z.string().max(500).optional().nullable(),
+});
+
+export type OneTimeInvestmentInput = z.infer<typeof oneTimeInvestmentInputSchema>;
+
+export const multiPaymentProjectInputSchema = z.object({
+  title: z.string().trim().min(1, "Enter a title").max(120, "Title is too long"),
+  description: z.string().max(500).optional().nullable(),
+  target_amount: z.coerce.number().positive("Enter a target amount"),
+});
+
+export type MultiPaymentProjectInput = z.infer<
+  typeof multiPaymentProjectInputSchema
+>;
+
+export const investmentProjectUpdateSchema = z.object({
+  title: z.string().trim().min(1, "Enter a title").max(120, "Title is too long"),
+  description: z.string().max(500).optional().nullable(),
+  target_amount: z.coerce.number().positive("Enter a target amount").optional(),
+  status: z.enum(["active", "completed"]).optional(),
+});
+
+export type InvestmentProjectUpdateInput = z.infer<
+  typeof investmentProjectUpdateSchema
+>;
+
+export const investmentPaymentInputSchema = z.object({
+  amount: z.coerce.number().positive("Enter a valid amount"),
+  payment_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date"),
+  note: z.string().max(500).optional().nullable(),
+});
+
+export type InvestmentPaymentInput = z.infer<typeof investmentPaymentInputSchema>;

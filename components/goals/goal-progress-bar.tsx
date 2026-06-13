@@ -82,7 +82,7 @@ export function GoalProgressBar({
   );
 }
 
-function GoalProgressTrack({
+export function GoalProgressTrack({
   goal,
   className,
 }: {

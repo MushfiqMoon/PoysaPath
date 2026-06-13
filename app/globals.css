@@ -454,6 +454,84 @@ input[type="date"] {
   animation: parsed-flash 1.5s ease-out;
 }
 
+/* Goal card stack — rise from deck / drop from above */
+@keyframes goal-stack-rise {
+  from {
+    opacity: 0.35;
+    transform: translateY(2rem) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes goal-stack-drop {
+  from {
+    opacity: 0.35;
+    transform: translateY(-2rem) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes goal-stack-peek-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes goal-stack-peek-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-0.75rem) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.goal-stack-rise,
+.card-stack-rise {
+  animation: goal-stack-rise 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.goal-stack-drop,
+.card-stack-drop {
+  animation: goal-stack-drop 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.goal-stack-peek-rise,
+.card-stack-peek-rise {
+  animation: goal-stack-peek-rise 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.goal-stack-peek-drop,
+.card-stack-peek-drop {
+  animation: goal-stack-peek-drop 0.34s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .goal-stack-rise,
+  .goal-stack-drop,
+  .goal-stack-peek-rise,
+  .goal-stack-peek-drop,
+  .card-stack-rise,
+  .card-stack-drop,
+  .card-stack-peek-rise,
+  .card-stack-peek-drop {
+    animation: none;
+  }
+}
+
 @keyframes swing {
   0%,
   100% {
