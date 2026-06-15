@@ -1,7 +1,7 @@
 export const GEMINI_KEY_REQUIRED_CODE = "GEMINI_KEY_REQUIRED" as const;
 
 export const GEMINI_HELP_URL = "https://aistudio.google.com/api-keys";
-export const GEMINI_SETTINGS_PATH = "/settings";
+export const GEMINI_SETTINGS_PATH = "/settings/ai";
 
 export const GEMINI_CONTACT = {
   name: "Mushfiq",

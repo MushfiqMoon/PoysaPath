@@ -11,9 +11,11 @@ import {
   FiTarget,
   FiTrendingUp,
   FiUser,
+  FiZap,
 } from "react-icons/fi";
 
 import { Card } from "@/components/ui/card";
+import { AI_LABELS } from "@/lib/gemini/labels";
 import type { SettingsMenuView } from "@/lib/settings-menu-view";
 
 type MenuLink = {
@@ -29,6 +31,12 @@ const menuLinks: MenuLink[] = [
     label: "Profile",
     desc: "Name, email, and preferences",
     Icon: FiUser,
+  },
+  {
+    href: "/settings/ai",
+    label: AI_LABELS.settingsSection,
+    desc: "Gemini API key for Quick entry and Money Coach",
+    Icon: FiZap,
   },
   {
     href: "/settings/categories",

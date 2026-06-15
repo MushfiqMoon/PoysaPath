@@ -27,7 +27,6 @@ export function InvestmentStackPreviewCard({
       <StackPeekStrip
         title={project.title}
         meta={getInvestmentKindLabel(project.kind)}
-        accent={isActive}
       />
     );
   }
