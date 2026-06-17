@@ -16,6 +16,7 @@ import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Logo } from "@/components/shared/logo";
 import { NotificationsBellButton } from "@/components/notifications/notifications-bell-button";
 import { NotificationsPanel } from "@/components/notifications/notifications-panel";
+import { AI_LABELS } from "@/lib/gemini/labels";
 import { useNotifications } from "@/lib/notifications/use-notifications";
 import { createClient } from "@/lib/supabase/client";
 
@@ -53,6 +54,7 @@ const mainNav: {
 
 const settingsSubNav = [
   { href: "/settings/profile", label: "Profile" },
+  { href: "/settings/ai", label: AI_LABELS.settingsSection },
   { href: "/settings/categories", label: "Categories" },
   { href: "/settings/budgets", label: "Budgets" },
   { href: "/settings/goals", label: "Goals" },

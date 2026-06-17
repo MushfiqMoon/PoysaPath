@@ -28,7 +28,6 @@ export function GoalStackPreviewCard({
       <StackPeekStrip
         title={goal.title}
         meta={GOAL_TYPE_LABELS_SHORT[goal.goal_type]}
-        accent={isActive}
       />
     );
   }

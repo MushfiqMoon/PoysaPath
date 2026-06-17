@@ -158,7 +158,7 @@ export function SwipeCardStack<T>({
     : null;
 
   const dragProgress = Math.max(-1, Math.min(1, dragOffset / 120));
-  const frontLiftY = dragOffset !== 0 ? -dragProgress * 18 : 0;
+  const frontLiftY = dragOffset !== 0 ? -Math.abs(dragProgress) * 18 : 0;
   const frontScale =
     dragOffset !== 0 ? 1 - Math.min(0.05, Math.abs(dragProgress) * 0.05) : 1;
   const frontRotate = dragOffset !== 0 ? dragProgress * 1.5 : 0;
@@ -176,11 +176,7 @@ export function SwipeCardStack<T>({
       : undefined;
 
   const topPeekDrop =
-    dragOffset > 0
-      ? Math.min(21, dragOffset * 0.12)
-      : dragOffset < 0
-        ? -Math.min(7, -dragOffset * 0.05)
-        : 0;
+    dragOffset !== 0 ? Math.min(21, Math.abs(dragOffset) * 0.12) : 0;
 
   const tapHint = onItemSelect ? "Tap to open · Swipe to browse" : "Swipe to browse";
 
@@ -216,13 +212,11 @@ export function SwipeCardStack<T>({
                 "absolute inset-x-0 z-[1] px-1.5",
                 reducedMotion ? "" : "card-stack-peek-drop",
               ].join(" ")}
-              style={{
-                top: `${topPeekDrop}px`,
-                transform: "scale(0.97)",
-                transformOrigin: "bottom center",
-              }}
+              style={{ top: `${topPeekDrop}px` }}
             >
-              {renderPeek(prevItem)}
+              <div className="origin-bottom scale-[0.97]">
+                {renderPeek(prevItem)}
+              </div>
             </div>
           ) : null}
 

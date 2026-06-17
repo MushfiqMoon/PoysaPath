@@ -29,18 +29,9 @@ export function RecurringStackPreviewCard({
   showHint = false,
   tapHint = "Swipe to browse",
 }: RecurringStackPreviewCardProps) {
-  const accentBar =
-    item.status === "missed"
-      ? false
-      : item.status === "due_soon" || item.is_active;
-
   if (variant === "peek") {
     return (
-      <StackPeekStrip
-        title={item.title}
-        meta={statusLabel(item)}
-        accent={accentBar}
-      />
+      <StackPeekStrip title={item.title} meta={statusLabel(item)} />
     );
   }
 
