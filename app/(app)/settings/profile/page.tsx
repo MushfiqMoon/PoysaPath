@@ -1,10 +1,22 @@
+import { ConnectionsPanel } from "@/components/connections/connections-panel";
 import { PageHeader } from "@/components/layout/page-header";
 import { ProfileSettings } from "@/components/settings/profile-settings";
 import { getAuthUser, getUserProfile } from "@/lib/auth/session";
+import {
+  getConnectedContacts,
+  getPendingIncomingRequests,
+  getPendingOutgoingRequests,
+} from "@/lib/data/connections";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function SettingsProfilePage() {
-  const [user, userProfile] = await Promise.all([getAuthUser(), getUserProfile()]);
+  const [user, userProfile, incoming, outgoing, contacts] = await Promise.all([
+    getAuthUser(),
+    getUserProfile(),
+    getPendingIncomingRequests(),
+    getPendingOutgoingRequests(),
+    getConnectedContacts(),
+  ]);
   const supabase = await createClient();
 
   const { data: profile } = user
@@ -26,6 +38,11 @@ export default async function SettingsProfilePage() {
         email={user?.email ?? ""}
         displayName={profile?.display_name ?? null}
         avatarUrl={profile?.avatar_url ?? userProfile?.avatarUrl ?? null}
+      />
+      <ConnectionsPanel
+        incoming={incoming}
+        outgoing={outgoing}
+        contacts={contacts}
       />
     </div>
   );

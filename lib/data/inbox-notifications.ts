@@ -11,7 +11,7 @@ export async function getUnreadInboxNotifications(): Promise<InboxNotification[]
   const { data, error } = await supabase
     .from("user_inbox_notifications")
     .select(
-      "id, user_id, shared_reminder_id, kind, title, body, read_at, created_at",
+      "id, user_id, shared_reminder_id, connection_request_id, kind, title, body, read_at, created_at",
     )
     .eq("user_id", user.id)
     .is("read_at", null)
@@ -25,6 +25,18 @@ export async function getUnreadInboxNotifications(): Promise<InboxNotification[]
   return (data ?? []) as InboxNotification[];
 }
 
+function inboxSourceForKind(
+  kind: InboxNotification["kind"],
+): BellNotification["source"] {
+  if (kind === "connection_request_received") return "connection";
+  return "shared_reminder";
+}
+
+function inboxHrefForKind(kind: InboxNotification["kind"]): string {
+  if (kind === "connection_request_received") return "/settings/profile";
+  return "/settings/follow-ups";
+}
+
 export function inboxToBellNotifications(
   items: InboxNotification[],
 ): BellNotification[] {
@@ -34,8 +46,8 @@ export function inboxToBellNotifications(
     body: n.body,
     kind: n.kind,
     created_at: n.created_at,
-    source: "shared_reminder" as const,
-    href: "/settings/connections",
+    source: inboxSourceForKind(n.kind),
+    href: inboxHrefForKind(n.kind),
   }));
 }
 
@@ -55,4 +67,22 @@ export async function markInboxNotificationRead(
     .eq("user_id", user.id);
 
   if (error) throw new Error(error.message);
+}
+
+export async function markConnectionRequestInboxRead(
+  connectionRequestId: string,
+  userId: string,
+): Promise<void> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("user_inbox_notifications")
+    .update({ read_at: new Date().toISOString() })
+    .eq("user_id", userId)
+    .eq("connection_request_id", connectionRequestId)
+    .eq("kind", "connection_request_received")
+    .is("read_at", null);
+
+  if (error && error.code !== "42P01") {
+    throw new Error(error.message);
+  }
 }

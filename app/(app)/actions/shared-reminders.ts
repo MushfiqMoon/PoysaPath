@@ -12,7 +12,8 @@ import {
 import { sharedReminderInputSchema } from "@/lib/validators";
 
 function revalidateReminderPages() {
-  revalidatePath("/settings/connections", "layout");
+  revalidatePath("/settings/profile", "layout");
+  revalidatePath("/settings/follow-ups", "layout");
   revalidatePath("/dashboard");
 }
 
@@ -82,8 +83,8 @@ export async function createSharedReminderAction(input: {
     user_id: parsed.assignee_id,
     shared_reminder_id: reminder.id,
     kind: "shared_reminder_assigned",
-    title: "New shared reminder",
-    body: `${creatorName} assigned you: ${reminder.title}`,
+    title: "Reminder",
+    body: `You got a reminder from ${creatorName} about ${reminder.title}`,
   });
 
   if (inboxError) throw new Error(inboxError.message);
@@ -135,8 +136,8 @@ export async function completeSharedReminderAction(reminderId: string) {
       user_id: notifyUserId,
       shared_reminder_id: reminder.id,
       kind: "shared_reminder_done",
-      title: "Reminder completed",
-      body: `${actorName} marked done: ${reminder.title}`,
+      title: "Reminder",
+      body: `${actorName} marked "${reminder.title}" as done`,
     });
   }
 

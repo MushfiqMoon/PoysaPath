@@ -34,6 +34,16 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/settings/connections",
+        destination: "/settings/follow-ups",
+        permanent: false,
+      },
+      {
+        source: "/settings/shared-reminders",
+        destination: "/settings/follow-ups",
+        permanent: false,
+      },
+      {
         source: "/categories",
         destination: "/settings/categories",
         permanent: true,

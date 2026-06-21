@@ -57,7 +57,7 @@ export function useNotifications() {
     setError(null);
     try {
       const item = items.find((n) => n.id === notificationId);
-      if (item?.source === "shared_reminder") {
+      if (item?.source === "shared_reminder" || item?.source === "connection") {
         await markInboxNotificationReadAction(notificationId);
       } else if (notificationId.startsWith(RECURRING_ALERT_ID_PREFIX)) {
         await dismissRecurringPaymentAlertAction(notificationId);
