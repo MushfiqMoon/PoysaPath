@@ -48,8 +48,76 @@ export type Notification = {
 };
 
 export type BellNotification = Notification & {
-  source: "announcement" | "recurring";
+  source: "announcement" | "recurring" | "shared_reminder";
   href?: string;
+};
+
+export type ConnectionStatus =
+  | "pending"
+  | "accepted"
+  | "declined"
+  | "cancelled"
+  | "removed";
+
+export type ConnectionProfilePreview = {
+  id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+};
+
+export type ConnectionRequest = {
+  id: string;
+  requester_id: string;
+  recipient_id: string;
+  status: ConnectionStatus;
+  created_at: string;
+  responded_at: string | null;
+  other_user: ConnectionProfilePreview;
+};
+
+export type ConnectedContact = {
+  connection_id: string;
+  user: ConnectionProfilePreview;
+  connected_at: string;
+};
+
+export type ConnectionSearchResult = {
+  user: ConnectionProfilePreview;
+  canInvite: boolean;
+  statusMessage: string | null;
+};
+
+export type SharedReminderStatus = "open" | "done" | "cancelled";
+
+export type SharedReminder = {
+  id: string;
+  creator_id: string;
+  assignee_id: string;
+  title: string;
+  note: string | null;
+  due_at: string | null;
+  status: SharedReminderStatus;
+  created_at: string;
+  updated_at: string;
+  completed_at: string | null;
+  completed_by: string | null;
+  creator: ConnectionProfilePreview;
+  assignee: ConnectionProfilePreview;
+};
+
+export type InboxNotificationKind =
+  | "shared_reminder_assigned"
+  | "shared_reminder_done";
+
+export type InboxNotification = {
+  id: string;
+  user_id: string;
+  shared_reminder_id: string | null;
+  kind: InboxNotificationKind;
+  title: string;
+  body: string;
+  read_at: string | null;
+  created_at: string;
 };
 
 export type RecurringAlertKind = "due_soon" | "missed";

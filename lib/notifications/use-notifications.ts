@@ -7,6 +7,10 @@ import {
   fetchPaymentReminderNotifications,
 } from "@/app/(app)/actions/recurring-alerts";
 import { markNotificationReadAction } from "@/app/(app)/actions/notifications";
+import {
+  fetchSharedReminderInboxNotifications,
+  markInboxNotificationReadAction,
+} from "@/app/(app)/actions/shared-reminders";
 import { RECURRING_ALERT_ID_PREFIX } from "@/lib/recurring-alert-id";
 import { fetchUnreadNotifications } from "@/lib/notifications/client";
 import type { BellNotification } from "@/lib/types";
@@ -27,11 +31,16 @@ export function useNotifications() {
     setLoading(true);
     setError(null);
     try {
-      const [announcements, reminders] = await Promise.all([
+      const [announcements, recurring, shared] = await Promise.all([
         fetchUnreadNotifications(),
         fetchPaymentReminderNotifications(),
+        fetchSharedReminderInboxNotifications(),
       ]);
-      setItems([...reminders, ...toAnnouncementItems(announcements)]);
+      setItems([
+        ...shared,
+        ...recurring,
+        ...toAnnouncementItems(announcements),
+      ]);
     } catch {
       setError("Could not load notifications.");
     } finally {
@@ -47,7 +56,10 @@ export function useNotifications() {
     setMarkingId(notificationId);
     setError(null);
     try {
-      if (notificationId.startsWith(RECURRING_ALERT_ID_PREFIX)) {
+      const item = items.find((n) => n.id === notificationId);
+      if (item?.source === "shared_reminder") {
+        await markInboxNotificationReadAction(notificationId);
+      } else if (notificationId.startsWith(RECURRING_ALERT_ID_PREFIX)) {
         await dismissRecurringPaymentAlertAction(notificationId);
       } else {
         await markNotificationReadAction(notificationId);

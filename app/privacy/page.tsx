@@ -90,6 +90,10 @@ export default function PrivacyPage() {
                 In-app product announcements and whether you have marked them read
               </li>
               <li>
+                Optional connections (mutual accept by email) and shared money
+                reminders you send or receive — not your expense or income records
+              </li>
+              <li>
                 Your Google Gemini API key, stored encrypted, if you enable AI in{" "}
                 <NavPath parts={["Settings", "AI"]} /> (optional)
               </li>
@@ -106,7 +110,10 @@ export default function PrivacyPage() {
             <h2 className="text-base font-semibold text-text">How we use data</h2>
             <p>
               Your data powers the app for you only. Row-level security in our
-              database (Supabase) ensures each user sees only their own records.
+              database (Supabase) ensures each user sees only their own financial
+              records. If you use optional Connections, you and another user you
+              both approve can exchange shared money reminders only — not expenses,
+              income, budgets, or goals.
             </p>
             <p>
               <strong className="font-medium text-text">Sign-in.</strong> If you

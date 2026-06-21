@@ -10,6 +10,8 @@
 6. For in-app notifications (broadcast + per-user read state), run `005_notifications.sql`.
 7. For per-user encrypted Gemini API keys (BYOK), run `006_user_gemini_credentials.sql`.
 8. For announcement messages, run each file in `migrations/notifications/` (start with `001_intro.sql`). See `migrations/notifications/README.md`.
+9. For connections and shared money reminders, run `024_connections_shared_reminders.sql`.
+10. For email search before sending a connection request, run `025_connection_search_by_email.sql`.
 
 ## Verify
 
@@ -75,3 +77,11 @@ Users cannot grant themselves `is_super_admin` from the app; only SQL (or servic
 1. Create User A and User B.
 2. As User A, add an expense.
 3. In SQL Editor (service role) or as User B via API — User B must not see User A’s rows when using the anon key + User B JWT.
+
+### Connections (after `024_connections_shared_reminders.sql`)
+
+1. As User A, open **Settings → Connections** and send a request to User B’s exact email.
+2. As User B, accept the request — both users appear under **Connected people**.
+3. User A creates a shared reminder for User B — User B sees it in the bell and on the Connections page.
+4. Either user removes the connection — open shared reminders are cancelled.
+5. User B still cannot read User A’s expenses, income, or budgets (finance data stays private).
