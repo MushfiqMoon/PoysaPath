@@ -13,6 +13,7 @@ Broadcast messages shown in the app bell until each user taps **Mark as read**.
 | `003_goals_recurring_updates.sql` | New planning and AI tools | Goals/challenges, recurring reminders, dashboard Money Coach, Monthly AI report |
 | `004_income_tracking.sql` | Income tracking and History | Income on Add, History tabs, dashboard Income·Expenses·Saved, AI savings rate |
 | `005_investments.sql` | Investment tracking | One-time and multi-payment projects in Settings → Investments, payment history, progress |
+| `006_follow_ups.sql` | Follow-Ups | Connect in Profile, send money-task nudges in Settings → Follow-Ups |
 
 ## Add a new notification
 

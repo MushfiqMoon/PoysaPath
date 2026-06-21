@@ -1,4 +1,5 @@
 import { ConnectionsPanel } from "@/components/connections/connections-panel";
+import { PendingConnectionRequests } from "@/components/connections/pending-connection-requests";
 import { PageHeader } from "@/components/layout/page-header";
 import { ProfileSettings } from "@/components/settings/profile-settings";
 import { getAuthUser, getUserProfile } from "@/lib/auth/session";
@@ -34,16 +35,13 @@ export default async function SettingsProfilePage() {
         backHref="/settings"
         backLabel="Settings"
       />
+      <PendingConnectionRequests incoming={incoming} outgoing={outgoing} />
       <ProfileSettings
         email={user?.email ?? ""}
         displayName={profile?.display_name ?? null}
         avatarUrl={profile?.avatar_url ?? userProfile?.avatarUrl ?? null}
       />
-      <ConnectionsPanel
-        incoming={incoming}
-        outgoing={outgoing}
-        contacts={contacts}
-      />
+      <ConnectionsPanel contacts={contacts} />
     </div>
   );
 }

@@ -4,9 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import {
-  acceptConnectionRequestAction,
-  cancelConnectionRequestAction,
-  declineConnectionRequestAction,
   removeConnectionAction,
   searchConnectionByEmailAction,
   sendConnectionRequestAction,
@@ -22,21 +19,14 @@ import { connectionDisplayName } from "@/lib/connections/labels";
 import { formatDateTimeDhaka } from "@/lib/format";
 import type {
   ConnectedContact,
-  ConnectionRequest,
   ConnectionSearchResult,
 } from "@/lib/types";
 
 type ConnectionsPanelProps = {
-  incoming: ConnectionRequest[];
-  outgoing: ConnectionRequest[];
   contacts: ConnectedContact[];
 };
 
-export function ConnectionsPanel({
-  incoming,
-  outgoing,
-  contacts,
-}: ConnectionsPanelProps) {
+export function ConnectionsPanel({ contacts }: ConnectionsPanelProps) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [searchLoading, setSearchLoading] = useState(false);
@@ -46,7 +36,6 @@ export function ConnectionsPanel({
   const [searchedEmail, setSearchedEmail] = useState<string | null>(null);
   const [inviteLoading, setInviteLoading] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
-  const [actionId, setActionId] = useState<string | null>(null);
   const [disconnectTarget, setDisconnectTarget] = useState<ConnectedContact | null>(
     null,
   );
@@ -95,24 +84,6 @@ export function ConnectionsPanel({
       setSearchResult(null);
       setSearchedEmail(null);
       setInviteError(null);
-    }
-  }
-
-  async function handleConnectionAction(
-    id: string,
-    action: "accept" | "decline" | "cancel",
-  ) {
-    setActionId(id);
-    setInviteError(null);
-    try {
-      if (action === "accept") await acceptConnectionRequestAction(id);
-      if (action === "decline") await declineConnectionRequestAction(id);
-      if (action === "cancel") await cancelConnectionRequestAction(id);
-      router.refresh();
-    } catch (err) {
-      setInviteError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setActionId(null);
     }
   }
 
@@ -198,75 +169,6 @@ export function ConnectionsPanel({
           </div>
         ) : null}
       </Card>
-
-      {(incoming.length > 0 || outgoing.length > 0) && (
-        <section className="space-y-4">
-          <h3 className="font-semibold text-text">Pending requests</h3>
-          {incoming.map((request) => {
-            const name = connectionDisplayName(request.other_user);
-            return (
-              <Card key={request.id} padding="sm" className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <UserAvatar
-                    name={name}
-                    avatarUrl={request.other_user.avatar_url}
-                    size={36}
-                  />
-                  <div className="min-w-0">
-                    <p className="font-medium text-text">{name}</p>
-                    <p className="text-sm text-text-muted">Wants to connect with you</p>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    fullWidth
-                    loading={actionId === request.id}
-                    onClick={() => void handleConnectionAction(request.id, "accept")}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    fullWidth
-                    disabled={actionId === request.id}
-                    onClick={() => void handleConnectionAction(request.id, "decline")}
-                  >
-                    Decline
-                  </Button>
-                </div>
-              </Card>
-            );
-          })}
-          {outgoing.map((request) => {
-            const name = connectionDisplayName(request.other_user);
-            return (
-              <Card key={request.id} padding="sm" className="flex items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-3">
-                  <UserAvatar
-                    name={name}
-                    avatarUrl={request.other_user.avatar_url}
-                    size={36}
-                  />
-                  <div className="min-w-0">
-                    <p className="font-medium text-text">{name}</p>
-                    <p className="text-sm text-text-muted">Waiting for them to accept</p>
-                  </div>
-                </div>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  loading={actionId === request.id}
-                  onClick={() => void handleConnectionAction(request.id, "cancel")}
-                >
-                  Cancel
-                </Button>
-              </Card>
-            );
-          })}
-        </section>
-      )}
 
       <section className="space-y-4">
         <h3 className="font-semibold text-text">Connected people</h3>
