@@ -55,6 +55,7 @@ const mainNav: {
 const settingsSubNav = [
   { href: "/settings/profile", label: "Profile" },
   { href: "/settings/ai", label: AI_LABELS.settingsSection },
+  { href: "/settings/follow-ups", label: "Follow-Ups" },
   { href: "/settings/categories", label: "Categories" },
   { href: "/settings/budgets", label: "Budgets" },
   { href: "/settings/goals", label: "Goals" },

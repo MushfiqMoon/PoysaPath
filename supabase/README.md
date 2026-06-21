@@ -12,6 +12,7 @@
 8. For announcement messages, run each file in `migrations/notifications/` (start with `001_intro.sql`). See `migrations/notifications/README.md`.
 9. For connections and shared money reminders, run `024_connections_shared_reminders.sql`.
 10. For email search before sending a connection request, run `025_connection_search_by_email.sql`.
+11. For connection-request bell notifications, run `026_connection_request_inbox.sql`.
 
 ## Verify
 
@@ -80,8 +81,8 @@ Users cannot grant themselves `is_super_admin` from the app; only SQL (or servic
 
 ### Connections (after `024_connections_shared_reminders.sql`)
 
-1. As User A, open **Settings → Connections** and send a request to User B’s exact email.
-2. As User B, accept the request — both users appear under **Connected people**.
-3. User A creates a shared reminder for User B — User B sees it in the bell and on the Connections page.
-4. Either user removes the connection — open shared reminders are cancelled.
+1. As User A, open **Settings → Profile** and send a connection request to User B’s exact email.
+2. As User B, see the request in the **bell** and on the Profile page — accept it.
+3. User A creates a follow-up for User B in **Settings → Follow-Ups** — User B sees it in the bell and on the Follow-Ups page.
+4. Either user removes the connection from Profile — open follow-ups are cancelled.
 5. User B still cannot read User A’s expenses, income, or budgets (finance data stays private).

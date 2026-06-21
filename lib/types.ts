@@ -48,7 +48,7 @@ export type Notification = {
 };
 
 export type BellNotification = Notification & {
-  source: "announcement" | "recurring" | "shared_reminder";
+  source: "announcement" | "recurring" | "shared_reminder" | "connection";
   href?: string;
 };
 
@@ -107,12 +107,14 @@ export type SharedReminder = {
 
 export type InboxNotificationKind =
   | "shared_reminder_assigned"
-  | "shared_reminder_done";
+  | "shared_reminder_done"
+  | "connection_request_received";
 
 export type InboxNotification = {
   id: string;
   user_id: string;
   shared_reminder_id: string | null;
+  connection_request_id: string | null;
   kind: InboxNotificationKind;
   title: string;
   body: string;

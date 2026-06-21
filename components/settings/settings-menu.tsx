@@ -11,7 +11,7 @@ import {
   FiTarget,
   FiTrendingUp,
   FiUser,
-  FiUsers,
+  FiSend,
   FiZap,
 } from "react-icons/fi";
 
@@ -38,6 +38,12 @@ const menuLinks: MenuLink[] = [
     label: AI_LABELS.settingsSection,
     desc: "Gemini API key for Quick entry and Money Coach",
     Icon: FiZap,
+  },
+  {
+    href: "/settings/follow-ups",
+    label: "Follow-Ups",
+    desc: "Nudge people you trust about money tasks",
+    Icon: FiSend,
   },
   {
     href: "/settings/categories",
@@ -68,12 +74,6 @@ const menuLinks: MenuLink[] = [
     label: "Recurring payments",
     desc: "Bills, subscriptions, DPS reminders",
     Icon: FiRefreshCw,
-  },
-  {
-    href: "/settings/connections",
-    label: "Connections",
-    desc: "Invite by email and send shared money reminders",
-    Icon: FiUsers,
   },
   {
     href: "/settings/reports",

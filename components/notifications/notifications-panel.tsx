@@ -21,7 +21,7 @@ type NotificationsPanelProps = {
 };
 
 function reminderCardClass(kind: string, source: BellNotification["source"]) {
-  if (source === "shared_reminder") {
+  if (source === "shared_reminder" || source === "connection") {
     return "border-accent/35 bg-accent/8 ring-1 ring-accent/15";
   }
   if (kind === "recurring_missed") {
@@ -46,7 +46,11 @@ function NotificationCard({
 }) {
   const isRecurring = item.source === "recurring";
   const isSharedReminder = item.source === "shared_reminder";
-  const isLinked = (isRecurring || isSharedReminder) && item.href;
+  const isConnection = item.source === "connection";
+  const isLinked = (isRecurring || isSharedReminder || isConnection) && item.href;
+
+  const isCompactInbox = isSharedReminder || isConnection;
+  const inboxMessage = isCompactInbox ? item.body : null;
 
   return (
     <Card padding="sm" className={reminderCardClass(item.kind, item.source)}>
@@ -56,34 +60,50 @@ function NotificationCard({
           onClick={onClose}
           className="block rounded-lg transition-opacity hover:opacity-90"
         >
-          <p className="break-words font-medium text-text">{item.title}</p>
-          <p className="mt-1 break-words text-sm leading-relaxed text-text-muted">
-            {item.body}
-          </p>
+          {inboxMessage ? (
+            <p className="break-words text-sm leading-relaxed text-text">
+              {inboxMessage}
+            </p>
+          ) : (
+            <>
+              <p className="break-words font-medium text-text">{item.title}</p>
+              <p className="mt-1 break-words text-sm leading-relaxed text-text-muted">
+                {item.body}
+              </p>
+            </>
+          )}
         </Link>
       ) : (
         <>
-          <p className="break-words font-medium text-text">{item.title}</p>
-          <p className="mt-1 break-words text-sm leading-relaxed text-text-muted">
-            {item.body}
-          </p>
+          {inboxMessage ? (
+            <p className="break-words text-sm leading-relaxed text-text">
+              {inboxMessage}
+            </p>
+          ) : (
+            <>
+              <p className="break-words font-medium text-text">{item.title}</p>
+              <p className="mt-1 break-words text-sm leading-relaxed text-text-muted">
+                {item.body}
+              </p>
+            </>
+          )}
         </>
       )}
-      <p className="mt-2 text-xs text-text-muted">
-        {isRecurring
-          ? "Payment reminder"
-          : isSharedReminder
-            ? "Shared reminder"
+      {!isCompactInbox ? (
+        <p className="mt-2 text-xs text-text-muted">
+          {isRecurring
+            ? "Payment reminder"
             : formatNotificationDate(item.created_at)}
-      </p>
+        </p>
+      ) : null}
       {isRecurring && item.href ? (
         <ForwardLink href={item.href} onClick={onClose} className="mt-2 text-xs">
           View recurring payments
         </ForwardLink>
       ) : null}
-      {isSharedReminder && item.href ? (
+      {!isSharedReminder && isConnection && item.href ? (
         <ForwardLink href={item.href} onClick={onClose} className="mt-2 text-xs">
-          View connections
+          Review connection request
         </ForwardLink>
       ) : null}
       <Button
@@ -146,16 +166,19 @@ export function NotificationsPanel({
 }: NotificationsPanelProps) {
   const [mounted, setMounted] = useState(false);
 
-  const { paymentReminders, sharedReminders, announcements } = useMemo(() => {
+  const { paymentReminders, connectionItems, sharedReminders, announcements } =
+    useMemo(() => {
     const paymentReminders: BellNotification[] = [];
+    const connectionItems: BellNotification[] = [];
     const sharedReminders: BellNotification[] = [];
     const announcements: BellNotification[] = [];
     for (const item of items) {
       if (item.source === "recurring") paymentReminders.push(item);
+      else if (item.source === "connection") connectionItems.push(item);
       else if (item.source === "shared_reminder") sharedReminders.push(item);
       else announcements.push(item);
     }
-    return { paymentReminders, sharedReminders, announcements };
+    return { paymentReminders, connectionItems, sharedReminders, announcements };
   }, [items]);
 
   useEffect(() => {
@@ -233,7 +256,14 @@ export function NotificationsPanel({
 
             <div className="space-y-5">
               <NotificationSection
-                title="Shared reminders"
+                title="Connection requests"
+                items={connectionItems}
+                markingId={markingId}
+                onMarkRead={onMarkRead}
+                onClose={onClose}
+              />
+              <NotificationSection
+                title="Follow-Ups"
                 items={sharedReminders}
                 markingId={markingId}
                 onMarkRead={onMarkRead}
