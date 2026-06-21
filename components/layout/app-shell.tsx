@@ -76,8 +76,17 @@ function isSettingsSectionActive(pathname: string) {
   return pathname.startsWith("/settings");
 }
 
+function isHistorySectionActive(pathname: string) {
+  return (
+    isActive(pathname, "/history") ||
+    pathname.startsWith("/expenses/") ||
+    pathname.startsWith("/incomes/")
+  );
+}
+
 function isMobileNavActive(pathname: string, href: string) {
   if (href === "/settings") return isSettingsSectionActive(pathname);
+  if (href === "/history") return isHistorySectionActive(pathname);
   return isActive(pathname, href);
 }
 
@@ -270,10 +279,16 @@ export function AppShell({ children, title }: AppShellProps) {
         >
           <div className="relative">
             <div
-              className="pointer-events-none absolute inset-y-0 left-0 rounded-xl bg-accent transition-[transform,width] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none"
+              className={[
+                "pointer-events-none absolute inset-y-0 left-0 rounded-xl bg-accent transition-[transform,width,opacity] duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none",
+                mobileActiveIndex < 0 ? "opacity-0" : "opacity-100",
+              ].join(" ")}
               style={{
                 width: "25%",
-                transform: `translate3d(${Math.max(mobileActiveIndex, 0) * 100}%, 0, 0)`,
+                transform:
+                  mobileActiveIndex >= 0
+                    ? `translate3d(${mobileActiveIndex * 100}%, 0, 0)`
+                    : undefined,
               }}
               aria-hidden
             />
