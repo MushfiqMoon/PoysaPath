@@ -156,3 +156,28 @@ export const investmentPaymentInputSchema = z.object({
 });
 
 export type InvestmentPaymentInput = z.infer<typeof investmentPaymentInputSchema>;
+
+export const connectionInviteInputSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email("Enter a valid email address"),
+});
+
+export type ConnectionInviteInput = z.infer<typeof connectionInviteInputSchema>;
+
+export const sharedReminderInputSchema = z.object({
+  assignee_id: z.string().uuid("Pick a connected person"),
+  title: z.string().trim().min(2, "Enter a reminder title").max(120),
+  note: z.string().max(500).optional().nullable(),
+  due_at: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date")
+    .optional()
+    .nullable()
+    .or(z.literal(""))
+    .transform((v) => (v === "" || v == null ? null : v)),
+});
+
+export type SharedReminderInput = z.infer<typeof sharedReminderInputSchema>;

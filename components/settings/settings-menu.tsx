@@ -11,6 +11,7 @@ import {
   FiTarget,
   FiTrendingUp,
   FiUser,
+  FiUsers,
   FiZap,
 } from "react-icons/fi";
 
@@ -67,6 +68,12 @@ const menuLinks: MenuLink[] = [
     label: "Recurring payments",
     desc: "Bills, subscriptions, DPS reminders",
     Icon: FiRefreshCw,
+  },
+  {
+    href: "/settings/connections",
+    label: "Connections",
+    desc: "Invite by email and send shared money reminders",
+    Icon: FiUsers,
   },
   {
     href: "/settings/reports",

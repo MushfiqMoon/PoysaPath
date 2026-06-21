@@ -205,7 +205,7 @@ export const FEATURE_SECTIONS: FeatureSection[] = [
         id: "isolation",
         title: "Account isolation",
         description:
-          "Each user only sees their own income, expenses, categories, budgets, goals, and reminders. No shared household view.",
+          "Each user only sees their own income, expenses, categories, budgets, and goals. Optional Connections share money reminders only — not financial records.",
         icon: "isolation",
       },
       {
