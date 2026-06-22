@@ -6,11 +6,17 @@ export function getSafeNextPath(next: string | null | undefined): string {
   return next;
 }
 
+/** Prefer NEXT_PUBLIC_APP_URL so OAuth always returns to the canonical production host. */
+export function getOAuthOrigin(fallbackOrigin: string): string {
+  const configured = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+  return configured || fallbackOrigin;
+}
+
 export function buildOAuthRedirectUrl(
   origin: string,
   next?: string | null,
 ): string {
-  const url = new URL("/auth/callback", origin);
+  const url = new URL("/auth/callback", getOAuthOrigin(origin));
   const safeNext = getSafeNextPath(next);
   if (safeNext !== "/dashboard") {
     url.searchParams.set("next", safeNext);
