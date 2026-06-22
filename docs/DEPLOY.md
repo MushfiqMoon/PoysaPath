@@ -26,7 +26,12 @@
    - `020_admin_user_list.sql`
    - `021_admin_stats_trim.sql`
    - `022_incomes.sql`
-3. **Authentication → URL configuration** — add your production URL, e.g. `https://your-app.vercel.app`.
+3. **Authentication → URL configuration** (critical for Google sign-in):
+   - **Site URL:** your public app URL only, e.g. `https://poysa-path.vercel.app` — not a Vercel team URL like `https://poysa-path-mushfiqur-rahmans-projects.vercel.app`.
+   - **Redirect URLs:** add:
+     - `https://poysa-path.vercel.app/auth/callback`
+     - `http://localhost:3000/auth/callback` (local dev)
+   - If Site URL or redirect URLs are wrong, Google sign-in lands on `/?code=` and never reaches the dashboard.
 4. **Authentication → Providers → Email** — turn on/off **Confirm email** as you prefer.
 5. Copy **Project URL** and **anon/publishable key** for Vercel env.
 
@@ -42,7 +47,7 @@
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Supabase anon/publishable key |
 | `ENCRYPTION_SECRET` | Random string, 32+ characters (encrypts user Gemini keys in DB) |
-| `NEXT_PUBLIC_APP_URL` | `https://your-app.vercel.app` |
+| `NEXT_PUBLIC_APP_URL` | `https://poysa-path.vercel.app` (must match Supabase Site URL) |
 
 5. Deploy.
 
